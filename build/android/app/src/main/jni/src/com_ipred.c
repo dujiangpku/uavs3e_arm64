@@ -36,6 +36,7 @@
  **************************************************************************************/
 
 #include "com_modules.h"
+#include "../test/config.h"
 
 void com_intra_get_nbr(int x, int y, int width, int height, pel *src, int s_src, pel *top, int lcu_size, u16 avail_cu, pel nb[N_C][INTRA_NEIB_SIZE], int scup, com_scu_t *map_scu, int i_scu, int bit_depth, int ch_type)
 {
@@ -385,7 +386,7 @@ static void tspcm_down_sample(int uiCWidth, int uiCHeight, int bitDept, pel *pSr
             }
 
             if (tempValue > maxResult || tempValue < 0) {
-                printf("\n TSCPM clip error");
+                as_print("\n TSCPM clip error");
             }
             pDst[i] = tempValue;
         }
@@ -815,7 +816,7 @@ void com_intra_pred_chroma(pel *dst, int ipm_c, int ipm, int w, int h, int bit_d
         break;
     }
     default:
-        printf("\n illegal chroma intra prediction mode\n");
+        as_print("\n illegal chroma intra prediction mode\n");
         break;
     }
 }

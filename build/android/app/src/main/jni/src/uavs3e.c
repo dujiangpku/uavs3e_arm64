@@ -234,13 +234,13 @@ static int refine_input_cfg(enc_cfg_t *param, enc_cfg_t *cfg_org)
     param->pic_height = (param->vertical_size   + PIC_ALIGN_SIZE - 1) / PIC_ALIGN_SIZE * PIC_ALIGN_SIZE;
 
     if (param->horizontal_size % PIC_ALIGN_SIZE != 0) {
-        printf("Note: picture width in encoding process is padded to %d (input value %d)\n", param->pic_width, param->horizontal_size);
+        as_print("Note: picture width in encoding process is padded to %d (input value %d)\n", param->pic_width, param->horizontal_size);
     }
     if (param->vertical_size % PIC_ALIGN_SIZE != 0) {
-        printf("Note: picture height in encoding process is padded to %d (input value %d)\n", param->pic_height, param->vertical_size);
+        as_print("Note: picture height in encoding process is padded to %d (input value %d)\n", param->pic_height, param->vertical_size);
     }
     if (param->bit_depth_input > param->bit_depth_internal) {
-        printf("Warning: Data precision may lose because input bit depth is higher than internal one !\n");
+        as_print("Warning: Data precision may lose because input bit depth is higher than internal one !\n");
     }
     param->wpp_threads = COM_CLIP3(1, (param->pic_height + param->ctu_size - 1) / param->ctu_size, param->wpp_threads);
     param->frm_threads = COM_MAX(param->frm_threads, 1);
@@ -1067,7 +1067,7 @@ void *enc_pic_thread(enc_pic_t *ep, pic_thd_param_t *p)
         }
         uavs3e_threadpool_set_priority(ep->wpp_threads_pool, THREAD_PRIORITY_NORMAL);
     }
-    printf("\n");
+    as_print("\n");
 
     if (info->sqh.alf_enable) {
         double lambda = 1.43631 * pow(2.0, (p->total_qp * 1.0 / info->f_lcu - 16.0) / 4.0);
@@ -1270,7 +1270,7 @@ void *uavs3e_create(enc_cfg_t *cfg, int *err)
     com_info_t *info;
     int pic_width, pic_height;
 
-    printf("Version: %s_%s,  SHA-1: %s\n", VERSION_STR, VERSION_TYPE, VERSION_SHA1);
+    as_print("Version: %s_%s,  SHA-1: %s\n", VERSION_STR, VERSION_TYPE, VERSION_SHA1);
 
     h = (enc_ctrl_t *)com_malloc(sizeof(enc_ctrl_t));
     info = &h->info;

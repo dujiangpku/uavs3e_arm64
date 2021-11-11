@@ -36,6 +36,7 @@
  **************************************************************************************/
 
 #include "com_modules.h"
+#include "../test/config.h"
 
 
 void com_alf_recon_coef(com_alf_pic_param_t *alfParam, int (*filterCoeff)[ALF_MAX_NUM_COEF])
@@ -142,7 +143,7 @@ void com_alf_copy_param(com_alf_pic_param_t *dst, com_alf_pic_param_t *src)
         }
         break;
     default: {
-        printf("Not a legal component ID\n");
+        as_print("Not a legal component ID\n");
         assert(0);
         exit(-1);
     }

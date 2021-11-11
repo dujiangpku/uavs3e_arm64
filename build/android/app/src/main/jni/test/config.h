@@ -170,7 +170,7 @@ static int app_parse_cfg_file(FILE *fp, app_cfg_t *ops)
         strcpy(val, parser);
         oidx = app_cfg_search_string(ops, tag);
         if (oidx < 0) {
-            printf("\nError in configuration file: \"%s\" is not a valid command!\n", tag);
+            as_print("\nError in configuration file: \"%s\" is not a valid command!\n", tag);
             return -1;
         }
         if (CFG_TYPE_GET(ops[oidx].val_type) !=
@@ -201,27 +201,27 @@ static int app_parse_cmd(int argc, const char *argv[], app_cfg_t *ops, int *idx)
         /* long option */
         oidx = app_cfg_search_string(ops, argv[aidx] + 2);
         if (oidx < 0) {
-            printf("\nError in command: \"%s\" is not a valid command!\n", argv[aidx]);
+            as_print("\nError in command: \"%s\" is not a valid command!\n", argv[aidx]);
             goto ERR;
         }
     } else if (strlen(argv[aidx]) == 2) {
         /* short option */
         oidx = app_cfg_search_char(ops, argv[aidx][1]);
         if (oidx < 0) {
-            printf("\nError in command: \"%s\" is not a valid command!\n", argv[aidx]);
+            as_print("\nError in command: \"%s\" is not a valid command!\n", argv[aidx]);
             goto ERR;
         }
     } else {
-        printf("\nError in command: \"%s\" is not a valid command!\n", argv[aidx]);
+        as_print("\nError in command: \"%s\" is not a valid command!\n", argv[aidx]);
         goto ERR;
     }
     if (CFG_TYPE_GET(ops[oidx].val_type) != CFG_TYPE_NULL) {
         if (aidx + 1 >= argc) {
-            printf("\nError in command: \"%s\" setting is incorrect!\n", argv[aidx]);
+            as_print("\nError in command: \"%s\" setting is incorrect!\n", argv[aidx]);
             goto ERR;
         }
         if (app_cfg_read_value(ops + oidx, argv[aidx + 1])) {
-            printf("\nError in command: \"%s\" setting is incorrect!\n", argv[aidx]);
+            as_print("\nError in command: \"%s\" setting is incorrect!\n", argv[aidx]);
             goto ERR;
         }
         *idx = *idx + 1;
@@ -255,7 +255,7 @@ static int app_parse_all(int argc, const char *argv[], app_cfg_t *ops)
     if (fname_cfg) {
         fp = fopen(fname_cfg, "r");
         if (fp == NULL) {
-            printf("\nError: Cannot open %s\n", fname_cfg);
+            as_print("\nError: Cannot open %s\n", fname_cfg);
             return -1;
         }
         if (app_parse_cfg_file(fp, ops)) {
@@ -277,7 +277,7 @@ static int app_parse_all(int argc, const char *argv[], app_cfg_t *ops)
         if (o->val_type & CFG_TYPE_MANDATORY) {
             if (o->flag == 0) {
                 /* not filled all mandatory argument */
-                printf("%s[-%c] is mandatory!\n", o->key_long, o->key);
+                as_print("%s[-%c] is mandatory!\n", o->key_long, o->key);
                 return -1;
             }
         }

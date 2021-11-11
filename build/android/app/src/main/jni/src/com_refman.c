@@ -307,15 +307,15 @@ ERR:
 void print_pm(com_pic_manager_t *pm, char type)
 {
 #if 0
-    printf("%c refpic/subpel:%2d/%2d(%2d)  ==> ",type, pm->cur_num_ref_pics, pm->cur_num_subpels, pm->max_pb_size);
+    as_print("%c refpic/subpel:%2d/%2d(%2d)  ==> ",type, pm->cur_num_ref_pics, pm->cur_num_subpels, pm->max_pb_size);
 
     for (int i = 0; i < pm->max_pb_size; i++) {
-        if (pm->pic[i] == NULL) printf("-");
-        else if (pm->pic[i]->b_ref) printf("R");
-        else if (1 == com_img_getref(pm->pic[i]->img)) printf("0");
-        else printf("*");
+        if (pm->pic[i] == NULL) as_print("-");
+        else if (pm->pic[i]->b_ref) as_print("R");
+        else if (1 == com_img_getref(pm->pic[i]->img)) as_print("0");
+        else as_print("*");
     }
-    printf("\n");
+    as_print("\n");
 #endif
 }
 

@@ -134,7 +134,7 @@ static int sao_offset_estimation(int typeIdx, int classIdx, double lambda, int o
             end_offset = 1;
             break;
         default:
-            printf("Not a supported SAO mode\n");
+            as_print("Not a supported SAO mode\n");
             assert(0);
             exit(-1);
         }

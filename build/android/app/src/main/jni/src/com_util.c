@@ -36,6 +36,7 @@
 **************************************************************************************/
 
 #include "com_util.h"
+#include "../test/config.h"
 
 funs_handle_t uavs3e_funs_handle;
 
@@ -901,9 +902,9 @@ void derive_umve_final_motions(int umve_idx, com_ref_pic_t(*refp)[REFP_NUM], s64
 
 void print_motion(com_motion_t motion)
 {
-    printf(" %d %d %d", motion.mv[PRED_L0][MV_X], motion.mv[PRED_L0][MV_Y], motion.ref_idx[PRED_L0]);
-    printf(" %d %d %d", motion.mv[PRED_L1][MV_X], motion.mv[PRED_L1][MV_Y], motion.ref_idx[PRED_L1]);
-    printf("\n");
+    as_print(" %d %d %d", motion.mv[PRED_L0][MV_X], motion.mv[PRED_L0][MV_Y], motion.ref_idx[PRED_L0]);
+    as_print(" %d %d %d", motion.mv[PRED_L1][MV_X], motion.mv[PRED_L1][MV_Y], motion.ref_idx[PRED_L1]);
+    as_print("\n");
 }
 
 void update_skip_candidates(com_motion_t motion_cands[ALLOWED_HMVP_NUM], s8 *num_cands, const int max_hmvp_num, s16 mv_new[REFP_NUM][MV_D], s8 refi_new[REFP_NUM])
@@ -2494,7 +2495,7 @@ int  get_part_idx(part_size_t part_size, int x, int y, int w, int h)
             idx = 1;
         }
     } else {
-        printf("\nError: part_size not expected");
+        as_print("\nError: part_size not expected");
         assert(0);
     }
     return idx;

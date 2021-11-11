@@ -41,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
         String[] streams = {
                 //"Cactus_1920x1080_50.yuv",
                 "akiyocif.yuv",
-                "BasketballDrive_1920x1080_50_34.yuv"
+                //"BasketballDrive_1920x1080_50_34.yuv"
         };
         for (int i = 0; i < stream_num; i++) {
             Log.i("uavs3e", streams[i]);
-            uavs3e(sdcard_path + stream_path + streams[i], sdcard_path + stream_path + "output.yuv",sdcard_path + stream_path + "rec.yuv", 1920,1080,8,25,1);
+            uavs3e(sdcard_path + stream_path + streams[i], sdcard_path + stream_path + "output.avs3",sdcard_path + stream_path + "rec.yuv", 1920,1080,8,25,1);
         }
     }
 

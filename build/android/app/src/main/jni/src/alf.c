@@ -36,6 +36,7 @@
 **************************************************************************************/
 
 #include "define.h"
+#include "../test/config.h"
 
 #define ROUND(a)  (((a) < 0)? (int)((a) - 0.5) : (int)((a) + 0.5))
 #define REG              0.0001
@@ -153,7 +154,7 @@ static void mergeFrom(enc_alf_corr_t *dst, enc_alf_corr_t *src, int *mergeTable)
         break;
     }
     default: {
-        printf("not a legal component ID\n");
+        as_print("not a legal component ID\n");
         assert(0);
         exit(-1);
     }
@@ -1227,7 +1228,7 @@ static void alf_derive_flt_coef(enc_alf_var_t *Enc_ALF, int compIdx, enc_alf_cor
         break;
     }
     default: {
-        printf("Not a legal component ID\n");
+        as_print("Not a legal component ID\n");
         assert(0);
         exit(-1);
     }

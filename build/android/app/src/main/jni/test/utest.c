@@ -803,95 +803,95 @@ static void print_stat_header(void)
     if (g_loglevel < FRAME_LOGLEVEL) {
         return;
     }
-    printf("-----------------------------------------------------------------------------------------------------------------------------------\n");
-    printf("  Input YUV file           : %s \n", fn_input);
+    as_print("-----------------------------------------------------------------------------------------------------------------------------------\n");
+    as_print("  Input YUV file           : %s \n", fn_input);
     if (strlen(fn_output) != 0) {
-        printf("  Output bitstream         : %s \n", fn_output);
+        as_print("  Output bitstream         : %s \n", fn_output);
     }
     if (strlen(fn_rec) != 0) {
-        printf("  Output YUV file          : %s \n", fn_rec);
+        as_print("  Output YUV file          : %s \n", fn_rec);
     }
-    printf("-----------------------------------------------------------------------------------------------------------------------------------\n");
-    printf("    POC | QP |  PSNR-Y  PSNR-U  PSNR-V| SSIM-Y SSIM-U SSIM-V|   Bits |  Time |        Ref. List      | Ext_info\n");
+    as_print("-----------------------------------------------------------------------------------------------------------------------------------\n");
+    as_print("    POC | QP |  PSNR-Y  PSNR-U  PSNR-V| SSIM-Y SSIM-U SSIM-V|   Bits |  Time |        Ref. List      | Ext_info\n");
     fflush(stdout);
 }
 
 static void print_config(void *h, enc_cfg_t param)
 {
-    printf("-----------------------------------------------------------------------------------------------------------------------------------\n");
-    printf("< Sequence's Info >\n");
-    printf("\tresolution input         : %d x %d\n", param.horizontal_size, param.vertical_size);
-    printf("\tresolution coding        : %d x %d\n", param.pic_width, param.pic_height);
-    printf("\tbitdepth input           : %d\n", param.bit_depth_input);
-    printf("\tbitdepth coding          : %d\n", param.bit_depth_internal);
-    printf("\tframe rate               : %d / %d\n", param.fps_num, param.fps_den);
-    printf("\tintra picture period     : %d\n", param.i_period);
-    printf("\tclose_gop                : %d\n", param.close_gop);
-    printf("\tmax b frames             : %d\n", param.max_b_frames);
-    printf("\tsignature                : %d\n", param.use_pic_sign);
+    as_print("-----------------------------------------------------------------------------------------------------------------------------------\n");
+    as_print("< Sequence's Info >\n");
+    as_print("\tresolution input         : %d x %d\n", param.horizontal_size, param.vertical_size);
+    as_print("\tresolution coding        : %d x %d\n", param.pic_width, param.pic_height);
+    as_print("\tbitdepth input           : %d\n", param.bit_depth_input);
+    as_print("\tbitdepth coding          : %d\n", param.bit_depth_internal);
+    as_print("\tframe rate               : %d / %d\n", param.fps_num, param.fps_den);
+    as_print("\tintra picture period     : %d\n", param.i_period);
+    as_print("\tclose_gop                : %d\n", param.close_gop);
+    as_print("\tmax b frames             : %d\n", param.max_b_frames);
+    as_print("\tsignature                : %d\n", param.use_pic_sign);
 
-    printf("\n< LookAhead Info >\n");
-    printf("\tlookahead                : %d\n", param.lookahead);
-    printf("\tscenecut                 : %d\n", param.scenecut);
-    printf("\tschistogram              : %d\n", param.scenecut_histogram);
-    printf("\tadaptive_gop             : %d\n", param.adaptive_gop);
+    as_print("\n< LookAhead Info >\n");
+    as_print("\tlookahead                : %d\n", param.lookahead);
+    as_print("\tscenecut                 : %d\n", param.scenecut);
+    as_print("\tschistogram              : %d\n", param.scenecut_histogram);
+    as_print("\tadaptive_gop             : %d\n", param.adaptive_gop);
 
-    printf("\n< Parallel Info >\n");
-    printf("\tWPP threads              : %d\n", param.wpp_threads);
-    printf("\tframe threads            : %d\n", param.frm_threads);
+    as_print("\n< Parallel Info >\n");
+    as_print("\tWPP threads              : %d\n", param.wpp_threads);
+    as_print("\tframe threads            : %d\n", param.frm_threads);
 
-    printf("\n< RC Info >\n");
-    printf("\tRC type                  : %d (0: CQP, 1: CRF, 2: ABR, 3: CBR)\n", param.rc_type);
+    as_print("\n< RC Info >\n");
+    as_print("\tRC type                  : %d (0: CQP, 1: CRF, 2: ABR, 3: CBR)\n", param.rc_type);
 
     if (param.rc_type == RC_TYPE_NULL) {
-        printf("\tqp                       : %d\n", param.qp);
+        as_print("\tqp                       : %d\n", param.qp);
     } else if (param.rc_type == RC_TYPE_CRF) {
-        printf("\tcrf                      : %d\n", param.rc_crf);
-        printf("\tmax_bitrate              : %d\n", param.rc_max_bitrate);
-        printf("\tqp range                 : %d-%d\n", param.rc_min_qp, param.rc_max_qp);
+        as_print("\tcrf                      : %d\n", param.rc_crf);
+        as_print("\tmax_bitrate              : %d\n", param.rc_max_bitrate);
+        as_print("\tqp range                 : %d-%d\n", param.rc_min_qp, param.rc_max_qp);
     } else  if (param.rc_type == RC_TYPE_ABR || param.rc_type == RC_TYPE_CBR) {
-        printf("\tbitrate                  : %d\n", param.rc_bitrate);
-        printf("\tmax_bitrate              : %d\n", param.rc_max_bitrate);
-        printf("\tqp range                 : %d-%d\n", param.rc_min_qp, param.rc_max_qp);
+        as_print("\tbitrate                  : %d\n", param.rc_bitrate);
+        as_print("\tmax_bitrate              : %d\n", param.rc_max_bitrate);
+        as_print("\tqp range                 : %d-%d\n", param.rc_min_qp, param.rc_max_qp);
     }
-    printf("\tqp_offset_cb             : %d\n", param.qp_offset_cb);
-    printf("\tqp_offset_cr             : %d\n", param.qp_offset_cr);
+    as_print("\tqp_offset_cb             : %d\n", param.qp_offset_cb);
+    as_print("\tqp_offset_cr             : %d\n", param.qp_offset_cr);
 
     //printf split configure
-    printf("\n< CU split CFG >\n");
-    printf("\tctu_size:        %d\n", param.ctu_size);
-    printf("\tmin_cu_size:     %d\n", param.min_cu_size);
-    printf("\tmax_part_ratio:  %d\n", param.max_part_ratio);
-    printf("\tmax_split_times: %d\n", param.max_split_times);
-    printf("\tmin_qt_size:     %d\n", param.min_qt_size);
-    printf("\tmax_bt_size:     %d\n", param.max_bt_size);
-    printf("\tmax_eqt_size:    %d\n", param.max_eqt_size);
-    printf("\tmax_dt_size:     %d\n", param.max_dt_size);
+    as_print("\n< CU split CFG >\n");
+    as_print("\tctu_size:        %d\n", param.ctu_size);
+    as_print("\tmin_cu_size:     %d\n", param.min_cu_size);
+    as_print("\tmax_part_ratio:  %d\n", param.max_part_ratio);
+    as_print("\tmax_split_times: %d\n", param.max_split_times);
+    as_print("\tmin_qt_size:     %d\n", param.min_qt_size);
+    as_print("\tmax_bt_size:     %d\n", param.max_bt_size);
+    as_print("\tmax_eqt_size:    %d\n", param.max_eqt_size);
+    as_print("\tmax_dt_size:     %d\n", param.max_dt_size);
 
-    // printf tool configurations
-    printf("\n< Tool CFG >\n");
+    // as_print tool configurations
+    as_print("\n< Tool CFG >\n");
 
     //loop filter
-    printf("\tLoop Filter:  deblock: %d, ", param.use_deblock);
-    printf("sao: %d, ", param.sao_enable);
-    printf("alf: %d, ", param.alf_enable);
-    printf("cross_patch: %d, ", param.filter_cross_patch);
-    printf("\n");
+    as_print("\tLoop Filter:  deblock: %d, ", param.use_deblock);
+    as_print("sao: %d, ", param.sao_enable);
+    as_print("alf: %d, ", param.alf_enable);
+    as_print("cross_patch: %d, ", param.filter_cross_patch);
+    as_print("\n");
 
     //inter
-    printf("\tInter: AMVR(%d) ", param.amvr_enable);
-    printf("HMVP_NUM(%d) ", param.num_of_hmvp);
-    printf("AFFINE(%d) ", param.affine_enable);
-    printf("SMVD(%d) ", param.smvd_enable);
-    printf("UMVE(%d) ", param.umve_enable);
-    printf("EMVR(%d) ", param.emvr_enable);
-    printf("\n");
+    as_print("\tInter: AMVR(%d) ", param.amvr_enable);
+    as_print("HMVP_NUM(%d) ", param.num_of_hmvp);
+    as_print("AFFINE(%d) ", param.affine_enable);
+    as_print("SMVD(%d) ", param.smvd_enable);
+    as_print("UMVE(%d) ", param.umve_enable);
+    as_print("EMVR(%d) ", param.emvr_enable);
+    as_print("\n");
 
     //intra
-    printf("\tIntra: TSCPM(%d) ", param.tscpm_enable);
-    printf("IPF(%d) ", param.ipf_flag);
-    printf("DT(%d) ", param.dt_enable);
-    printf("\n");
+    as_print("\tIntra: TSCPM(%d) ", param.tscpm_enable);
+    as_print("IPF(%d) ", param.ipf_flag);
+    as_print("DT(%d) ", param.dt_enable);
+    as_print("\n");
 
     //transform 
     printf("\tTransform: PBT(%d) ", param.pbt_enable);
@@ -939,6 +939,8 @@ void print_psnr(enc_stat_t *stat, double *psnr, double *ssim, int bitrate, time_
 
     print_log(1, "%5lld(%c)|%4.1f|%8.4f%8.4f%8.4f|%7.4f%7.4f%7.4f|%8d|%7d|", \
             stat->poc, type, stat->qp, psnr[0], psnr[1], psnr[2], ssim[0], ssim[1], ssim[2],\
+            bitrate, clock_2_msec(clk_end));
+    as_print("%5lld(%c)|%4.1f|%8.4f%8.4f%8.4f|%7.4f%7.4f%7.4f|%8d|%7d|",stat->poc, type, stat->qp, psnr[0], psnr[1], psnr[2], ssim[0], ssim[1], ssim[2],\
             bitrate, clock_2_msec(clk_end));
 
     for (i = 0; i < 2; i++) {
@@ -1016,6 +1018,10 @@ Java_com_example_uavs3e_1android_MainActivity_uavs3e(JNIEnv *env, jobject thiz, 
     argv[argc++]=str_fpsnum;
     argv[argc++]="--fps_den";
     argv[argc++]=str_fpsden;
+    argv[argc++]="-f";
+    argv[argc++]="20";
+
+
     //sprintf(str_width,"%d",width);
     //sprintf(str_height,"%d",height);
     sprintf(str_bitdepth,"%d",bitdepth);
@@ -1205,9 +1211,9 @@ Java_com_example_uavs3e_1android_MainActivity_uavs3e(JNIEnv *env, jobject thiz, 
     print_log(1, "===============================================================================\n");
     fflush(stdout);
 
-#if 1
+#if 0
     FILE *fp = fopen("psnr.txt", "a+");
-    fprintf(fp, "%s    %.4f %.4f %.4f %.4f    %.4f %.4f %.4f    %.5f\n", fn_output, bitrate, 
+    fprintf(fp, "%s    %.4f %.4f %.4f %.4f    %.4f %.4f %.4f    %.5f\n", fn_output, bitrate,
                                                     psnr_avg[0], psnr_avg[1], psnr_avg[2],
                                                     ssim_avg[0], ssim_avg[1], ssim_avg[2],
                                                    ((float)frame_cnt * 1000) / ((float)clock_2_msec(total_time)));

@@ -37,6 +37,7 @@
 
 #include "define.h"
 #include <limits.h>
+#include "../test/config.h"
 
 static tab_s16 tbl_plps[1 << 14] = {
     2048, 2049, 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059, 2060, 2061, 2062, 2063, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070, 2071, 2072, 2073, 2074, 2075, 2076, 2077,
@@ -733,7 +734,7 @@ void bs_demulate(bs_t *bs)
             zero_cnt++;
         }
     } else {
-        printf("Wrong start code!");
+        as_print("Wrong start code!");
         exit(1);
     }
 
@@ -849,7 +850,7 @@ static void ec_write_alf_coef(bs_t *bs, com_alf_pic_param_t *Alfp)
     }
     break;
     default: {
-        printf("Not a legal component ID\n");
+        as_print("Not a legal component ID\n");
         assert(0);
         exit(-1);
     }
@@ -2937,8 +2938,8 @@ static int ec_write_seq_display_extension(bs_t *bs, int colour_primaries, int tr
     bs_write1(bs, 1);                              // colour_description           u(1)
     bs_write(bs, colour_primaries, 8);             // colour_primaries             u(8)
     bs_write(bs, transfer_characteristics, 8);     // transfer_characteristics     u(8)
-    printf("colour_primaries = %d\n", colour_primaries);
-    printf("transfer_characteristics = %d\n", transfer_characteristics);
+    as_print("colour_primaries = %d\n", colour_primaries);
+    as_print("transfer_characteristics = %d\n", transfer_characteristics);
     bs_write(bs, 1, 8);                            // matrix_coefficients          u(8)
 
     bs_write(bs, 8, 14);                           // display_horizontal_size      u(14)

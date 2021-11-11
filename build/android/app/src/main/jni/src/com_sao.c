@@ -36,6 +36,7 @@
  **************************************************************************************/
 
 #include "com_modules.h"
+#include "../test/config.h"
 
 long long int com_sao_get_dist(int compIdx, int type, com_sao_stat_t saostatData[N_C][NUM_SAO_NEW_TYPES], com_sao_param_t sao_cur_param[N_C])
 {
@@ -60,7 +61,7 @@ long long int com_sao_get_dist(int compIdx, int type, com_sao_stat_t saostatData
     }
     break;
     default: {
-        printf("Not a supported type");
+        as_print("Not a supported type");
         assert(0);
         exit(-1);
     }
@@ -757,7 +758,7 @@ static void sao_get_stat(com_pic_t  *pic_org, com_pic_t  *pic_rec, com_sao_stat_
         }
         break;
         default: {
-            printf("Not a supported SAO types\n");
+            as_print("Not a supported SAO types\n");
             assert(0);
             exit(-1);
         }
