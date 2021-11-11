@@ -51,6 +51,11 @@
 #define CFG_TYPE_GET(x)  ((x) & ~CFG_TYPE_MANDATORY)
 #define CFG_KEY_NULL                   (127)
 
+#if defined(__APPLE__) && (defined(__arm64__) || defined(__ARM_NEON__))
+int uavs3e_decode_sample(int argc, const char **argv);
+#endif
+
+
 typedef struct app_cfg_t {
     char   key;          /* option keyword */
     char   key_long[32]; /* option long keyword */

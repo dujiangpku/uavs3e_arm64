@@ -58,6 +58,7 @@
 
 #ifndef _WIN32
 #if defined(__APPLE__)
+#include <unistd.h>
 #define _lseeki64 lseek
 #else
 #define _lseeki64 lseek64
@@ -957,7 +958,11 @@ void print_psnr(enc_stat_t *stat, double *psnr, double *ssim, int bitrate, time_
     fflush(stdout);
 }
 
+#if defined(__APPLE__) && (defined(__arm64__) || defined(__ARM_NEON__))
+int uavs3e_decode_sample(int argc, const char **argv)
+#else
 int main(int argc, const char **argv)
+#endif
 {
     int                finished = 0;
     int                fdi = 0;

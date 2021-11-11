@@ -1333,10 +1333,10 @@ void *uavs3e_create(enc_cfg_t *cfg, int *err)
     uavs3e_funs_init_c();
 #endif
 
-    uavs3e_funs_init_sse();
-    if (uavs3e_simd_avx_level(NULL) >= 2) {
-        uavs3e_funs_init_avx2();
-    }
+    //uavs3e_funs_init_sse();
+    //if (uavs3e_simd_avx_level(NULL) >= 2) {
+     //   uavs3e_funs_init_avx2();
+    //}
 
     com_scan_tbl_init();
     com_dct_coef_create();
