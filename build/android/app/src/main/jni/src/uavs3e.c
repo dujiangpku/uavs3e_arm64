@@ -40,6 +40,7 @@
 #include "define.h"
 #include "analyze.h"
 #include "com_util.h"
+#include "../test/config.h"
 
 #include "../version.h"
 
@@ -864,7 +865,7 @@ void *enc_lcu_row(core_t *core, enc_lcu_row_t *row)
 
         /* end_of_picture_flag */
         lbac_enc_slice_end_flag(lbac, NULL, 0);
-        printf("*");
+        as_print("*");
         fflush(stdout);
 
 #define KEEP_CONST 0

@@ -43,6 +43,14 @@
 #include <string.h>
 #include <assert.h>
 
+#if defined(__ANDROID__)
+#include <android/log.h>
+#define LOGE(format, ...)  __android_log_print(ANDROID_LOG_ERROR, "(>_<)", format, ##__VA_ARGS__)
+#define LOGI(format, ...)  __android_log_print(ANDROID_LOG_INFO,  "(=_=)", format, ##__VA_ARGS__)
+
+#define as_print(args...) LOGI(args)
+#endif
+
 #define CFG_TYPE_MANDATORY       (1 <<0) /* mandatory or not   */
 #define CFG_TYPE_NULL            (0 <<1) /* no value           */
 #define CFG_TYPE_INTEGER         (10<<1) /* integer type value */
