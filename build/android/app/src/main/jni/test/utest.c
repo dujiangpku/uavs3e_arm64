@@ -1009,9 +1009,9 @@ Java_com_example_uavs3e_1android_MainActivity_uavs3e(JNIEnv *env, jobject thiz, 
     argv[argc++]="-r";
     argv[argc++]=str_rec;
     argv[argc++]="-w";
-    argv[argc++]="352";
+    argv[argc++]="1920";
     argv[argc++]="-h";
-    argv[argc++]="288";
+    argv[argc++]="1080";
     argv[argc++]="-d";
     argv[argc++]=str_bitdepth;
     argv[argc++]="--fps_num";
@@ -1020,7 +1020,6 @@ Java_com_example_uavs3e_1android_MainActivity_uavs3e(JNIEnv *env, jobject thiz, 
     argv[argc++]=str_fpsden;
     argv[argc++]="-f";
     argv[argc++]="20";
-
 
     //sprintf(str_width,"%d",width);
     //sprintf(str_height,"%d",height);
@@ -1178,7 +1177,7 @@ Java_com_example_uavs3e_1android_MainActivity_uavs3e(JNIEnv *env, jobject thiz, 
         bitrate += 4 * 8;
     }
 
-    print_log(1, "\n\n===============================================================================\n");
+    as_print("\n\n===============================================================================\n");
     psnr_avg[0] /= frame_cnt;
     psnr_avg[1] /= frame_cnt;
     psnr_avg[2] /= frame_cnt;
@@ -1186,29 +1185,29 @@ Java_com_example_uavs3e_1android_MainActivity_uavs3e(JNIEnv *env, jobject thiz, 
     ssim_avg[1] /= frame_cnt;
     ssim_avg[2] /= frame_cnt;
 
-    print_log(1, "  PSNR Y(dB)       : %-5.4f\n", psnr_avg[0]);
-    print_log(1, "  PSNR U(dB)       : %-5.4f\n", psnr_avg[1]);
-    print_log(1, "  PSNR V(dB)       : %-5.4f\n", psnr_avg[2]);
-    print_log(1, "  SSIM Y(dB)       : %-5.4f\n", ssim_avg[0]);
-    print_log(1, "  SSIM U(dB)       : %-5.4f\n", ssim_avg[1]);
-    print_log(1, "  SSIM V(dB)       : %-5.4f\n", ssim_avg[2]);
+    as_print( "  PSNR Y(dB)       : %-5.4f\n", psnr_avg[0]);
+    as_print( "  PSNR U(dB)       : %-5.4f\n", psnr_avg[1]);
+    as_print( "  PSNR V(dB)       : %-5.4f\n", psnr_avg[2]);
+    as_print( "  SSIM Y(dB)       : %-5.4f\n", ssim_avg[0]);
+    as_print( "  SSIM U(dB)       : %-5.4f\n", ssim_avg[1]);
+    as_print( "  SSIM V(dB)       : %-5.4f\n", ssim_avg[2]);
 
     print_log(1, "  Total bits(bits) : %-.0f\n", bitrate * 8);
     bitrate *= (cfg.fps_num / cfg.fps_den * 8);
 
     bitrate /= frame_cnt;
     bitrate /= 1000;
-    print_log(1, "  bitrate(kbps)    : %-5.4f\n", bitrate);
-    print_log(1, "===============================================================================\n");
-    print_log(1, "Encoded frame count               = %d\n", (int)frame_cnt);
-    print_log(1, "Total encoding time               = %.3f msec,",
+    as_print("  bitrate(kbps)    : %-5.4f\n", bitrate);
+    as_print("===============================================================================\n");
+    as_print("Encoded frame count               = %d\n", (int)frame_cnt);
+    as_print("Total encoding time               = %.3f msec,",
             (float)clock_2_msec(total_time));
-    print_log(1, " %.3f sec\n", (float)(clock_2_msec(total_time) / 1000.0));
-    print_log(1, "Average encoding time for a frame = %.3f msec\n",
+    as_print( " %.3f sec\n", (float)(clock_2_msec(total_time) / 1000.0));
+    as_print("Average encoding time for a frame = %.3f msec\n",
             (float)clock_2_msec(total_time) / frame_cnt);
-    print_log(1, "Average encoding speed            = %.5f frames/sec\n",
+    as_print("Average encoding speed            = %.5f frames/sec\n",
             ((float)frame_cnt * 1000) / ((float)clock_2_msec(total_time)));
-    print_log(1, "===============================================================================\n");
+    as_print("===============================================================================\n");
     fflush(stdout);
 
 #if 0

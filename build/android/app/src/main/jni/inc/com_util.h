@@ -373,6 +373,10 @@ void uavs3e_funs_init_sse();
 void uavs3e_funs_init_avx2();
 #endif
 
+#if ENABLE_FUNCTION_ARM64
+void uavs3e_funs_init_arm64();
+#endif
+
 void *uavs3e_align_malloc(int i_size);
 void uavs3e_align_free(void *p);
 
