@@ -1,13 +1,14 @@
 #define INFILE_NUM 2
-#define WIDTH "352"
-#define HEIGHT "288"
-#define INPUT_BIT_DEPTH "8"
+#define WIDTH "1920"
+#define HEIGHT "1080"
+#define INPUT_BIT_DEPTH "10"
 #define VERBOSE "2"
-#define FPS_NUMBER "25"
+#define FPS_NUMBER "60"
 #define FPS_DEN "1"
 #define VERBOSE "2"
 
 char infile[INFILE_NUM][128]={ // base dir: app/documents
+    "MarketPlace_1920x1080_60fps_10bit_420.yuv",
     "akiyo_cif.yuv",
     "abr_hpm4.0/Traffic_2560x1600_30_7000kbps.avs3"
 };
@@ -24,8 +25,10 @@ int main(int argc, char * argv[]) {
         
     NSString * NsDocuments = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSLog(@"path:   %@",NsDocuments);
-    char* uavs3e_argv[17];
-    int uavs3e_argc = 17;
+    NSLog(@"paths:   %@",NSHomeDirectory());
+
+    char* uavs3e_argv[19];
+    int uavs3e_argc = 19;
     char decfile[64] = "dec.yuv";
     char recfile[64] = "rec.yuv";
     int j=0;
@@ -66,6 +69,8 @@ int main(int argc, char * argv[]) {
         uavs3e_argv[j++] = FPS_NUMBER;
         uavs3e_argv[j++] = "--fps_den";
         uavs3e_argv[j++] = FPS_DEN;
+        uavs3e_argv[j++] = "--internal_bit_depth";
+        uavs3e_argv[j++] = "10";
         uavs3e_decode_sample(uavs3e_argc, uavs3e_argv);
     }
 
