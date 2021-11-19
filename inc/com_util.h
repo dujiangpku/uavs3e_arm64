@@ -371,6 +371,8 @@ void uavs3e_funs_init_c();
 int  uavs3e_simd_avx_level(int *phwavx);
 void uavs3e_funs_init_sse();
 void uavs3e_funs_init_avx2();
+#elif ENABLE_FUNCTION_ARM64
+void uavs3e_funs_init_arm64();
 #endif
 
 void *uavs3e_align_malloc(int i_size);

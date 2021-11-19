@@ -982,7 +982,7 @@ int main(int argc, const char **argv)
     double             ssim_avg[3] = { 0 };
     com_img_t          *tmp_img = NULL;
     int fd_rec = 0;
-
+    
     uavs3e_load_default_cfg(&cfg);
 
     srand((unsigned int)(time(NULL)));
