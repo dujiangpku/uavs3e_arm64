@@ -11,7 +11,8 @@ void uavs3e_funs_init_arm64()
 
 
 #else
-    //uavs3e_funs_handle.itrans_dct2[1][1] = uavs3e_itrans_dct2_h4_w4_arm64;
+    uavs3e_funs_handle.itrans_dct2[1][1] = uavs3e_itrans_dct2_h4_w4_arm64;
+
     /*
     int i;
 

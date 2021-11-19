@@ -1721,7 +1721,7 @@ void lbac_enc_run_length_cc_rdo(lbac_t *lbac, s16 *coef, int log2_w, int log2_h,
             int s_flag = rMPS < QUAR_HALF_PROB;
             rMPS |= 0x100;
 
-            if (!sym == ((*model) & 1)) { // MPS
+            if ((!sym) == ((*model) & 1)) { // MPS
                 bitcounter += s_flag;
                 range = rMPS;
                 *model = tbl_plps[*model];
@@ -1765,7 +1765,7 @@ void lbac_enc_run_length_cc_rdo(lbac_t *lbac, s16 *coef, int log2_w, int log2_h,
                     int s_flag = rMPS < QUAR_HALF_PROB;
                     rMPS |= 0x100;
 
-                    if (!sym == (m & 1)) { // MPS
+                    if ((!sym) == (m & 1)) { // MPS
                         bitcounter += s_flag;
                         range = rMPS;
                         m = tbl_plps[m];
@@ -1794,12 +1794,12 @@ void lbac_enc_run_length_cc_rdo(lbac_t *lbac, s16 *coef, int log2_w, int log2_h,
 
         sym = run;
         model = ctx_run_rdoq + t0;
-        *model = switch_tab_plps[!sym == ((*model) & 1)][*model];
+        *model = switch_tab_plps[(!sym) == ((*model) & 1)][*model];
 
         if (sym--) {
             model++;
             do {
-                *model = switch_tab_plps[!sym == ((*model) & 1)][*model];
+                *model = switch_tab_plps[(!sym) == ((*model) & 1)][*model];
             } while (sym--);
         }
 
@@ -1815,7 +1815,7 @@ void lbac_enc_run_length_cc_rdo(lbac_t *lbac, s16 *coef, int log2_w, int log2_h,
             int s_flag = rMPS < QUAR_HALF_PROB;
             rMPS |= 0x100;
 
-            if (!sym == ((*model) & 1)) { // MPS
+            if ((!sym) == ((*model) & 1)) { // MPS
                 bitcounter += s_flag;
                 range = rMPS;
                 *model = tbl_plps[*model];
@@ -1860,7 +1860,7 @@ void lbac_enc_run_length_cc_rdo(lbac_t *lbac, s16 *coef, int log2_w, int log2_h,
                     int s_flag = rMPS < QUAR_HALF_PROB;
                     rMPS |= 0x100;
 
-                    if (!sym == (m & 1)) { // MPS
+                    if ((!sym) == (m & 1)) { // MPS
                         bitcounter += s_flag;
                         range = rMPS;
                         m = tbl_plps[m];

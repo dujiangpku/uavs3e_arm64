@@ -161,7 +161,7 @@ typedef int BOOL;
 #define com_mset_x128(dst,v,size) memset((dst), (v), (size))
 #define com_mcmp(dst,src,size)    memcmp((dst), (src), (size))
 
-#if defined(__GNUC__)
+#if defined(__GNUC__)&& !defined(__ANDROID__)
 #define offsetof(s,m) __builtin_offsetof(s,m)
 #endif
 

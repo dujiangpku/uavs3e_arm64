@@ -37,6 +37,9 @@ uavs3e_srcs_c   += $(LOCAL_PATH)/src/uavs3e.c           \
 uavs3e_srcs_c   += $(LOCAL_PATH)/src/util.c           \
 uavs3e_srcs_c   += $(LOCAL_PATH)/test/utest.c
 
+LOCAL_CFLAGS    += -O0 -fPIC -std=gnu99
+LOCAL_LDFLAGS   += -fPIC
+
 # build arm64
 ifeq ($(TARGET_ARCH),arm64)
     LOCAL_CFLAGS=-D_arm64

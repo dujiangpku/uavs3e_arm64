@@ -1020,6 +1020,8 @@ Java_com_example_uavs3e_1android_MainActivity_uavs3e(JNIEnv *env, jobject thiz, 
     argv[argc++]=str_fpsden;
     argv[argc++]="-f";
     argv[argc++]="20";
+    argv[argc++]="--internal_bit_depth";
+    argv[argc++]="10";
 
     //sprintf(str_width,"%d",width);
     //sprintf(str_height,"%d",height);

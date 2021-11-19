@@ -36,6 +36,7 @@
  **************************************************************************************/
 
 #include "define.h"
+#include "../test/config.h"
 
 static double sao_rdcost_merge(core_t *core, const lbac_t *lbac, int lcu_pos, int pix_y, int pix_x,
                         double *sao_labmda, com_sao_stat_t saostatData[N_C][NUM_SAO_NEW_TYPES], com_sao_param_t(*sao_blk_params)[N_C],
