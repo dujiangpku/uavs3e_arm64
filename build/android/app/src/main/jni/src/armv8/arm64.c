@@ -11,7 +11,7 @@ void uavs3e_funs_init_arm64()
 
 
 #else
-    uavs3e_funs_handle.itrans_dct2[1][1] = uavs3e_itrans_dct2_h4_w4_arm64;
+//    uavs3e_funs_handle.itrans_dct2[1][1] = uavs3e_itrans_dct2_h4_w4_arm64;
 
     /*
     int i;
@@ -26,7 +26,7 @@ void uavs3e_funs_init_arm64()
         uavs3e_funs_handle.ipflt[IPFILTER_V_8][i] = uavs3e_if_ver_luma_w8x_arm64;
         uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][i] = uavs3e_if_hor_ver_luma_w8x_arm64;
     }
-
+    */
     uavs3e_funs_handle.ipcpy[0] = uavs3e_if_cpy_w4_arm64;
     uavs3e_funs_handle.ipcpy[1] = uavs3e_if_cpy_w8_arm64;
     uavs3e_funs_handle.ipcpy[2] = uavs3e_if_cpy_w16_arm64;
@@ -35,8 +35,8 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.ipflt[IPFILTER_V_8][0] = uavs3e_if_ver_luma_w4_arm64;
     uavs3e_funs_handle.ipflt[IPFILTER_V_8][1] = uavs3e_if_ver_luma_w8_arm64;
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][0] = uavs3e_if_hor_ver_luma_w4_arm64;
-    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][1] = uavs3e_if_hor_ver_luma_w8_arm64;
-
+//    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][1] = uavs3e_if_hor_ver_luma_w8_arm64;        // ERROR
+    /*
     uavs3e_funs_handle.itrans_dct2[1][1] = uavs3e_itrans_dct2_h4_w4_arm64;
     uavs3e_funs_handle.itrans_dct2[1][2] = uavs3e_itrans_dct2_h4_w8_arm64;
     uavs3e_funs_handle.itrans_dct2[1][3] = uavs3e_itrans_dct2_h4_w16_arm64;
