@@ -106,10 +106,6 @@ void uavs3e_recon_w16_arm64(s16 *resi, pel *pred, int i_pred, int width, int hei
 void uavs3e_recon_w32_arm64(s16 *resi, pel *pred, int i_pred, int width, int height, pel *rec, int i_rec, int cbf, int bit_depth);
 void uavs3e_recon_w64_arm64(s16 *resi, pel *pred, int i_pred, int width, int height, pel *rec, int i_rec, int cbf, int bit_depth);
 
-void uavs3e_dct2_butterfly_h8_arm64(s16 *src, s16 *dst, int line, int shift, int bit_depth);
-void uavs3e_dct2_butterfly_h16_arm64(s16 *src, s16 *dst, int line, int shift, int bit_depth);
-void uavs3e_dct2_butterfly_h32_arm64(s16 *src, s16 *dst, int line, int shift, int bit_depth);
-
 void uavs3e_itrans_dct2_h4_w4_arm64(s16 *src, s16 *dst, int bit_depth);
 void uavs3e_itrans_dct2_h4_w8_arm64(s16 *src, s16 *dst, int bit_depth);
 void uavs3e_itrans_dct2_h4_w16_arm64(s16 *src, s16 *dst, int bit_depth);
