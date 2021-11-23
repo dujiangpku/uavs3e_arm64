@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
             }
         }
-        int stream_num = 145;
+        int stream_num = 1;
         //String[] streams = new String[18];
         String stream_path = "/avs3/"; //"/avs3/hpm3.3/";
         String[] streams = {
