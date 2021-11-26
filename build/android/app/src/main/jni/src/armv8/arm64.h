@@ -7,38 +7,51 @@
 #define __ARM64_H__
 #include "../../inc/com_util.h"
 
-void uavs3e_if_cpy_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height);
 void uavs3e_if_cpy_w4_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height);
 void uavs3e_if_cpy_w8_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height);
 void uavs3e_if_cpy_w16_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height);
-void uavs3e_if_cpy_w16x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height);
+void uavs3e_if_cpy_w32_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height);
+void uavs3e_if_cpy_w64_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height);
+void uavs3e_if_cpy_w128_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height);
 
-void uavs3e_if_hor_chroma_w4_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
 void uavs3e_if_hor_chroma_w8_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
-void uavs3e_if_hor_chroma_w8x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_hor_chroma_w16_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_hor_chroma_w16x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_hor_chroma_w32_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_hor_chroma_w32x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
 void uavs3e_if_hor_luma_w4_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
 void uavs3e_if_hor_luma_w8_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
-void uavs3e_if_hor_luma_w8x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
-void uavs3e_if_ver_chroma_w4_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_hor_luma_w16_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_hor_luma_w16x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_hor_luma_w32_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_hor_luma_w32x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+
 void uavs3e_if_ver_chroma_w8_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
-void uavs3e_if_ver_chroma_w8x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
 void uavs3e_if_ver_chroma_w16_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
-void uavs3e_if_ver_chroma_w16x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_ver_chroma_w32_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_ver_chroma_w32x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_ver_chroma_w64_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_ver_chroma_w128_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
 void uavs3e_if_ver_luma_w4_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
 void uavs3e_if_ver_luma_w8_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
-void uavs3e_if_ver_luma_w8x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
 void uavs3e_if_ver_luma_w16_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
 void uavs3e_if_ver_luma_w16x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
-void uavs3e_if_hor_ver_chroma_w4_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
-void uavs3e_if_hor_ver_chroma_w8_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
-void uavs3e_if_hor_ver_chroma_w8x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
-void uavs3e_if_hor_ver_luma_w4_arm64 (const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
-void uavs3e_if_hor_ver_luma_w8_arm64 (const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
-void uavs3e_if_hor_ver_luma_w8x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+void uavs3e_if_ver_luma_w32_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
+void uavs3e_if_ver_luma_w32x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coeff, int max_val);
 
-void uavs3e_if_hor_luma_frame_arm64(const pel  *src, int i_src, pel *dst[3], int i_dst, s16 *dst_tmp[3], int i_dst_tmp, int width, int height, s8(*coeff)[8], int bit_depth);
-void uavs3e_if_ver_luma_frame_arm64(const pel  *src, int i_src, pel *dst[3], int i_dst, int width, int height, s8(*coeff)[8], int bit_depth);
-void uavs3e_if_ver_luma_frame_ext_arm64(const s16 *src, int i_src, pel *dst[3], int i_dst, int width, int height, s8(*coeff)[8], int bit_depth);
+void uavs3e_if_hor_ver_chroma_w8_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+void uavs3e_if_hor_ver_chroma_w16_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+void uavs3e_if_hor_ver_chroma_w32_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+void uavs3e_if_hor_ver_chroma_w32x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+void uavs3e_if_hor_ver_luma_w4_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+void uavs3e_if_hor_ver_luma_w8_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+void uavs3e_if_hor_ver_luma_w16_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+void uavs3e_if_hor_ver_luma_w32_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+void uavs3e_if_hor_ver_luma_w32x_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height, const s8 *coef_x, const s8 *coef_y, int max_val);
+
+//void uavs3e_if_hor_luma_frame_arm64(const pel  *src, int i_src, pel *dst[3], int i_dst, s16 *dst_tmp[3], int i_dst_tmp, int width, int height, s8(*coeff)[8], int bit_depth);
+//void uavs3e_if_ver_luma_frame_arm64(const pel  *src, int i_src, pel *dst[3], int i_dst, int width, int height, s8(*coeff)[8], int bit_depth);
+//void uavs3e_if_ver_luma_frame_ext_arm64(const s16 *src, int i_src, pel *dst[3], int i_dst, int width, int height, s8(*coeff)[8], int bit_depth);
 
 void uavs3e_deblock_ver_luma_arm64(pel *src, int stride, int alpha, int beta, int flt_flag);
 void uavs3e_deblock_hor_luma_arm64(pel *src, int stride, int alpha, int beta, int flt_flag);

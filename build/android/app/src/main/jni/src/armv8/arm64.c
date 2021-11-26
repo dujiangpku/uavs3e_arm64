@@ -38,6 +38,53 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.itrans_dct2[5][3] = uavs3e_itrans_dct2_h64_w16_arm64;
     uavs3e_funs_handle.itrans_dct2[5][4] = uavs3e_itrans_dct2_h64_w32_arm64;
     uavs3e_funs_handle.itrans_dct2[5][5] = uavs3e_itrans_dct2_h64_w64_arm64;
+
+    uavs3e_funs_handle.ipcpy[0] = uavs3e_if_cpy_w4_arm64;
+    uavs3e_funs_handle.ipcpy[1] = uavs3e_if_cpy_w8_arm64;
+    uavs3e_funs_handle.ipcpy[2] = uavs3e_if_cpy_w16_arm64;
+    uavs3e_funs_handle.ipcpy[3] = uavs3e_if_cpy_w32_arm64;
+    uavs3e_funs_handle.ipcpy[4] = uavs3e_if_cpy_w64_arm64;
+    uavs3e_funs_handle.ipcpy[5] = uavs3e_if_cpy_w128_arm64;
+
+    uavs3e_funs_handle.ipflt[IPFILTER_H_8][0] = uavs3e_if_hor_luma_w4_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_H_8][1] = uavs3e_if_hor_luma_w8_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_H_8][2] = uavs3e_if_hor_luma_w16_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_H_8][3] = uavs3e_if_hor_luma_w16x_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_H_8][4] = uavs3e_if_hor_luma_w16x_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_H_8][5] = uavs3e_if_hor_luma_w16x_arm64;
+
+//    uavs3e_funs_handle.ipflt[IPFILTER_H_4][1] = uavs3e_if_hor_chroma_w8_arm64;            // ERROR
+//    uavs3e_funs_handle.ipflt[IPFILTER_H_4][2] = uavs3e_if_hor_chroma_w16_arm64;           // ERROR
+//    uavs3e_funs_handle.ipflt[IPFILTER_H_4][3] = uavs3e_if_hor_chroma_w16x_arm64;          // ERROR
+//    uavs3e_funs_handle.ipflt[IPFILTER_H_4][4] = uavs3e_if_hor_chroma_w16x_arm64;          // ERROR
+    uavs3e_funs_handle.ipflt[IPFILTER_H_4][5] = uavs3e_if_hor_chroma_w16x_arm64;
+
+    uavs3e_funs_handle.ipflt[IPFILTER_V_8][0] = uavs3e_if_ver_luma_w4_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_V_8][1] = uavs3e_if_ver_luma_w8_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_V_8][2] = uavs3e_if_ver_luma_w16_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_V_8][3] = uavs3e_if_ver_luma_w16x_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_V_8][4] = uavs3e_if_ver_luma_w16x_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_V_8][5] = uavs3e_if_ver_luma_w16x_arm64;
+
+    uavs3e_funs_handle.ipflt[IPFILTER_V_4][1] = uavs3e_if_ver_chroma_w8_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_V_4][2] = uavs3e_if_ver_chroma_w16_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_V_4][3] = uavs3e_if_ver_chroma_w32_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_V_4][4] = uavs3e_if_ver_chroma_w32x_arm64;
+    uavs3e_funs_handle.ipflt[IPFILTER_V_4][5] = uavs3e_if_ver_chroma_w32x_arm64;
+
+    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][0] = uavs3e_if_hor_ver_luma_w4_arm64;
+//    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][1] = uavs3e_if_hor_ver_luma_w8_arm64;        // ERROR (PSNR不一致)
+    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][2] = uavs3e_if_hor_ver_luma_w16_arm64;
+    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][3] = uavs3e_if_hor_ver_luma_w32_arm64;
+    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][4] = uavs3e_if_hor_ver_luma_w32x_arm64;
+    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][5] = uavs3e_if_hor_ver_luma_w32x_arm64;
+
+//    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][1] = uavs3e_if_hor_ver_chroma_w8_arm64;        // ERROR
+//    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][2] = uavs3e_if_hor_ver_chroma_w16_arm64;       // ERROR
+//    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][3] = uavs3e_if_hor_ver_chroma_w32_arm64;       // ERROR
+//    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][4] = uavs3e_if_hor_ver_chroma_w32x_arm64;      // ERROR
+    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][5] = uavs3e_if_hor_ver_chroma_w32x_arm64;
+
     /*
     int i;
 
@@ -51,7 +98,7 @@ void uavs3e_funs_init_arm64()
         uavs3e_funs_handle.ipflt[IPFILTER_V_8][i] = uavs3e_if_ver_luma_w8x_arm64;
         uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][i] = uavs3e_if_hor_ver_luma_w8x_arm64;
     }
-    */
+
     uavs3e_funs_handle.ipcpy[0] = uavs3e_if_cpy_w4_arm64;
     uavs3e_funs_handle.ipcpy[1] = uavs3e_if_cpy_w8_arm64;
     uavs3e_funs_handle.ipcpy[2] = uavs3e_if_cpy_w16_arm64;
@@ -61,7 +108,7 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.ipflt[IPFILTER_V_8][1] = uavs3e_if_ver_luma_w8_arm64;
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][0] = uavs3e_if_hor_ver_luma_w4_arm64;
     //uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][1] = uavs3e_if_hor_ver_luma_w8_arm64;      // ERROR (PSNR不一致)
-    /*
+
     uavs3e_funs_handle.deblock_luma[0] = uavs3e_deblock_ver_luma_arm64;
     uavs3e_funs_handle.deblock_luma[1] = uavs3e_deblock_hor_luma_arm64;
     uavs3e_funs_handle.deblock_chroma[0] = uavs3e_deblock_ver_chroma_arm64;
