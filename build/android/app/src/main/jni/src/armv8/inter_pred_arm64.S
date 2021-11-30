@@ -3406,7 +3406,7 @@ if_hor_ver_luma_w32x_ver_loop_x:
     ld1 {v8.8h, v9.8h}, [sp], #32
     ret
 
-#else
+#else   //10bit
 //void uavs3e_if_cpy_w4_arm64(const pel *src, int i_src, pel *dst, int i_dst, int width, int height)
 //src->x0, i_src->x1, dst->x2, i_dst->x3, width->x4, height->x5
 function uavs3e_if_cpy_w4_arm64
@@ -5231,7 +5231,7 @@ function uavs3e_if_hor_ver_luma_w8_arm64
     ldr w8, [sp]                            // w8 = max_val
 
     sub sp, sp, #80
-    sub x9, sp, #16
+    add x9, sp, #64
     st1 {v12.2d, v13.2d, v14.2d, v15.2d}, [sp]
     st1 {v11.2d}, [x9]
 

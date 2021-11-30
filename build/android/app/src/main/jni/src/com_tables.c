@@ -104,6 +104,9 @@ tab_s8 com_tbl_log2[257] = {
     8
 };
 
+ALIGNED_32(s8* g_tbl_itrans[NUM_TRANS_TYPE][ITRANS_SIZE_TYPES]);
+ALIGNED_32(s8 g_tbl_itrans_coeffs[ITRANS_COEFFS_SIZE]);
+
 s8 com_tbl_tm2[NUM_TRANS_TYPE][2][2];
 s8 com_tbl_tm4[NUM_TRANS_TYPE][4][4];
 s8 com_tbl_tm8[NUM_TRANS_TYPE][8][8];
@@ -218,6 +221,45 @@ tab_u8 com_tbl_qp_chroma_adjust_enc[64] = {
     47, 48, 48, 49, 50, 51, 52, 53, 54, 55,
     56, 57, 58, 59
 };
+
+void com_idct_coef_create()
+{
+    int i, c = 2;
+    const double PI = 3.14159265358979323846;
+    s8 *coeffs=g_tbl_itrans_coeffs;
+
+    for (i = 0; i < 6; i++) {
+        const double s = sqrt((double)c) * 32;
+
+        for (int k = 0; k < c; k++) {
+            for (int n = 0; n < c; n++) {
+                double w0, v;
+
+                // DCT-II
+                w0 = k == 0 ? sqrt(0.5) : 1;
+                v = cos(PI * (n + 0.5) * k / c) * w0 * sqrt(2.0 / c);
+                coeffs[DCT2 *c *c + k *c + n] = (s8)(s * v + (v > 0 ? 0.5 : -0.5));
+
+                // DCT-VIII
+                v = cos(PI * (k + 0.5) * (n + 0.5) / (c + 0.5)) * sqrt(2.0 / (c + 0.5));
+                coeffs[DCT8 *c *c + k *c + n] = (s8)(s * v + (v > 0 ? 0.5 : -0.5));
+
+                // DST-VII
+                v = sin(PI * (k + 0.5) * (n + 1) / (c + 0.5)) * sqrt(2.0 / (c + 0.5));
+                coeffs[DST7 *c *c + k *c + n] = (s8)(s * v + (v > 0 ? 0.5 : -0.5));
+
+            }
+        }
+
+        g_tbl_itrans[DCT2][i] = coeffs;
+        g_tbl_itrans[DCT8][i] = coeffs + DCT8 * c * c;
+        g_tbl_itrans[DST7][i] = coeffs + DST7 * c * c;
+
+        coeffs += NUM_TRANS_TYPE * c*c;
+
+        c <<= 1;
+    }
+}
 
 void com_dct_coef_create()
 {

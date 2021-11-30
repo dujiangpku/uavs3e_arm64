@@ -40,6 +40,12 @@
 
 #include "com_define.h"
 
+#define ITRANS_SIZE_TYPES 6
+#define ITRANS_COEFFS_SIZE ((2 * 2 + 4 * 4 + 8 * 8 + 16 * 16 + 32 * 32 + 64 * 64) * NUM_TRANS_TYPE)
+
+extern s8*      g_tbl_itrans[NUM_TRANS_TYPE][ITRANS_SIZE_TYPES];
+extern s8       g_tbl_itrans_coeffs[ITRANS_COEFFS_SIZE];
+
 extern s8 com_tbl_tm2[NUM_TRANS_TYPE][2][2];
 extern s8 com_tbl_tm4[NUM_TRANS_TYPE][4][4];
 extern s8 com_tbl_tm8[NUM_TRANS_TYPE][8][8];

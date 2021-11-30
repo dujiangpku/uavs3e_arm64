@@ -425,13 +425,10 @@ static void itrans_dct2_h64_w64(s16 *src, s16 *dst, int bit_depth)
 
 /******************   DCT-8   ******************************************/
 
-static void itx_dct8_pb4(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input tmp, output block
+static void itx_dct8_pb4(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input tmp, output block
 {
     int i;
     int rnd_factor = 1 << (shift - 1);
-
-    s8 *iT = com_tbl_tm4[DCT8][0];
-
     int c[4];
     const int  reducedLine = line;
     for (i = 0; i < reducedLine; i++) {
@@ -451,12 +448,11 @@ static void itx_dct8_pb4(s16 *coeff, s16 *block, int shift, int line, int max_tr
     }
 }
 
-static void itx_dct8_pb8(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input block, output coeff
+static void itx_dct8_pb8(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input block, output coeff
 {
     int i, j, k, iSum;
     int rnd_factor = 1 << (shift - 1);
     const int uiTrSize = 8;
-    s8 *iT = com_tbl_tm8[DCT8][0];
     const int  reducedLine = line;
     const int  cutoff = 8;
 
@@ -473,12 +469,11 @@ static void itx_dct8_pb8(s16 *coeff, s16 *block, int shift, int line, int max_tr
     }
 }
 
-static void itx_dct8_pb16(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input block, output coeff
+static void itx_dct8_pb16(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input block, output coeff
 {
     int i, j, k, iSum;
     int rnd_factor = 1 << (shift - 1);
     const int uiTrSize = 16;
-    s8 *iT = com_tbl_tm16[DCT8][0];
     const int  reducedLine = line;
     const int  cutoff = uiTrSize;
 
@@ -495,12 +490,11 @@ static void itx_dct8_pb16(s16 *coeff, s16 *block, int shift, int line, int max_t
     }
 }
 
-static void itx_dct8_pb32(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input block, output coeff
+static void itx_dct8_pb32(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input block, output coeff
 {
     int i, j, k, iSum;
     int rnd_factor = 1 << (shift - 1);
     const int uiTrSize = 32;
-    s8 *iT = com_tbl_tm32[DCT8][0];
     const int  reducedLine = line;
     const int  cutoff = uiTrSize;
 
@@ -517,12 +511,11 @@ static void itx_dct8_pb32(s16 *coeff, s16 *block, int shift, int line, int max_t
     }
 }
 
-static void itx_dct8_pb64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input block, output coeff
+static void itx_dct8_pb64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input block, output coeff
 {
     int i, j, k, iSum;
     int rnd_factor = 1 << (shift - 1);
     const int uiTrSize = 64;
-    s8 *iT = com_tbl_tm64[DCT8][0];
     const int  reducedLine = line;
     const int  cutoff = uiTrSize;
 
@@ -540,11 +533,10 @@ static void itx_dct8_pb64(s16 *coeff, s16 *block, int shift, int line, int max_t
 }
 
 /******************   DST-7   ******************************************/
-static void itx_dst7_pb4(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input tmp, output block
+static void itx_dst7_pb4(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input tmp, output block
 {
     int i, c[4];
     int rnd_factor = 1 << (shift - 1);
-    s8 *iT = com_tbl_tm4[DST7][0];
     const int  reducedLine = line;
 
     for (i = 0; i < reducedLine; i++) {
@@ -565,12 +557,11 @@ static void itx_dst7_pb4(s16 *coeff, s16 *block, int shift, int line, int max_tr
     }
 }
 
-static void itx_dst7_pb8(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input block, output coeff
+static void itx_dst7_pb8(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input block, output coeff
 {
     int i, j, k, iSum;
     int rnd_factor = 1 << (shift - 1);
     const int uiTrSize = 8;
-    s8 *iT = com_tbl_tm8[DST7][0];
     const int  reducedLine = line;
     const int  cutoff = uiTrSize;
 
@@ -587,12 +578,11 @@ static void itx_dst7_pb8(s16 *coeff, s16 *block, int shift, int line, int max_tr
     }
 }
 
-static void itx_dst7_pb16(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input block, output coeff
+static void itx_dst7_pb16(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input block, output coeff
 {
     int i, j, k, iSum;
     int rnd_factor = 1 << (shift - 1);
     const int uiTrSize = 16;
-    s8 *iT = com_tbl_tm16[DST7][0];
     const int  reducedLine = line;
     const int  cutoff = uiTrSize;
 
@@ -609,12 +599,11 @@ static void itx_dst7_pb16(s16 *coeff, s16 *block, int shift, int line, int max_t
     }
 }
 
-static void itx_dst7_pb32(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input block, output coeff
+static void itx_dst7_pb32(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input block, output coeff
 {
     int i, j, k, iSum;
     int rnd_factor = 1 << (shift - 1);
     const int uiTrSize = 32;
-    s8 *iT = com_tbl_tm32[DST7][0];
     const int  reducedLine = line;
     const int  cutoff = uiTrSize;
 
@@ -631,12 +620,11 @@ static void itx_dst7_pb32(s16 *coeff, s16 *block, int shift, int line, int max_t
     }
 }
 
-static void itx_dst7_pb64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val)  // input block, output coeff
+static void itx_dst7_pb64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT)  // input block, output coeff
 {
     int i, j, k, iSum;
     int rnd_factor = 1 << (shift - 1);
     const int uiTrSize = 64;
-    s8 *iT = com_tbl_tm64[DST7][0];
     const int  reducedLine = line;
     const int  cutoff = uiTrSize;
     for (i = 0; i < reducedLine; i++) {
@@ -767,11 +755,19 @@ static void com_inv_trans(com_mode_t *mode, int plane, int blk_idx, s16 *coef_dq
         if (plane == Y_C && mode->tb_part == SIZE_NxN) {
             int max_tr_val = (1 << MAX_TX_DYNAMIC_RANGE) - 1;
             int min_tr_val = -(1 << MAX_TX_DYNAMIC_RANGE);
-            uavs3e_funs_handle.itrans_dct8_dst7[blk_idx >> 1][cu_height_log2 - 1](coef_dq, coef_temp, shift1, 1 << cu_width_log2, max_tr_val, min_tr_val);
-
+            if (blk_idx >> 1) { // DST7
+                uavs3e_funs_handle.itrans_dst7[cu_height_log2 - 1](coef_dq, coef_temp, shift1, 1 << cu_width_log2, max_tr_val, min_tr_val, g_tbl_itrans[DST7][cu_height_log2 - 1]);
+            } else {
+                uavs3e_funs_handle.itrans_dct8[cu_height_log2 - 1](coef_dq, coef_temp, shift1, 1 << cu_width_log2, max_tr_val, min_tr_val, g_tbl_itrans[DCT8][cu_height_log2 - 1]);
+            }
             max_tr_val = (1 << bit_depth) - 1;
             min_tr_val = -(1 << bit_depth);
-            uavs3e_funs_handle.itrans_dct8_dst7[blk_idx & 1][cu_width_log2 - 1](coef_temp, resi, shift2, 1 << cu_height_log2, max_tr_val, min_tr_val);
+            if (blk_idx & 1) { // DST7
+                uavs3e_funs_handle.itrans_dst7[cu_width_log2 - 1](coef_temp, resi, shift2, 1 << cu_height_log2, max_tr_val, min_tr_val, g_tbl_itrans[DST7][cu_width_log2 - 1]);
+            }
+            else {
+                uavs3e_funs_handle.itrans_dct8[cu_width_log2 - 1](coef_temp, resi, shift2, 1 << cu_height_log2, max_tr_val, min_tr_val, g_tbl_itrans[DCT8][cu_width_log2 - 1]);
+            }
         } else {
             uavs3e_funs_handle.itrans_dct2[cu_height_log2 - 1][cu_width_log2 - 1](coef_dq, resi, bit_depth);
         }
@@ -983,17 +979,17 @@ void uavs3e_funs_init_itrans_c()
     uavs3e_funs_handle.itrans_dct2[5][4] = itrans_dct2_h64_w32;
     uavs3e_funs_handle.itrans_dct2[5][5] = itrans_dct2_h64_w64;
 
-    uavs3e_funs_handle.itrans_dct8_dst7[0][1] = itx_dct8_pb4;
-    uavs3e_funs_handle.itrans_dct8_dst7[0][2] = itx_dct8_pb8;
-    uavs3e_funs_handle.itrans_dct8_dst7[0][3] = itx_dct8_pb16;
-    uavs3e_funs_handle.itrans_dct8_dst7[0][4] = itx_dct8_pb32;
-    uavs3e_funs_handle.itrans_dct8_dst7[0][5] = itx_dct8_pb64;
+    uavs3e_funs_handle.itrans_dct8[1] = itx_dct8_pb4;
+    uavs3e_funs_handle.itrans_dct8[2] = itx_dct8_pb8;
+    uavs3e_funs_handle.itrans_dct8[3] = itx_dct8_pb16;
+    uavs3e_funs_handle.itrans_dct8[4] = itx_dct8_pb32;
+    uavs3e_funs_handle.itrans_dct8[5] = itx_dct8_pb64;
 
-    uavs3e_funs_handle.itrans_dct8_dst7[1][1] = itx_dst7_pb4;
-    uavs3e_funs_handle.itrans_dct8_dst7[1][2] = itx_dst7_pb8;
-    uavs3e_funs_handle.itrans_dct8_dst7[1][3] = itx_dst7_pb16;
-    uavs3e_funs_handle.itrans_dct8_dst7[1][4] = itx_dst7_pb32;
-    uavs3e_funs_handle.itrans_dct8_dst7[1][5] = itx_dst7_pb64;
+    uavs3e_funs_handle.itrans_dst7[1] = itx_dst7_pb4;
+    uavs3e_funs_handle.itrans_dst7[2] = itx_dst7_pb8;
+    uavs3e_funs_handle.itrans_dst7[3] = itx_dst7_pb16;
+    uavs3e_funs_handle.itrans_dst7[4] = itx_dst7_pb32;
+    uavs3e_funs_handle.itrans_dst7[5] = itx_dst7_pb64;
 
     uavs3e_funs_handle.dquant[0] = com_dquant_wq;
     uavs3e_funs_handle.dquant[1] = com_dquant;

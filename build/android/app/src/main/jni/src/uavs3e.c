@@ -1345,6 +1345,7 @@ void *uavs3e_create(enc_cfg_t *cfg, int *err)
 
     com_scan_tbl_init();
     com_dct_coef_create();
+    com_idct_coef_create();
     rdoq_init_err_scale(h->cfg.bit_depth_internal);
     rdoq_init_prob_2_bits();
 

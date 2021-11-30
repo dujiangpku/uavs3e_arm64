@@ -24,13 +24,6 @@ void uavs3e_itrans_dct2_h4_w32_arm64(s16 *src, s16 *dst, int bit_depth)
     dct2_butterfly_h32_arm64(tmp, 4, dst, 4, 20 - bit_depth, bit_depth);
 }
 
-void uavs3e_itrans_dct2_h4_w64_arm64(s16 *src, s16 *dst, int bit_depth)
-{
-    ALIGNED_16(s16 tmp[4*64]);
-    dct2_butterfly_h4_arm64(src, tmp, 64, 5, MAX_TX_DYNAMIC_RANGE);
-    dct2_butterfly_h64_arm64(tmp, 4, dst, 4, 20 - bit_depth, bit_depth);
-}
-
 void uavs3e_itrans_dct2_h8_w4_arm64(s16 *src, s16 *dst, int bit_depth)
 {
     ALIGNED_16(s16 tmp[8*4]);

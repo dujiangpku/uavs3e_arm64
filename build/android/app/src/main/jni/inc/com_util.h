@@ -89,6 +89,7 @@ operation: if(sign == 0) return val, else if(sign == 1) return -val */
 #define IS_BYTE_ALIGN(bs) !((bs)->leftbits & 0x7)
 
 void com_dct_coef_create();
+void com_idct_coef_create();
 void set_pic_wq_matrix_by_param(int *param_vector, int mode, u8 *pic_wq_matrix4x4, u8 *pic_wq_matrix8x8);
 void init_pic_wq_matrix(u8 *pic_wq_matrix4x4, u8 *pic_wq_matrix8x8);
 
@@ -309,7 +310,9 @@ typedef struct uavs3e_funs_handle_t {
     void(*dquant[2])(s16 *coef, s16 *coef_out, u8 *wq_matrix[2], int log2_w, int log2_h, int scale, int shift, int bit_depth);
 
     void(*itrans_dct2[MAX_TR_LOG2][MAX_TR_LOG2])(s16 *coef, s16 *resi, int bit_depth);
-    void(*itrans_dct8_dst7[2][MAX_TR_LOG2])(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val);
+    void(*itrans_dct8[MAX_TR_LOG2 - 1])(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *it);
+    void(*itrans_dst7[MAX_TR_LOG2 - 1])(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *it);
+    //void(*itrans_dct8_dst7[2][MAX_TR_LOG2])(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val);
     void(*trans_dct2[MAX_TR_LOG2][MAX_TR_LOG2])(s16 *coef, s16 *resi, int bit_depth);
     void(*trans_dct8_dst7[2][MAX_TR_LOG2])(s16 *src, s16 *dst, int shift, int line);
 
