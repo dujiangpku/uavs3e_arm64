@@ -74,6 +74,7 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.ipflt[IPFILTER_V_8][4] = uavs3e_if_ver_luma_w16x_arm64;
     uavs3e_funs_handle.ipflt[IPFILTER_V_8][5] = uavs3e_if_ver_luma_w16x_arm64;
 
+    //uavs3e_funs_handle.ipflt[IPFILTER_V_4][0] = uavs3e_if_ver_chroma_w4_arm64;            //后面补
     uavs3e_funs_handle.ipflt[IPFILTER_V_4][1] = uavs3e_if_ver_chroma_w8_arm64;
     uavs3e_funs_handle.ipflt[IPFILTER_V_4][2] = uavs3e_if_ver_chroma_w16_arm64;
     uavs3e_funs_handle.ipflt[IPFILTER_V_4][3] = uavs3e_if_ver_chroma_w32_arm64;
@@ -81,7 +82,7 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.ipflt[IPFILTER_V_4][5] = uavs3e_if_ver_chroma_w32x_arm64;
 
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][0] = uavs3e_if_hor_ver_luma_w4_arm64;
-    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][1] = uavs3e_if_hor_ver_luma_w8_arm64;        // ERROR (PSNR不一致)
+    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][1] = uavs3e_if_hor_ver_luma_w8_arm64;
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][2] = uavs3e_if_hor_ver_luma_w16_arm64;
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][3] = uavs3e_if_hor_ver_luma_w32_arm64;
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][4] = uavs3e_if_hor_ver_luma_w32x_arm64;
@@ -93,34 +94,17 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][4] = uavs3e_if_hor_ver_chroma_w32x_arm64;      // bug fixed
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][5] = uavs3e_if_hor_ver_chroma_w32x_arm64;      // bug fixed
 
+    uavs3e_funs_handle.deblock_luma[0] = uavs3e_deblock_ver_luma_arm64;
+    uavs3e_funs_handle.deblock_luma[1] = uavs3e_deblock_hor_luma_arm64;
+    uavs3e_funs_handle.deblock_chroma[0] = uavs3e_deblock_ver_chroma_arm64;
+    uavs3e_funs_handle.deblock_chroma[1] = uavs3e_deblock_hor_chroma_arm64;
+
     /*
     int i;
 
     uavs3e_funs_handle.ip_flt_y_hor = uavs3e_if_hor_luma_frame_arm64;
     uavs3e_funs_handle.ip_flt_y_ver = uavs3e_if_ver_luma_frame_arm64;
     uavs3e_funs_handle.ip_flt_y_ver_ext = uavs3e_if_ver_luma_frame_ext_arm64;
-
-    for (i = 0; i < CU_SIZE_NUM; i++) {
-        uavs3e_funs_handle.ipcpy[i] = uavs3e_if_cpy_w16x_arm64;
-        uavs3e_funs_handle.ipflt[IPFILTER_H_8][i] = uavs3e_if_hor_luma_w8x_arm64;
-        uavs3e_funs_handle.ipflt[IPFILTER_V_8][i] = uavs3e_if_ver_luma_w8x_arm64;
-        uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][i] = uavs3e_if_hor_ver_luma_w8x_arm64;
-    }
-
-    uavs3e_funs_handle.ipcpy[0] = uavs3e_if_cpy_w4_arm64;
-    uavs3e_funs_handle.ipcpy[1] = uavs3e_if_cpy_w8_arm64;
-    uavs3e_funs_handle.ipcpy[2] = uavs3e_if_cpy_w16_arm64;
-    uavs3e_funs_handle.ipflt[IPFILTER_H_8][0] = uavs3e_if_hor_luma_w4_arm64;
-    uavs3e_funs_handle.ipflt[IPFILTER_H_8][1] = uavs3e_if_hor_luma_w8_arm64;
-    uavs3e_funs_handle.ipflt[IPFILTER_V_8][0] = uavs3e_if_ver_luma_w4_arm64;
-    uavs3e_funs_handle.ipflt[IPFILTER_V_8][1] = uavs3e_if_ver_luma_w8_arm64;
-    uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][0] = uavs3e_if_hor_ver_luma_w4_arm64;
-    //uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_8][1] = uavs3e_if_hor_ver_luma_w8_arm64;      // ERROR (PSNR不一致)
-
-    uavs3e_funs_handle.deblock_luma[0] = uavs3e_deblock_ver_luma_arm64;
-    uavs3e_funs_handle.deblock_luma[1] = uavs3e_deblock_hor_luma_arm64;
-    uavs3e_funs_handle.deblock_chroma[0] = uavs3e_deblock_ver_chroma_arm64;
-    uavs3e_funs_handle.deblock_chroma[1] = uavs3e_deblock_hor_chroma_arm64;
 
     uavs3e_funs_handle.sao = uavs3e_sao_on_lcu_arm64;
     //uavs3e_funs_handle.alf = uavs3e_alf_one_lcu_sse; // ERROR
