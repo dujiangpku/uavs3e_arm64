@@ -3914,18 +3914,18 @@ function uavs3e_if_hor_chroma_w8_arm64
     dup v2.8h, v3.h[2]
     dup v3.8h, v3.h[3]
 
-    sub x0, x0, #4                      // src - 2
+    sub x0, x0, #2                      // src - 1
     dup v31.8h, w7                      // max_val
 
 if_hor_chroma_w8_loop_y:
-    ld1 {v20.8h, v21.8h}, [x0], x1      // src[x-2]
+    ld1 {v20.8h, v21.8h}, [x0], x1      // src[x-1]
     ld1 {v22.8h, v23.8h}, [x0], x1
-    ext v17.16b, v20.16b, v21.16b, #4   // src[x]
-    ext v18.16b, v20.16b, v21.16b, #8   // src[x+1]
-    ext v19.16b, v20.16b, v21.16b, #12  // src[x+2]
-    ext v24.16b, v22.16b, v23.16b, #4   // src[x]
-    ext v25.16b, v22.16b, v23.16b, #8   // src[x+1]
-    ext v26.16b, v22.16b, v23.16b, #12  // src[x+2]
+    ext v17.16b, v20.16b, v21.16b, #2   // src[x]
+    ext v18.16b, v20.16b, v21.16b, #4   // src[x+1]
+    ext v19.16b, v20.16b, v21.16b, #6   // src[x+2]
+    ext v24.16b, v22.16b, v23.16b, #2   // src[x]
+    ext v25.16b, v22.16b, v23.16b, #4   // src[x+1]
+    ext v26.16b, v22.16b, v23.16b, #6   // src[x+2]
 
     umull  v4.4s, v17.4h, v1.4h
     umull2 v5.4s, v17.8h, v1.8h
@@ -3976,19 +3976,19 @@ function uavs3e_if_hor_chroma_w16_arm64
     dup v2.8h, v3.h[2]
     dup v3.8h, v3.h[3]
 
-    sub x0, x0, #4                      // src - 2
+    sub x0, x0, #2                      // src - 1
     sub x1, x1, #32
     dup v31.8h, w7                      // max_val
 if_hor_chroma_w16_loop_y:
-    ld1 {v16.8h, v17.8h}, [x0], #32     // src[x-2]
+    ld1 {v16.8h, v17.8h}, [x0], #32     // src[x-1]
     ld1 {v18.8h}, [x0], x1
 
-    ext v19.16b, v16.16b, v17.16b, #4   // src[x]
-    ext v20.16b, v16.16b, v17.16b, #8   // src[x+1]
-    ext v21.16b, v16.16b, v17.16b, #12  // src[x+2]
-    ext v22.16b, v17.16b, v18.16b, #4   // src[x+8]
-    ext v23.16b, v17.16b, v18.16b, #8   // src[x+9]
-    ext v24.16b, v17.16b, v18.16b, #12  // src[x+10]
+    ext v19.16b, v16.16b, v17.16b, #2   // src[x]
+    ext v20.16b, v16.16b, v17.16b, #4   // src[x+1]
+    ext v21.16b, v16.16b, v17.16b, #6   // src[x+2]
+    ext v22.16b, v17.16b, v18.16b, #2   // src[x+8]
+    ext v23.16b, v17.16b, v18.16b, #4   // src[x+9]
+    ext v24.16b, v17.16b, v18.16b, #6   // src[x+10]
 
     umull  v4.4s, v19.4h, v1.4h
     umull2 v5.4s, v19.8h, v1.8h
@@ -4038,22 +4038,22 @@ function uavs3e_if_hor_chroma_w16x_arm64
     dup v2.8h, v3.h[2]
     dup v3.8h, v3.h[3]
 
-    sub x0, x0, #4                      // src - 2
+    sub x0, x0, #2                      // src - 1
     dup v31.8h, w7                      // max_val
 if_hor_chroma_w16x_loop_y:
     mov w9, w4
     mov x10, x0
     mov x11, x2
 if_hor_chroma_w16x_loop_x:
-    ld1 {v16.8h, v17.8h}, [x10], #32     // src[x-2]
+    ld1 {v16.8h, v17.8h}, [x10], #32     // src[x-1]
     ld1 {v18.8h}, [x10]
 
-    ext v19.16b, v16.16b, v17.16b, #4   // src[x]
-    ext v20.16b, v16.16b, v17.16b, #8   // src[x+1]
-    ext v21.16b, v16.16b, v17.16b, #12  // src[x+2]
-    ext v22.16b, v17.16b, v18.16b, #4   // src[x+8]
-    ext v23.16b, v17.16b, v18.16b, #8   // src[x+9]
-    ext v24.16b, v17.16b, v18.16b, #12  // src[x+10]
+    ext v19.16b, v16.16b, v17.16b, #2   // src[x]
+    ext v20.16b, v16.16b, v17.16b, #4   // src[x+1]
+    ext v21.16b, v16.16b, v17.16b, #6   // src[x+2]
+    ext v22.16b, v17.16b, v18.16b, #2   // src[x+8]
+    ext v23.16b, v17.16b, v18.16b, #4   // src[x+9]
+    ext v24.16b, v17.16b, v18.16b, #6   // src[x+10]
 
     umull  v4.4s, v19.4h, v1.4h
     umull2 v5.4s, v19.8h, v1.8h
@@ -7056,7 +7056,7 @@ function uavs3e_if_hor_ver_chroma_w8_arm64
     dup v1.8h, v3.h[1]
     dup v2.8h, v3.h[2]
     dup v3.8h, v3.h[3]
-    sub x0, x0, #4                          // x - 1 UV
+    sub x0, x0, #2                          // x - 1 UV
 
     cmp w8, #255
     bgt if_hor_ver_chroma_w8_10bit
@@ -7066,17 +7066,17 @@ function uavs3e_if_hor_ver_chroma_w8_arm64
     ld1 {v18.8h, v19.8h}, [x0], x1          // src[x-1]
     ld1 {v20.8h, v21.8h}, [x0], x1
 
-    ext v22.16b, v16.16b, v17.16b, #4       // src[x]
-    ext v23.16b, v16.16b, v17.16b, #8       // src[x+1]
-    ext v24.16b, v16.16b, v17.16b, #12      // src[x+2]
+    ext v22.16b, v16.16b, v17.16b, #2       // src[x]
+    ext v23.16b, v16.16b, v17.16b, #4       // src[x+1]
+    ext v24.16b, v16.16b, v17.16b, #6       // src[x+2]
 
-    ext v25.16b, v18.16b, v19.16b, #4
-    ext v26.16b, v18.16b, v19.16b, #8
-    ext v27.16b, v18.16b, v19.16b, #12
+    ext v25.16b, v18.16b, v19.16b, #2
+    ext v26.16b, v18.16b, v19.16b, #4
+    ext v27.16b, v18.16b, v19.16b, #6
 
-    ext v28.16b, v20.16b, v21.16b, #4
-    ext v29.16b, v20.16b, v21.16b, #8
-    ext v30.16b, v20.16b, v21.16b, #12
+    ext v28.16b, v20.16b, v21.16b, #2
+    ext v29.16b, v20.16b, v21.16b, #4
+    ext v30.16b, v20.16b, v21.16b, #6
 
     mul v4.8h, v22.8h, v1.8h
     mul v5.8h, v25.8h, v1.8h
@@ -7102,21 +7102,21 @@ if_hor_ver_chroma_w8_hor_loop_y:
     ld1 {v20.8h, v21.8h}, [x0], x1
     ld1 {v22.8h, v23.8h}, [x0], x1
 
-    ext v24.16b, v16.16b, v17.16b, #4       // src[x]
-    ext v25.16b, v16.16b, v17.16b, #8       // src[x+1]
-    ext v26.16b, v16.16b, v17.16b, #12      // src[x+2]
+    ext v24.16b, v16.16b, v17.16b, #2       // src[x]
+    ext v25.16b, v16.16b, v17.16b, #4       // src[x+1]
+    ext v26.16b, v16.16b, v17.16b, #6      // src[x+2]
 
-    ext v27.16b, v18.16b, v19.16b, #4       // src[x]
-    ext v28.16b, v18.16b, v19.16b, #8       // src[x+1]
-    ext v29.16b, v18.16b, v19.16b, #12      // src[x+2]
+    ext v27.16b, v18.16b, v19.16b, #2       // src[x]
+    ext v28.16b, v18.16b, v19.16b, #4       // src[x+1]
+    ext v29.16b, v18.16b, v19.16b, #6      // src[x+2]
 
-    ext v30.16b, v20.16b, v21.16b, #4       // src[x]
-    ext v31.16b, v20.16b, v21.16b, #8       // src[x+1]
-    ext v17.16b, v20.16b, v21.16b, #12      // src[x+2]
+    ext v30.16b, v20.16b, v21.16b, #2       // src[x]
+    ext v31.16b, v20.16b, v21.16b, #4       // src[x+1]
+    ext v17.16b, v20.16b, v21.16b, #6      // src[x+2]
 
-    ext v19.16b, v22.16b, v23.16b, #4       // src[x]
-    ext v21.16b, v22.16b, v23.16b, #8       // src[x+1]
-    ext v23.16b, v22.16b, v23.16b, #12      // src[x+2]
+    ext v19.16b, v22.16b, v23.16b, #2       // src[x]
+    ext v21.16b, v22.16b, v23.16b, #4       // src[x+1]
+    ext v23.16b, v22.16b, v23.16b, #6      // src[x+2]
 
     mul v4.8h, v24.8h, v1.8h
     mul v5.8h, v27.8h, v1.8h
@@ -7216,17 +7216,17 @@ if_hor_ver_chroma_w8_10bit:
     ld1 {v18.8h, v19.8h}, [x0], x1       // src[x-1]
     ld1 {v20.8h, v21.8h}, [x0], x1
 
-    ext v22.16b, v16.16b, v17.16b, #4      // src[x]
-    ext v23.16b, v16.16b, v17.16b, #8      // src[x+1]
-    ext v24.16b, v16.16b, v17.16b, #12     // src[x+2]
+    ext v22.16b, v16.16b, v17.16b, #2      // src[x]
+    ext v23.16b, v16.16b, v17.16b, #4      // src[x+1]
+    ext v24.16b, v16.16b, v17.16b, #6      // src[x+2]
 
-    ext v25.16b, v18.16b, v19.16b, #4
-    ext v26.16b, v18.16b, v19.16b, #8
-    ext v27.16b, v18.16b, v19.16b, #12
+    ext v25.16b, v18.16b, v19.16b, #2
+    ext v26.16b, v18.16b, v19.16b, #4
+    ext v27.16b, v18.16b, v19.16b, #6
 
-    ext v28.16b, v20.16b, v21.16b, #4
-    ext v29.16b, v20.16b, v21.16b, #8
-    ext v30.16b, v20.16b, v21.16b, #12
+    ext v28.16b, v20.16b, v21.16b, #2
+    ext v29.16b, v20.16b, v21.16b, #4
+    ext v30.16b, v20.16b, v21.16b, #6
 
     umull  v4.4s, v22.4h, v1.4h
     umull2 v5.4s, v22.8h, v1.8h
@@ -7273,21 +7273,21 @@ if_hor_ver_chroma_w8_hor_10bit_loop_y:
     ld1 {v20.8h, v21.8h}, [x0], x1
     ld1 {v22.8h, v23.8h}, [x0], x1
 
-    ext v24.16b, v16.16b, v17.16b, #4       // src[x]
-    ext v25.16b, v16.16b, v17.16b, #8       // src[x+1]
-    ext v26.16b, v16.16b, v17.16b, #12      // src[x+2]
+    ext v24.16b, v16.16b, v17.16b, #2       // src[x]
+    ext v25.16b, v16.16b, v17.16b, #4       // src[x+1]
+    ext v26.16b, v16.16b, v17.16b, #6       // src[x+2]
 
-    ext v27.16b, v18.16b, v19.16b, #4       // src[x]
-    ext v28.16b, v18.16b, v19.16b, #8       // src[x+1]
-    ext v29.16b, v18.16b, v19.16b, #12      // src[x+2]
+    ext v27.16b, v18.16b, v19.16b, #2       // src[x]
+    ext v28.16b, v18.16b, v19.16b, #4       // src[x+1]
+    ext v29.16b, v18.16b, v19.16b, #6      // src[x+2]
 
-    ext v30.16b, v20.16b, v21.16b, #4       // src[x]
-    ext v31.16b, v20.16b, v21.16b, #8       // src[x+1]
-    ext v17.16b, v20.16b, v21.16b, #12      // src[x+2]
+    ext v30.16b, v20.16b, v21.16b, #2       // src[x]
+    ext v31.16b, v20.16b, v21.16b, #4       // src[x+1]
+    ext v17.16b, v20.16b, v21.16b, #6       // src[x+2]
 
-    ext v19.16b, v22.16b, v23.16b, #4       // src[x]
-    ext v21.16b, v22.16b, v23.16b, #8       // src[x+1]
-    ext v23.16b, v22.16b, v23.16b, #12      // src[x+2]
+    ext v19.16b, v22.16b, v23.16b, #2       // src[x]
+    ext v21.16b, v22.16b, v23.16b, #4       // src[x+1]
+    ext v23.16b, v22.16b, v23.16b, #6       // src[x+2]
 
     umull  v4.4s, v24.4h, v1.4h
     umull  v5.4s, v27.4h, v1.4h
@@ -7445,7 +7445,7 @@ function uavs3e_if_hor_ver_chroma_w16_arm64
     dup v1.8h, v3.h[1]
     dup v2.8h, v3.h[2]
     dup v3.8h, v3.h[3]
-    sub x0, x0, #4                          // x - 1 UV
+    sub x0, x0, #2                          // x - 1 UV
     sub x1, x1, #32
 
     cmp w8, #255
@@ -7456,12 +7456,12 @@ if_hor_ver_chroma_w16_hor_loop_y:
     ld1 {v16.8h, v17.8h}, [x0], #32         // src[x-1]
     ld1 {v18.8h}, [x0], x1
 
-    ext v19.16b, v16.16b, v17.16b, #4       // src[x]
-    ext v20.16b, v16.16b, v17.16b, #8       // src[x+1]
-    ext v21.16b, v16.16b, v17.16b, #12      // src[x+2]
-    ext v22.16b, v17.16b, v18.16b, #4
-    ext v23.16b, v17.16b, v18.16b, #8
-    ext v24.16b, v17.16b, v18.16b, #12
+    ext v19.16b, v16.16b, v17.16b, #2       // src[x]
+    ext v20.16b, v16.16b, v17.16b, #4       // src[x+1]
+    ext v21.16b, v16.16b, v17.16b, #6       // src[x+2]
+    ext v22.16b, v17.16b, v18.16b, #2
+    ext v23.16b, v17.16b, v18.16b, #4
+    ext v24.16b, v17.16b, v18.16b, #6
 
     mul v28.8h, v19.8h, v1.8h
     mul v29.8h, v22.8h, v1.8h
@@ -7551,12 +7551,12 @@ if_hor_ver_chroma_w16_hor_10bit_loop_y:
     ld1 {v16.8h, v17.8h}, [x0], #32         // src[x-1]
     ld1 {v18.8h}, [x0], x1
 
-    ext v19.16b, v16.16b, v17.16b, #4       // src[x]
-    ext v20.16b, v16.16b, v17.16b, #8       // src[x+1]
-    ext v21.16b, v16.16b, v17.16b, #12      // src[x+2]
-    ext v22.16b, v17.16b, v18.16b, #4
-    ext v23.16b, v17.16b, v18.16b, #8
-    ext v24.16b, v17.16b, v18.16b, #12
+    ext v19.16b, v16.16b, v17.16b, #2       // src[x]
+    ext v20.16b, v16.16b, v17.16b, #4       // src[x+1]
+    ext v21.16b, v16.16b, v17.16b, #6       // src[x+2]
+    ext v22.16b, v17.16b, v18.16b, #2
+    ext v23.16b, v17.16b, v18.16b, #4
+    ext v24.16b, v17.16b, v18.16b, #6
 
     umull  v28.4s, v19.4h, v1.4h
     umull2 v29.4s, v19.8h, v1.8h
@@ -7692,7 +7692,7 @@ function uavs3e_if_hor_ver_chroma_w32_arm64
     dup v1.8h, v3.h[1]
     dup v2.8h, v3.h[2]
     dup v3.8h, v3.h[3]
-    sub x0, x0, #4                          // x - 1 UV
+    sub x0, x0, #2                          // x - 1 UV
     sub x1, x1, #64
 
     cmp w8, #255
@@ -7704,12 +7704,12 @@ if_hor_ver_chroma_w32_hor_loop_y:
     ld1 {v26.8h, v27.8h}, [x0], #32
     ld1 {v18.8h}, [x0], x1
 
-    ext v19.16b, v16.16b, v17.16b, #4       // src[x]
-    ext v20.16b, v16.16b, v17.16b, #8       // src[x+1]
-    ext v21.16b, v16.16b, v17.16b, #12      // src[x+2]
-    ext v22.16b, v17.16b, v26.16b, #4
-    ext v23.16b, v17.16b, v26.16b, #8
-    ext v24.16b, v17.16b, v26.16b, #12
+    ext v19.16b, v16.16b, v17.16b, #2       // src[x]
+    ext v20.16b, v16.16b, v17.16b, #4       // src[x+1]
+    ext v21.16b, v16.16b, v17.16b, #6       // src[x+2]
+    ext v22.16b, v17.16b, v26.16b, #2
+    ext v23.16b, v17.16b, v26.16b, #4
+    ext v24.16b, v17.16b, v26.16b, #6
 
     mul v28.8h, v19.8h, v1.8h
     mul v29.8h, v22.8h, v1.8h
@@ -7720,12 +7720,12 @@ if_hor_ver_chroma_w32_hor_loop_y:
     mls v28.8h, v21.8h, v3.8h
     mls v29.8h, v24.8h, v3.8h
 
-    ext v19.16b, v26.16b, v27.16b, #4       // src[x+16]
-    ext v20.16b, v26.16b, v27.16b, #8       // src[x+17]
-    ext v21.16b, v26.16b, v27.16b, #12      // src[x+18]
-    ext v22.16b, v27.16b, v18.16b, #4
-    ext v23.16b, v27.16b, v18.16b, #8
-    ext v24.16b, v27.16b, v18.16b, #12
+    ext v19.16b, v26.16b, v27.16b, #2       // src[x+16]
+    ext v20.16b, v26.16b, v27.16b, #4       // src[x+17]
+    ext v21.16b, v26.16b, v27.16b, #6       // src[x+18]
+    ext v22.16b, v27.16b, v18.16b, #2
+    ext v23.16b, v27.16b, v18.16b, #4
+    ext v24.16b, v27.16b, v18.16b, #6
 
     mul v30.8h, v19.8h, v1.8h
     mul v31.8h, v22.8h, v1.8h
@@ -7872,12 +7872,12 @@ if_hor_ver_chroma_w32_hor_10bit_loop_y:
     ld1 {v26.8h, v27.8h}, [x0], #32
     ld1 {v18.8h}, [x0], x1
 
-    ext v19.16b, v16.16b, v17.16b, #4       // src[x]
-    ext v20.16b, v16.16b, v17.16b, #8       // src[x+1]
-    ext v21.16b, v16.16b, v17.16b, #12      // src[x+2]
-    ext v22.16b, v17.16b, v26.16b, #4
-    ext v23.16b, v17.16b, v26.16b, #8
-    ext v24.16b, v17.16b, v26.16b, #12
+    ext v19.16b, v16.16b, v17.16b, #2       // src[x]
+    ext v20.16b, v16.16b, v17.16b, #4       // src[x+1]
+    ext v21.16b, v16.16b, v17.16b, #6       // src[x+2]
+    ext v22.16b, v17.16b, v26.16b, #2
+    ext v23.16b, v17.16b, v26.16b, #4
+    ext v24.16b, v17.16b, v26.16b, #6
 
     umull  v28.4s, v19.4h, v1.4h
     umull2 v29.4s, v19.8h, v1.8h
@@ -7903,12 +7903,12 @@ if_hor_ver_chroma_w32_hor_10bit_loop_y:
 
     st1 {v28.8h, v29.8h}, [x17], #32
 
-    ext v19.16b, v26.16b, v27.16b, #4       // src[x]
-    ext v20.16b, v26.16b, v27.16b, #8       // src[x+1]
-    ext v21.16b, v26.16b, v27.16b, #12      // src[x+2]
-    ext v22.16b, v27.16b, v18.16b, #4
-    ext v23.16b, v27.16b, v18.16b, #8
-    ext v24.16b, v27.16b, v18.16b, #12
+    ext v19.16b, v26.16b, v27.16b, #2       // src[x]
+    ext v20.16b, v26.16b, v27.16b, #4       // src[x+1]
+    ext v21.16b, v26.16b, v27.16b, #6       // src[x+2]
+    ext v22.16b, v27.16b, v18.16b, #2
+    ext v23.16b, v27.16b, v18.16b, #4
+    ext v24.16b, v27.16b, v18.16b, #6
 
     umull  v28.4s, v19.4h, v1.4h
     umull2 v29.4s, v19.8h, v1.8h
@@ -8103,7 +8103,7 @@ function uavs3e_if_hor_ver_chroma_w32x_arm64
     dup v1.8h, v3.h[1]
     dup v2.8h, v3.h[2]
     dup v3.8h, v3.h[3]
-    sub x0, x0, #4                          // x - 1 UV
+    sub x0, x0, #2                          // x - 1 UV
 
     cmp w8, #255
     bgt hor_ver_chroma_w32x_10bit
@@ -8118,12 +8118,12 @@ if_hor_ver_chroma_w32x_hor_loop_x:
     ld1 {v26.8h, v27.8h}, [x10], #32
     ld1 {v18.8h}, [x10]
 
-    ext v19.16b, v16.16b, v17.16b, #4       // src[x]
-    ext v20.16b, v16.16b, v17.16b, #8       // src[x+1]
-    ext v21.16b, v16.16b, v17.16b, #12      // src[x+2]
-    ext v22.16b, v17.16b, v26.16b, #4
-    ext v23.16b, v17.16b, v26.16b, #8
-    ext v24.16b, v17.16b, v26.16b, #12
+    ext v19.16b, v16.16b, v17.16b, #2       // src[x]
+    ext v20.16b, v16.16b, v17.16b, #4       // src[x+1]
+    ext v21.16b, v16.16b, v17.16b, #6       // src[x+2]
+    ext v22.16b, v17.16b, v26.16b, #2
+    ext v23.16b, v17.16b, v26.16b, #4
+    ext v24.16b, v17.16b, v26.16b, #6
 
     mul v28.8h, v19.8h, v1.8h
     mul v29.8h, v22.8h, v1.8h
@@ -8134,12 +8134,12 @@ if_hor_ver_chroma_w32x_hor_loop_x:
     mls v28.8h, v21.8h, v3.8h
     mls v29.8h, v24.8h, v3.8h
 
-    ext v19.16b, v26.16b, v27.16b, #4       // src[x+16]
-    ext v20.16b, v26.16b, v27.16b, #8       // src[x+17]
-    ext v21.16b, v26.16b, v27.16b, #12      // src[x+18]
-    ext v22.16b, v27.16b, v18.16b, #4
-    ext v23.16b, v27.16b, v18.16b, #8
-    ext v24.16b, v27.16b, v18.16b, #12
+    ext v19.16b, v26.16b, v27.16b, #2       // src[x+16]
+    ext v20.16b, v26.16b, v27.16b, #4       // src[x+17]
+    ext v21.16b, v26.16b, v27.16b, #6       // src[x+18]
+    ext v22.16b, v27.16b, v18.16b, #2
+    ext v23.16b, v27.16b, v18.16b, #4
+    ext v24.16b, v27.16b, v18.16b, #6
 
     mul v30.8h, v19.8h, v1.8h
     mul v31.8h, v22.8h, v1.8h
@@ -8252,12 +8252,12 @@ if_hor_ver_chroma_w32x_hor_10bit_loop_x:
     ld1 {v26.8h, v27.8h}, [x10], #32
     ld1 {v18.8h}, [x10]
 
-    ext v19.16b, v16.16b, v17.16b, #4       // src[x]
-    ext v20.16b, v16.16b, v17.16b, #8       // src[x+1]
-    ext v21.16b, v16.16b, v17.16b, #12      // src[x+2]
-    ext v22.16b, v17.16b, v26.16b, #4
-    ext v23.16b, v17.16b, v26.16b, #8
-    ext v24.16b, v17.16b, v26.16b, #12
+    ext v19.16b, v16.16b, v17.16b, #2       // src[x]
+    ext v20.16b, v16.16b, v17.16b, #4       // src[x+1]
+    ext v21.16b, v16.16b, v17.16b, #6      // src[x+2]
+    ext v22.16b, v17.16b, v26.16b, #2
+    ext v23.16b, v17.16b, v26.16b, #4
+    ext v24.16b, v17.16b, v26.16b, #6
 
     umull  v28.4s, v19.4h, v1.4h
     umull2 v29.4s, v19.8h, v1.8h
@@ -8283,12 +8283,12 @@ if_hor_ver_chroma_w32x_hor_10bit_loop_x:
 
     st1 {v28.8h, v29.8h}, [x11], #32
 
-    ext v19.16b, v26.16b, v27.16b, #4       // src[x]
-    ext v20.16b, v26.16b, v27.16b, #8       // src[x+1]
-    ext v21.16b, v26.16b, v27.16b, #12      // src[x+2]
-    ext v22.16b, v27.16b, v18.16b, #4
-    ext v23.16b, v27.16b, v18.16b, #8
-    ext v24.16b, v27.16b, v18.16b, #12
+    ext v19.16b, v26.16b, v27.16b, #2       // src[x]
+    ext v20.16b, v26.16b, v27.16b, #4       // src[x+1]
+    ext v21.16b, v26.16b, v27.16b, #6       // src[x+2]
+    ext v22.16b, v27.16b, v18.16b, #2
+    ext v23.16b, v27.16b, v18.16b, #4
+    ext v24.16b, v27.16b, v18.16b, #6
 
     umull  v28.4s, v19.4h, v1.4h
     umull2 v29.4s, v19.8h, v1.8h
