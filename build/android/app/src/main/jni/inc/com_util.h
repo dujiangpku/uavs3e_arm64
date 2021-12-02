@@ -310,8 +310,8 @@ typedef struct uavs3e_funs_handle_t {
     void(*dquant[2])(s16 *coef, s16 *coef_out, u8 *wq_matrix[2], int log2_w, int log2_h, int scale, int shift, int bit_depth);
 
     void(*itrans_dct2[MAX_TR_LOG2][MAX_TR_LOG2])(s16 *coef, s16 *resi, int bit_depth);
-    void(*itrans_dct8[MAX_TR_LOG2 - 1])(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *it);
-    void(*itrans_dst7[MAX_TR_LOG2 - 1])(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *it);
+    void(*itrans_dct8[MAX_TR_LOG2])(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *it);
+    void(*itrans_dst7[MAX_TR_LOG2])(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *it);
     //void(*itrans_dct8_dst7[2][MAX_TR_LOG2])(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val);
     void(*trans_dct2[MAX_TR_LOG2][MAX_TR_LOG2])(s16 *coef, s16 *resi, int bit_depth);
     void(*trans_dct8_dst7[2][MAX_TR_LOG2])(s16 *src, s16 *dst, int shift, int line);

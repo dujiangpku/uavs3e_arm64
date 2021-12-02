@@ -344,43 +344,52 @@ deblock_ver_filtered:
 
 
 /*****************************************************************************************************
- *  void uavs3e_deblock_ver_chroma_arm64(pel *srcuv, int stride, int alpha_u, int beta_u, int alpha_v, int beta_v, int flt_flag);
- *  SrcPtrU->x0, stride->x1, alpha_u->x2, beta_u->x3, alpha_v->x4, beta_v->x5, flt_flag->x6
+ *  void uavs3e_deblock_ver_chroma_arm64(pel *srcu, pel *srcv, int stride, int alpha_u, int beta_u, int alpha_v, int beta_v, int flt_flag);
+ *  SrcPtrU->x0, SrcPtrV->x1, stride->x2, alpha_u->x3, beta_u->x4, alpha_v->x5, beta_v->x6, flt_flag->x7
  ******************************************************************************************************/
 function uavs3e_deblock_ver_chroma_arm64
 
-    and x1, x1, #0xffffffff
+    and x2, x2, #0xffffffff
 
-    add w7, w2, w4, lsl #16
     add w8, w3, w5, lsl #16
+    add w9, w4, w6, lsl #16
 
-    dup v25.4s, w7                  // v25.8h: alphau alphav alphau alphav alphau alphav alphau alphav
-    dup v24.4s, w8                  // v24.8h: betau, betav
+    dup v25.4s, w8                  // v25.8h: alphau alphav alphau alphav alphau alphav alphau alphav
+    dup v24.4s, w9                  // v24.8h: betau, betav
 
-    lsr w8, w6, #1
-    lsr w7, w6, #9
-    and w8, w8, #1
-    and w9, w7, #1
-    neg w8, w8                      // flag0
-    neg w9, w9                      // flag1
+    lsr w9, w7, #1
+    lsr w8, w7, #9
+    and w9, w9, #1
+    and w10, w8, #1
+    neg w9, w9                      // flag0
+    neg w10, w10                      // flag1
 
-    dup v26.2s, w8
-    dup v27.2s, w9                  // v26: flag0 flag0 flag1 flag1
+    dup v26.2s, w9
+    dup v27.2s, w10                  // v26: flag0 flag0 flag1 flag1
     mov v26.d[1], v27.d[0]
 
-    sub x0, x0, #6                  // srcuv -= 6
-    sub x5, x1, #8
+    sub x0, x0, #3                  // srcu -= 3*sizeof(pel)
+    sub x1, x1, #3                  // srcv -= 3*sizeof(pel)
+    sub x5, x2, #4
     mov x3, x0
+    mov x4, x1
 
-    //src[-3]:src[4] --> l2, l1, l0, r0, r1, r2, r3, r4
-    ld4 {v0.h, v1.h, v2.h, v3.h}[0], [x0], #8
-    ld2 {v4.h, v5.h}[0], [x0], x5
-    ld4 {v0.h, v1.h, v2.h, v3.h}[1], [x0], #8
-    ld2 {v4.h, v5.h}[1], [x0], x5
-    ld4 {v0.h, v1.h, v2.h, v3.h}[2], [x0], #8
-    ld2 {v4.h, v5.h}[2], [x0], x5
-    ld4 {v0.h, v1.h, v2.h, v3.h}[3], [x0], #8
-    ld2 {v4.h, v5.h}[3], [x0]
+    ld4 {v0.b, v1.b, v2.b, v3.b}[0], [x0], #4
+    ld2 {v4.b, v5.b}[0], [x0], x5
+    ld4 {v0.b, v1.b, v2.b, v3.b}[1], [x1], #4
+    ld2 {v4.b, v5.b}[1], [x1], x5
+    ld4 {v0.b, v1.b, v2.b, v3.b}[2], [x0], #4
+    ld2 {v4.b, v5.b}[2], [x0], x5
+    ld4 {v0.b, v1.b, v2.b, v3.b}[3], [x1], #4
+    ld2 {v4.b, v5.b}[3], [x1], x5
+    ld4 {v0.b, v1.b, v2.b, v3.b}[4], [x0], #4
+    ld2 {v4.b, v5.b}[4], [x0], x5
+    ld4 {v0.b, v1.b, v2.b, v3.b}[5], [x1], #4
+    ld2 {v4.b, v5.b}[5], [x1], x5
+    ld4 {v0.b, v1.b, v2.b, v3.b}[6], [x0], #4
+    ld2 {v4.b, v5.b}[6], [x0], x5
+    ld4 {v0.b, v1.b, v2.b, v3.b}[7], [x1], #4
+    ld2 {v4.b, v5.b}[7], [x1]
 
     uxtl v5.8h, v5.8b               // R2
     uxtl v4.8h, v4.8b               // R1
@@ -461,15 +470,22 @@ function uavs3e_deblock_ver_chroma_arm64
     xtn v4.8b, v4.8h
     xtn v5.8b, v5.8h
 
-    st4 {v0.h, v1.h, v2.h, v3.h}[0], [x3], #8
-    st2 {v4.h, v5.h}[0], [x3], x5
-    st4 {v0.h, v1.h, v2.h, v3.h}[1], [x3], #8
-    st2 {v4.h, v5.h}[1], [x3], x5
-    st4 {v0.h, v1.h, v2.h, v3.h}[2], [x3], #8
-    st2 {v4.h, v5.h}[2], [x3], x5
-    st4 {v0.h, v1.h, v2.h, v3.h}[3], [x3], #8
-    st2 {v4.h, v5.h}[3], [x3]
-
+    st4 {v0.b, v1.b, v2.b, v3.b}[0], [x3], #4
+    st2 {v4.b, v5.b}[0], [x3], x5
+    st4 {v0.b, v1.b, v2.b, v3.b}[1], [x4], #4
+    st2 {v4.b, v5.b}[1], [x4], x5
+    st4 {v0.b, v1.b, v2.b, v3.b}[2], [x3], #4
+    st2 {v4.b, v5.b}[2], [x3], x5
+    st4 {v0.b, v1.b, v2.b, v3.b}[3], [x4], #4
+    st2 {v4.b, v5.b}[3], [x4], x5
+    st4 {v0.b, v1.b, v2.b, v3.b}[4], [x3], #4
+    st2 {v4.b, v5.b}[4], [x3], x5
+    st4 {v0.b, v1.b, v2.b, v3.b}[5], [x4], #4
+    st2 {v4.b, v5.b}[5], [x4], x5
+    st4 {v0.b, v1.b, v2.b, v3.b}[6], [x3], #4
+    st2 {v4.b, v5.b}[6], [x3], x5
+    st4 {v0.b, v1.b, v2.b, v3.b}[7], [x4], #4
+    st2 {v4.b, v5.b}[7], [x4]
     ret
 
 /*****************************************************************************************************
@@ -766,38 +782,62 @@ deblock_hor_end:
     ret
 
 /*****************************************************************************************************
- *  void uavs3e_deblock_hor_chroma_arm64(pel *srcuv, int stride, int alpha_u, int beta_u, int alpha_v, int beta_v, int flt_flag)
- *  srcuv->x0, stride->x1, alpha_u->x2, beta_u->x3, alpha_v->x4, beta_v->x5, flt_flag->x6
+ *  void uavs3e_deblock_hor_chroma_arm64(pel *srcu, pel *srcv, int stride, int alpha_u, int beta_u, int alpha_v, int beta_v, int flt_flag)
+ *  srcu->x0, srcv->x1, stride->x2, alpha_u->x3, beta_u->x4, alpha_v->x5, beta_v->x6, flt_flag->x7
  ******************************************************************************************************/
 function uavs3e_deblock_hor_chroma_arm64
+    sub sp, sp, #96
+    add x11, sp, #64
+    st1 {v8.2d, v9.2d, v10.2d, v11.2d}, [sp]
+    st1 {v12.2d, v13.2d}, [x11]
 
-    and x1, x1, #0xffffffff
+    and x2, x2, #0xffffffff
 
-    add w2, w2, w4, lsl #16
     add w3, w3, w5, lsl #16
-    dup v25.4s, w2                  // v25: alphau alphav alphau alphav alphau alphav alphau alphav
-    dup v24.4s, w3                  // v24: betau betav betau betav betau betav betau betav
+    add w4, w4, w6, lsl #16
+    dup v25.4s, w3                  // v25: alphau alphav alphau alphav alphau alphav alphau alphav
+    dup v24.4s, w4                  // v24: betau betav betau betav betau betav betau betav
 
-    lsr w7, w6, #1
-    lsr w6, w6, #9
-    and w5, w7, #1
-    and w6, w6, #1
-    neg w5, w5                      // flag0
-    neg w6, w6                      // flag1
+    lsr w8, w7, #1
+    lsr w7, w7, #9
+    and w6, w8, #1
+    and w7, w7, #1
+    neg w6, w6                      // flag0
+    neg w7, w7                      // flag1
 
-    dup v6.4h, w5
-    dup v7.4h, w6                   // v6: flag0 flag0 flag1 flag1
+    dup v6.4h, w6
+    dup v7.4h, w7                   // v6: flag0 flag0 flag1 flag1
     mov v6.d[1], v7.d[0]
 
-    sub x0, x0, x1, lsl #1          // srcuv - 2*stride
-    sub x2, x0, x1                  // srcuv - 3*stride
+    lsl x3, x2, #1                  // x3 -> 2*stride
+    sub x0, x0, x3                  // srcu - 2*stride
+    sub x4, x0, x2                  // srcu - 3*stride
+    sub x1, x1, x3                  // srcv - 2*stride
+    sub x5, x1, x2                  // srcv - 3*stride
 
-    ld1 {v0.4h}, [x2], x1           // L2
-    ld1 {v1.4h}, [x2], x1           // L1
-    ld1 {v2.4h}, [x2], x1           // L0
-    ld1 {v3.4h}, [x2], x1           // R0
-    ld1 {v4.4h}, [x2], x1           // R1
-    ld1 {v5.4h}, [x2]               // R2
+    //load u
+    ld1 {v0.s}[0], [x4], x2           // L2
+    ld1 {v1.s}[0], [x4], x2           // L1
+    ld1 {v2.s}[0], [x4], x2           // L0
+    ld1 {v3.s}[0], [x4], x2           // R0
+    ld1 {v4.s}[0], [x4], x2           // R1
+    ld1 {v5.s}[0], [x4]               // R2
+
+    //load v
+    ld1 {v8.s}[0], [x5], x2           // L2
+    ld1 {v9.s}[0], [x5], x2           // L1
+    ld1 {v10.s}[0], [x5], x2           // L0
+    ld1 {v11.s}[0], [x5], x2           // R0
+    ld1 {v12.s}[0], [x5], x2           // R1
+    ld1 {v13.s}[0], [x5]               // R2
+
+    //uv交织
+    zip1 v0.8b, v0.8b, v8.8b
+    zip1 v1.8b, v1.8b, v9.8b
+    zip1 v2.8b, v2.8b, v10.8b
+    zip1 v3.8b, v3.8b, v11.8b
+    zip1 v4.8b, v4.8b, v12.8b
+    zip1 v5.8b, v5.8b, v13.8b
 
     uxtl v0.8h, v0.8b               // L2
     uxtl v1.8h, v1.8b               // L1
@@ -876,10 +916,28 @@ function uavs3e_deblock_hor_chroma_arm64
     xtn v3.8b, v3.8h
     xtn v4.8b, v4.8h
 
-    st1 {v1.4h}, [x0], x1
-    st1 {v2.4h}, [x0], x1
-    st1 {v3.4h}, [x0], x1
-    st1 {v4.4h}, [x0]
+    uzp2 v8.8b, v1.8b, v1.8b        //v
+    uzp1 v1.8b, v1.8b, v1.8b        //u
+    uzp2 v9.8b, v2.8b, v2.8b        //v
+    uzp1 v2.8b, v2.8b, v2.8b        //u
+    uzp2 v10.8b, v3.8b, v3.8b       //v
+    uzp1 v3.8b, v3.8b, v3.8b        //u
+    uzp2 v11.8b, v4.8b, v4.8b       //v
+    uzp1 v4.8b, v4.8b, v4.8b        //u
+
+    st1 {v1.s}[0], [x0], x2
+    st1 {v2.s}[0], [x0], x2
+    st1 {v3.s}[0], [x0], x2
+    st1 {v4.s}[0], [x0]
+
+    st1 {v8.s}[0], [x1], x2
+    st1 {v9.s}[0], [x1], x2
+    st1 {v10.s}[0], [x1], x2
+    st1 {v11.s}[0], [x1]
+
+    ld1 {v8.2d, v9.2d, v10.2d, v11.2d}, [sp], #64
+    ld1 {v12.2d, v13.2d}, [sp], #32
+
 
     ret
 
@@ -1161,7 +1219,7 @@ deblock_hor_end:
 
 /*****************************************************************************************************
  *  void uavs3e_deblock_hor_chroma_arm64(pel *srcu, pel *srcv, int stride, int alpha_u, int beta_u, int alpha_v, int beta_v, int flt_flag)
- *  srcuv->x0, stride->x1, alpha_u->x2, beta_u->x3, alpha_v->x4, beta_v->x5, flt_flag->x6
+ *  srcu->x0, srcv->x1, stride->x2, alpha_u->x3, beta_u->x4, alpha_v->x5, beta_v->x6, flt_flag->x7
  ******************************************************************************************************/
 function uavs3e_deblock_hor_chroma_arm64
 
@@ -1612,7 +1670,7 @@ deblock_ver_filtered:
 
 /*****************************************************************************************************
  *  void uavs3e_deblock_ver_chroma_arm64(pel *srcu, pel *srcv, int stride, int alpha_u, int beta_u, int alpha_v, int beta_v, int flt_flag);
- *  SrcPtrU->x0, stride->x1, alpha_u->x2, beta_u->x3, alpha_v->x4, beta_v->x5, flt_flag->x6
+ *  SrcPtrU->x0, SrcPtrU->x1, stride->x2, alpha_u->x3, beta_u->x4, alpha_v->x5, beta_v->x6, flt_flag->x7
  ******************************************************************************************************/
 function uavs3e_deblock_ver_chroma_arm64
 
