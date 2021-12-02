@@ -48,6 +48,7 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.deblock_chroma[0] = uavs3e_deblock_ver_chroma_arm64;
     uavs3e_funs_handle.deblock_chroma[1] = uavs3e_deblock_hor_chroma_arm64;
 
+    uavs3e_funs_handle.alf      = uavs3e_alf_filter_block_arm64;
 
 #else
     uavs3e_funs_handle.itrans_dct2[1][1] = uavs3e_itrans_dct2_h4_w4_arm64;
@@ -137,6 +138,9 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.deblock_luma[1] = uavs3e_deblock_hor_luma_arm64;
     uavs3e_funs_handle.deblock_chroma[0] = uavs3e_deblock_ver_chroma_arm64;
     uavs3e_funs_handle.deblock_chroma[1] = uavs3e_deblock_hor_chroma_arm64;
+
+    uavs3e_funs_handle.alf      = uavs3e_alf_filter_block_arm64;
+
 
     /*
     int i;
