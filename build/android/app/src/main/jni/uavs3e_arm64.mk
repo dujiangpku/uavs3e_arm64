@@ -8,3 +8,4 @@ uavs3e_srcs_arm += $(ARM64_SRC_PATH)/itrans_dct2_arm64.S
 uavs3e_srcs_arm += $(ARM64_SRC_PATH)/itrans_dct8_dst7_arm64.S
 uavs3e_srcs_arm += $(ARM64_SRC_PATH)/inter_pred_arm64.S
 uavs3e_srcs_arm += $(ARM64_SRC_PATH)/deblock_arm64.S
+uavs3e_srcs_arm += $(ARM64_SRC_PATH)/alf_arm64.S
