@@ -79,13 +79,13 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.itrans_dct2[5][4] = uavs3e_itrans_dct2_h64_w32_arm64;
     uavs3e_funs_handle.itrans_dct2[5][5] = uavs3e_itrans_dct2_h64_w64_arm64;
 
-    uavs3e_funs_handle.itrans_dct8[1] = uavs3e_itrans_dct8_pb4_arm64;
-    uavs3e_funs_handle.itrans_dct8[2] = uavs3e_itrans_dct8_pb8_arm64;
-    uavs3e_funs_handle.itrans_dct8[3] = uavs3e_itrans_dct8_pb16_arm64;
+    uavs3e_funs_handle.itrans_dct8_dst7[0][1] = uavs3e_itrans_dct8_pb4_arm64;
+    uavs3e_funs_handle.itrans_dct8_dst7[0][2] = uavs3e_itrans_dct8_pb8_arm64;
+    uavs3e_funs_handle.itrans_dct8_dst7[0][3] = uavs3e_itrans_dct8_pb16_arm64;
 
-    uavs3e_funs_handle.itrans_dst7[1] = uavs3e_itrans_dst7_pb4_arm64;
-    uavs3e_funs_handle.itrans_dst7[2] = uavs3e_itrans_dst7_pb8_arm64;
-    uavs3e_funs_handle.itrans_dst7[3] = uavs3e_itrans_dst7_pb16_arm64;
+    uavs3e_funs_handle.itrans_dct8_dst7[1][1] = uavs3e_itrans_dst7_pb4_arm64;
+    uavs3e_funs_handle.itrans_dct8_dst7[1][2] = uavs3e_itrans_dst7_pb8_arm64;
+    uavs3e_funs_handle.itrans_dct8_dst7[1][3] = uavs3e_itrans_dst7_pb16_arm64;
 
     uavs3e_funs_handle.ipcpy[0] = uavs3e_if_cpy_w4_arm64;
     uavs3e_funs_handle.ipcpy[1] = uavs3e_if_cpy_w8_arm64;

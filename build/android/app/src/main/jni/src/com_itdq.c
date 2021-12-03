@@ -756,17 +756,17 @@ static void com_inv_trans(com_mode_t *mode, int plane, int blk_idx, s16 *coef_dq
             int max_tr_val = (1 << MAX_TX_DYNAMIC_RANGE) - 1;
             int min_tr_val = -(1 << MAX_TX_DYNAMIC_RANGE);
             if (blk_idx >> 1) { // DST7
-                uavs3e_funs_handle.itrans_dst7[cu_height_log2 - 1](coef_dq, coef_temp, shift1, 1 << cu_width_log2, max_tr_val, min_tr_val, g_tbl_itrans[DST7][cu_height_log2 - 1]);
+                uavs3e_funs_handle.itrans_dct8_dst7[1][cu_height_log2 - 1](coef_dq, coef_temp, shift1, 1 << cu_width_log2, max_tr_val, min_tr_val, g_tbl_itrans[DST7][cu_height_log2 - 1]);
             } else {
-                uavs3e_funs_handle.itrans_dct8[cu_height_log2 - 1](coef_dq, coef_temp, shift1, 1 << cu_width_log2, max_tr_val, min_tr_val, g_tbl_itrans[DCT8][cu_height_log2 - 1]);
+                uavs3e_funs_handle.itrans_dct8_dst7[0][cu_height_log2 - 1](coef_dq, coef_temp, shift1, 1 << cu_width_log2, max_tr_val, min_tr_val, g_tbl_itrans[DCT8][cu_height_log2 - 1]);
             }
             max_tr_val = (1 << bit_depth) - 1;
             min_tr_val = -(1 << bit_depth);
             if (blk_idx & 1) { // DST7
-                uavs3e_funs_handle.itrans_dst7[cu_width_log2 - 1](coef_temp, resi, shift2, 1 << cu_height_log2, max_tr_val, min_tr_val, g_tbl_itrans[DST7][cu_width_log2 - 1]);
+                uavs3e_funs_handle.itrans_dct8_dst7[1][cu_width_log2 - 1](coef_temp, resi, shift2, 1 << cu_height_log2, max_tr_val, min_tr_val, g_tbl_itrans[DST7][cu_width_log2 - 1]);
             }
             else {
-                uavs3e_funs_handle.itrans_dct8[cu_width_log2 - 1](coef_temp, resi, shift2, 1 << cu_height_log2, max_tr_val, min_tr_val, g_tbl_itrans[DCT8][cu_width_log2 - 1]);
+                uavs3e_funs_handle.itrans_dct8_dst7[0][cu_width_log2 - 1](coef_temp, resi, shift2, 1 << cu_height_log2, max_tr_val, min_tr_val, g_tbl_itrans[DCT8][cu_width_log2 - 1]);
             }
         } else {
             uavs3e_funs_handle.itrans_dct2[cu_height_log2 - 1][cu_width_log2 - 1](coef_dq, resi, bit_depth);
@@ -979,17 +979,17 @@ void uavs3e_funs_init_itrans_c()
     uavs3e_funs_handle.itrans_dct2[5][4] = itrans_dct2_h64_w32;
     uavs3e_funs_handle.itrans_dct2[5][5] = itrans_dct2_h64_w64;
 
-    uavs3e_funs_handle.itrans_dct8[1] = itx_dct8_pb4;
-    uavs3e_funs_handle.itrans_dct8[2] = itx_dct8_pb8;
-    uavs3e_funs_handle.itrans_dct8[3] = itx_dct8_pb16;
-    uavs3e_funs_handle.itrans_dct8[4] = itx_dct8_pb32;
-    uavs3e_funs_handle.itrans_dct8[5] = itx_dct8_pb64;
+    uavs3e_funs_handle.itrans_dct8_dst7[0][1] = itx_dct8_pb4;
+    uavs3e_funs_handle.itrans_dct8_dst7[0][2] = itx_dct8_pb8;
+    uavs3e_funs_handle.itrans_dct8_dst7[0][3] = itx_dct8_pb16;
+    uavs3e_funs_handle.itrans_dct8_dst7[0][4] = itx_dct8_pb32;
+    uavs3e_funs_handle.itrans_dct8_dst7[0][5] = itx_dct8_pb64;
 
-    uavs3e_funs_handle.itrans_dst7[1] = itx_dst7_pb4;
-    uavs3e_funs_handle.itrans_dst7[2] = itx_dst7_pb8;
-    uavs3e_funs_handle.itrans_dst7[3] = itx_dst7_pb16;
-    uavs3e_funs_handle.itrans_dst7[4] = itx_dst7_pb32;
-    uavs3e_funs_handle.itrans_dst7[5] = itx_dst7_pb64;
+    uavs3e_funs_handle.itrans_dct8_dst7[1][1] = itx_dst7_pb4;
+    uavs3e_funs_handle.itrans_dct8_dst7[1][2] = itx_dst7_pb8;
+    uavs3e_funs_handle.itrans_dct8_dst7[1][3] = itx_dst7_pb16;
+    uavs3e_funs_handle.itrans_dct8_dst7[1][4] = itx_dst7_pb32;
+    uavs3e_funs_handle.itrans_dct8_dst7[1][5] = itx_dst7_pb64;
 
     uavs3e_funs_handle.dquant[0] = com_dquant_wq;
     uavs3e_funs_handle.dquant[1] = com_dquant;
