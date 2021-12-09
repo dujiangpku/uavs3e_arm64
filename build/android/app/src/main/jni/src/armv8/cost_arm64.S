@@ -42,7 +42,7 @@
 
 #else
 //void uavs3e_get_sad_4_arm64(pel *p_org, int i_org, pel *pred, int i_pred, int height)
-//*p_org->x9, i_org->x1, p_pred->x2, i_pred->x3, height->x4
+//*p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, height->x4
 function uavs3e_get_sad_4_arm64
     lsl w1, w1, #1
     lsl w3, w3, #1
@@ -76,6 +76,10 @@ get_sad4_y:
     umov w0, v16.s[0]
 
     ret
+
+//void uavs3e_get_sad_8_arm64(pel *p_org, int i_org, pel *pred, int i_pred, int height)
+//*p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, height->x4
+
 
 #endif
 #endif
