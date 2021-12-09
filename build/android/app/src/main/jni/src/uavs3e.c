@@ -1632,7 +1632,7 @@ void uavs3e_load_default_cfg(enc_cfg_t *cfg)
     cfg->tscpm_enable        =   1;
     cfg->umve_enable         =   1;
     cfg->emvr_enable         =   1;
-    cfg->dt_enable           =   1;
+    cfg->dt_enable           =   0;
     cfg->sectrans_enable     =   1;
     cfg->pbt_enable          =   1;
     cfg->use_deblock         =   1;
