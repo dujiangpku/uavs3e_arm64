@@ -134,11 +134,12 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][4] = uavs3e_if_hor_ver_chroma_w32x_arm64;
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][5] = uavs3e_if_hor_ver_chroma_w32x_arm64;
 
-    uavs3e_funs_handle.intra_pred_dc        = uavs3e_intra_pred_dc_arm64;
+    //需要考虑dt
+    //uavs3e_funs_handle.intra_pred_dc        = uavs3e_intra_pred_dc_arm64;
     //uavs3e_funs_handle.intra_pred_bi        = ipred_bi;
     //uavs3e_funs_handle.intra_pred_plane     = ipred_plane;
-    uavs3e_funs_handle.intra_pred_hor       = uavs3e_intra_pred_hor_arm64;
-    uavs3e_funs_handle.intra_pred_ver       = uavs3e_intra_pred_ver_arm64;
+    //uavs3e_funs_handle.intra_pred_hor       = uavs3e_intra_pred_hor_arm64;
+    //uavs3e_funs_handle.intra_pred_ver       = uavs3e_intra_pred_ver_arm64;
     //uavs3e_funs_handle.intra_pred_bi_ipf    = ipred_bi_ipf;
     //uavs3e_funs_handle.intra_pred_plane_ipf = ipred_plane_ipf;
     //uavs3e_funs_handle.intra_pred_ipf_core  = ipf_core;
@@ -162,16 +163,17 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.cost_ssd[1] = uavs3e_get_ssd_8_arm64;
     uavs3e_funs_handle.cost_ssd[2] = uavs3e_get_ssd_16_arm64;
     uavs3e_funs_handle.cost_ssd[3] = uavs3e_get_ssd_32_arm64;
-    //uavs3e_funs_handle.cost_ssd[4] = uavs3e_get_ssd_64_arm64;
-    //uavs3e_funs_handle.cost_ssd[5] = uavs3e_get_ssd_128_arm64;
-/*
-    uavs3e_funs_handle.cost_sad_x3[0] = uavs3e_get_sad_x3_4_arm64;
-    uavs3e_funs_handle.cost_sad_x3[1] = uavs3e_get_sad_x3_8_arm64;
-    uavs3e_funs_handle.cost_sad_x3[2] = uavs3e_get_sad_x3_16_arm64;
-    uavs3e_funs_handle.cost_sad_x3[3] = uavs3e_get_sad_x3_32_arm64;
-    uavs3e_funs_handle.cost_sad_x3[4] = uavs3e_get_sad_x3_64_arm64;
-    uavs3e_funs_handle.cost_sad_x3[5] = uavs3e_get_sad_x3_128_arm64;
+    uavs3e_funs_handle.cost_ssd[4] = uavs3e_get_ssd_64_arm64;
+    uavs3e_funs_handle.cost_ssd[5] = uavs3e_get_ssd_128_arm64;
 
+    //uavs3e_funs_handle.cost_sad_x3[0] = uavs3e_get_sad_x3_4_arm64;
+    //uavs3e_funs_handle.cost_sad_x3[1] = uavs3e_get_sad_x3_8_arm64;
+    //uavs3e_funs_handle.cost_sad_x3[2] = uavs3e_get_sad_x3_16_arm64;
+    //uavs3e_funs_handle.cost_sad_x3[3] = uavs3e_get_sad_x3_32_arm64;
+    //uavs3e_funs_handle.cost_sad_x3[4] = uavs3e_get_sad_x3_64_arm64;
+    //uavs3e_funs_handle.cost_sad_x3[5] = uavs3e_get_sad_x3_128_arm64;
+
+    /*
     uavs3e_funs_handle.cost_sad_x4[0] = uavs3e_get_sad_x4_4_arm64;
     uavs3e_funs_handle.cost_sad_x4[1] = uavs3e_get_sad_x4_8_arm64;
     uavs3e_funs_handle.cost_sad_x4[2] = uavs3e_get_sad_x4_16_arm64;

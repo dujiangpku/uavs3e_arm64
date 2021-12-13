@@ -679,5 +679,267 @@ get_ssd_32_y:
 
 ret
 
+//void uavs3e_get_ssd_64_arm64(pel *p_org, int i_org, pel *pred, int i_pred, int height)
+//*p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, height->x4
+function uavs3e_get_ssd_64_arm64
+    lsl x1, x1, #1      //i_org
+    lsl x3, x3, #1      //i_pred
+    lsl x5, x1, #1      //2 * i_org
+    lsl x6, x3, #1      //2 * i_pred
+    movi v24.16b, #0
+
+
+get_ssd_64_y:
+    mov x7, x0
+    mov x8, x2
+
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x7], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x7], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x8], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x8], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    umlal v24.4s, v0.4h, v0.4h
+    umlal2 v24.4s, v0.8h, v0.8h
+    umlal v24.4s, v1.4h, v1.4h
+    umlal2 v24.4s, v1.8h, v1.8h
+    umlal v24.4s, v2.4h, v2.4h
+    umlal2 v24.4s, v2.8h, v2.8h
+    umlal v24.4s, v3.4h, v3.4h
+    umlal2 v24.4s, v3.8h, v3.8h
+    umlal v24.4s, v4.4h, v4.4h
+    umlal2 v24.4s, v4.8h, v4.8h
+    umlal v24.4s, v5.4h, v5.4h
+    umlal2 v24.4s, v5.8h, v5.8h
+    umlal v24.4s, v6.4h, v6.4h
+    umlal2 v24.4s, v6.8h, v6.8h
+    umlal v24.4s, v7.4h, v7.4h
+    umlal2 v24.4s, v7.8h, v7.8h
+
+    add x7, x0, #64
+    add x8, x2, #64
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x7], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x7], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x8], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x8], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    umlal v24.4s, v0.4h, v0.4h
+    umlal2 v24.4s, v0.8h, v0.8h
+    umlal v24.4s, v1.4h, v1.4h
+    umlal2 v24.4s, v1.8h, v1.8h
+    umlal v24.4s, v2.4h, v2.4h
+    umlal2 v24.4s, v2.8h, v2.8h
+    umlal v24.4s, v3.4h, v3.4h
+    umlal2 v24.4s, v3.8h, v3.8h
+    umlal v24.4s, v4.4h, v4.4h
+    umlal2 v24.4s, v4.8h, v4.8h
+    umlal v24.4s, v5.4h, v5.4h
+    umlal2 v24.4s, v5.8h, v5.8h
+    umlal v24.4s, v6.4h, v6.4h
+    umlal2 v24.4s, v6.8h, v6.8h
+    umlal v24.4s, v7.4h, v7.4h
+    umlal2 v24.4s, v7.8h, v7.8h
+
+    add x0, x0, x5
+    add x2, x2, x6
+
+    subs w4, w4, #2
+    bgt get_ssd_64_y
+
+    uaddlp v24.2d, v24.4s
+    addp v24.2d, v24.2d, v24.2d
+    mov x0, v24.d[0]
+
+ret
+
+//void uavs3e_get_ssd_128_arm64(pel *p_org, int i_org, pel *pred, int i_pred, int height)
+//*p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, height->x4
+function uavs3e_get_ssd_128_arm64
+    lsl x1, x1, #1      //i_org
+    lsl x3, x3, #1      //i_pred
+    lsl x5, x1, #1      //2 * i_org
+    lsl x6, x3, #1      //2 * i_pred
+    movi v24.16b, #0
+    movi v25.16b, #0
+
+
+get_ssd_128_y:
+    mov x7, x0
+    mov x8, x2
+
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x7], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x7], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x8], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x8], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    umlal v24.4s, v0.4h, v0.4h
+    umlal2 v24.4s, v0.8h, v0.8h
+    umlal v24.4s, v1.4h, v1.4h
+    umlal2 v24.4s, v1.8h, v1.8h
+    umlal v24.4s, v2.4h, v2.4h
+    umlal2 v24.4s, v2.8h, v2.8h
+    umlal v24.4s, v3.4h, v3.4h
+    umlal2 v24.4s, v3.8h, v3.8h
+    umlal v24.4s, v4.4h, v4.4h
+    umlal2 v24.4s, v4.8h, v4.8h
+    umlal v24.4s, v5.4h, v5.4h
+    umlal2 v24.4s, v5.8h, v5.8h
+    umlal v24.4s, v6.4h, v6.4h
+    umlal2 v24.4s, v6.8h, v6.8h
+    umlal v24.4s, v7.4h, v7.4h
+    umlal2 v24.4s, v7.8h, v7.8h
+
+    add x7, x0, #64
+    add x8, x2, #64
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x7], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x7], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x8], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x8], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    umlal v24.4s, v0.4h, v0.4h
+    umlal2 v24.4s, v0.8h, v0.8h
+    umlal v24.4s, v1.4h, v1.4h
+    umlal2 v24.4s, v1.8h, v1.8h
+    umlal v24.4s, v2.4h, v2.4h
+    umlal2 v24.4s, v2.8h, v2.8h
+    umlal v24.4s, v3.4h, v3.4h
+    umlal2 v24.4s, v3.8h, v3.8h
+    umlal v24.4s, v4.4h, v4.4h
+    umlal2 v24.4s, v4.8h, v4.8h
+    umlal v24.4s, v5.4h, v5.4h
+    umlal2 v24.4s, v5.8h, v5.8h
+    umlal v24.4s, v6.4h, v6.4h
+    umlal2 v24.4s, v6.8h, v6.8h
+    umlal v24.4s, v7.4h, v7.4h
+    umlal2 v24.4s, v7.8h, v7.8h
+
+    add x7, x0, #128
+    add x8, x2, #128
+
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x7], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x7], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x8], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x8], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    umlal v25.4s, v0.4h, v0.4h
+    umlal2 v25.4s, v0.8h, v0.8h
+    umlal v25.4s, v1.4h, v1.4h
+    umlal2 v25.4s, v1.8h, v1.8h
+    umlal v25.4s, v2.4h, v2.4h
+    umlal2 v25.4s, v2.8h, v2.8h
+    umlal v25.4s, v3.4h, v3.4h
+    umlal2 v25.4s, v3.8h, v3.8h
+    umlal v25.4s, v4.4h, v4.4h
+    umlal2 v25.4s, v4.8h, v4.8h
+    umlal v25.4s, v5.4h, v5.4h
+    umlal2 v25.4s, v5.8h, v5.8h
+    umlal v25.4s, v6.4h, v6.4h
+    umlal2 v25.4s, v6.8h, v6.8h
+    umlal v25.4s, v7.4h, v7.4h
+    umlal2 v25.4s, v7.8h, v7.8h
+
+    add x7, x0, #192
+    add x8, x2, #192
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x7], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x7], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x8], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x8], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    umlal v25.4s, v0.4h, v0.4h
+    umlal2 v25.4s, v0.8h, v0.8h
+    umlal v25.4s, v1.4h, v1.4h
+    umlal2 v25.4s, v1.8h, v1.8h
+    umlal v25.4s, v2.4h, v2.4h
+    umlal2 v25.4s, v2.8h, v2.8h
+    umlal v25.4s, v3.4h, v3.4h
+    umlal2 v25.4s, v3.8h, v3.8h
+    umlal v25.4s, v4.4h, v4.4h
+    umlal2 v25.4s, v4.8h, v4.8h
+    umlal v25.4s, v5.4h, v5.4h
+    umlal2 v25.4s, v5.8h, v5.8h
+    umlal v25.4s, v6.4h, v6.4h
+    umlal2 v25.4s, v6.8h, v6.8h
+    umlal v25.4s, v7.4h, v7.4h
+    umlal2 v25.4s, v7.8h, v7.8h
+
+    add x0, x0, x5
+    add x2, x2, x6
+
+    subs w4, w4, #2
+    bgt get_ssd_128_y
+
+    uaddl v26.2d, v24.2s, v25.2s
+    uaddl2 v27.2d, v24.4s, v25.4s
+    add v24.2d, v26.2d, v27.2d
+    addp v24.2d, v24.2d, v24.2d
+    mov x0, v24.d[0]
+
+ret
+
 #endif
 #endif
