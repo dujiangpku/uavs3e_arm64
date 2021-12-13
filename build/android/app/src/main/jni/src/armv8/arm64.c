@@ -152,11 +152,12 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.alf      = uavs3e_alf_filter_block_arm64;
 
     uavs3e_funs_handle.cost_sad[0] = uavs3e_get_sad_4_arm64;
-    //uavs3e_funs_handle.cost_sad[1] = uavs3e_get_sad_8_arm64;
-    //uavs3e_funs_handle.cost_sad[2] = uavs3e_get_sad_16_arm64;
-    //uavs3e_funs_handle.cost_sad[3] = uavs3e_get_sad_32_arm64;
-    //uavs3e_funs_handle.cost_sad[4] = uavs3e_get_sad_64_arm64;
-    //uavs3e_funs_handle.cost_sad[5] = uavs3e_get_sad_128_arm64;
+    uavs3e_funs_handle.cost_sad[1] = uavs3e_get_sad_8_arm64;
+    uavs3e_funs_handle.cost_sad[2] = uavs3e_get_sad_16_arm64;
+    uavs3e_funs_handle.cost_sad[3] = uavs3e_get_sad_32_arm64;
+    uavs3e_funs_handle.cost_sad[4] = uavs3e_get_sad_64_arm64;
+    uavs3e_funs_handle.cost_sad[5] = uavs3e_get_sad_128_arm64;
+    
 /*
     uavs3e_funs_handle.cost_sad_x3[0] = uavs3e_get_sad_x3_4_arm64;
     uavs3e_funs_handle.cost_sad_x3[1] = uavs3e_get_sad_x3_8_arm64;
@@ -171,13 +172,6 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.cost_sad_x4[3] = uavs3e_get_sad_x4_32_arm64;
     uavs3e_funs_handle.cost_sad_x4[4] = uavs3e_get_sad_x4_64_arm64;
     uavs3e_funs_handle.cost_sad_x4[5] = uavs3e_get_sad_x4_128_arm64;
-
-    uavs3e_funs_handle.cost_ssd[0] = uavs3e_get_ssd_4_arm64;
-    uavs3e_funs_handle.cost_ssd[1] = uavs3e_get_ssd_8_arm64;
-    uavs3e_funs_handle.cost_ssd[2] = uavs3e_get_ssd_16_arm64;
-    uavs3e_funs_handle.cost_ssd[3] = uavs3e_get_ssd_32_arm64;
-    uavs3e_funs_handle.cost_ssd[4] = uavs3e_get_ssd_64_arm64;
-    uavs3e_funs_handle.cost_ssd[5] = uavs3e_get_ssd_128_arm64;
 
     uavs3e_funs_handle.cost_satd[0][0] = uavs3e_had_4x4_arm64;
     uavs3e_funs_handle.cost_satd[1][0] = uavs3e_had_8x4_arm64;

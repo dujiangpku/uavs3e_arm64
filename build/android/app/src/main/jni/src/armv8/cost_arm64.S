@@ -48,7 +48,7 @@ function uavs3e_get_sad_4_arm64
     lsl w3, w3, #1
 
     movi v16.16b, #0
-get_sad4_y:
+get_sad_4_y:
     //load org
     ld1 {v0.d}[0], [x0], x1
     ld1 {v1.d}[0], [x0], x1
@@ -68,7 +68,7 @@ get_sad4_y:
     add v0.4s, v0.4s, v2.4s
     add v16.4s, v0.4s, v16.4s
     subs w4, w4, #4
-    bgt get_sad4_y
+    bgt get_sad_4_y
 
     addp v16.4s, v16.4s, v16.4s
     addp v16.4s, v16.4s, v16.4s
@@ -79,6 +79,421 @@ get_sad4_y:
 
 //void uavs3e_get_sad_8_arm64(pel *p_org, int i_org, pel *pred, int i_pred, int height)
 //*p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, height->x4
+function uavs3e_get_sad_8_arm64
+    lsl x1, x1, #1
+    lsl x3, x3, #1
+    movi v16.16b, #0
+
+get_sad_8_y:
+    //load org
+    ld1 {v0.8h}, [x0], x1
+    ld1 {v1.8h}, [x0], x1
+    ld1 {v2.8h}, [x0], x1
+    ld1 {v3.8h}, [x0], x1
+    //load pred
+    ld1 {v4.8h}, [x2], x3
+    ld1 {v5.8h}, [x2], x3
+    ld1 {v6.8h}, [x2], x3
+    ld1 {v7.8h}, [x2], x3
+    uabd v0.8h, v0.8h, v4.8h
+    uabd v1.8h, v1.8h, v5.8h
+    uabd v2.8h, v2.8h, v6.8h
+    uabd v3.8h, v3.8h, v7.8h
+    uaddl v17.4s, v0.4h, v1.4h
+    uaddl2 v18.4s, v0.8h, v1.8h
+    uaddl v19.4s, v2.4h, v3.4h
+    uaddl2 v20.4s, v2.8h, v3.8h
+    add v17.4s, v17.4s, v18.4s
+    add v19.4s, v19.4s, v20.4s
+    add v17.4s, v17.4s, v19.4s
+    add v16.4s, v16.4s, v17.4s
+    subs w4, w4, #4
+    bgt get_sad_8_y
+
+    addp v16.4s, v16.4s, v16.4s
+    addp v16.4s, v16.4s, v16.4s
+
+    mov x0, #0
+    umov w0, v16.s[0]
+
+ret
+
+//void uavs3e_get_sad_16_arm64(pel *p_org, int i_org, pel *pred, int i_pred, int height)
+//*p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, height->x4
+function uavs3e_get_sad_16_arm64
+    lsl x1, x1, #1
+    lsl x3, x3, #1
+    movi v26.16b, #0
+
+get_sad_16_y:
+    ld1 {v0.8h, v1.8h}, [x0], x1
+    ld1 {v2.8h, v3.8h}, [x0], x1
+    ld1 {v4.8h, v5.8h}, [x0], x1
+    ld1 {v6.8h, v7.8h}, [x0], x1
+    //load pred
+    ld1 {v16.8h, v17.8h}, [x2], x3
+    ld1 {v18.8h, v19.8h}, [x2], x3
+    ld1 {v20.8h, v21.8h}, [x2], x3
+    ld1 {v22.8h, v23.8h}, [x2], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    uaddl v24.4s, v0.4h, v1.4h
+    uaddl2 v25.4s, v0.8h, v1.8h
+    add v0.4s, v24.4s, v25.4s
+    uaddl v24.4s, v2.4h, v3.4h
+    uaddl2 v25.4s, v2.8h, v3.8h
+    add v1.4s, v24.4s, v25.4s
+    uaddl v24.4s, v4.4h, v5.4h
+    uaddl2 v25.4s, v4.8h, v5.8h
+    add v2.4s, v24.4s, v25.4s
+    uaddl v24.4s, v6.4h, v7.4h
+    uaddl2 v25.4s, v6.8h, v7.8h
+    add v3.4s, v24.4s, v25.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v2.4s
+    add v26.4s, v26.4s, v0.4s
+    subs w4, w4, #4
+    bgt get_sad_16_y
+
+    addp v26.4s, v26.4s, v26.4s
+    addp v26.4s, v26.4s, v26.4s
+
+    mov x0, #0
+    umov w0, v26.s[0]
+
+    ret
+
+//void uavs3e_get_sad_32_arm64(pel *p_org, int i_org, pel *pred, int i_pred, int height)
+//*p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, height->x4
+function uavs3e_get_sad_32_arm64
+    lsl x1, x1, #1
+    lsl x3, x3, #1
+    movi v26.16b, #0
+
+get_sad_32_y:
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x0], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x0], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x2], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x2], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    uaddl v24.4s, v0.4h, v1.4h
+    uaddl2 v25.4s, v0.8h, v1.8h
+    add v0.4s, v24.4s, v25.4s
+    uaddl v24.4s, v2.4h, v3.4h
+    uaddl2 v25.4s, v2.8h, v3.8h
+    add v1.4s, v24.4s, v25.4s
+    uaddl v24.4s, v4.4h, v5.4h
+    uaddl2 v25.4s, v4.8h, v5.8h
+    add v2.4s, v24.4s, v25.4s
+    uaddl v24.4s, v6.4h, v7.4h
+    uaddl2 v25.4s, v6.8h, v7.8h
+    add v3.4s, v24.4s, v25.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v2.4s
+    add v26.4s, v26.4s, v0.4s
+    subs w4, w4, #2
+    bgt get_sad_32_y
+
+    addp v26.4s, v26.4s, v26.4s
+    addp v26.4s, v26.4s, v26.4s
+
+    mov x0, #0
+    umov w0, v26.s[0]
+
+    ret
+
+//void uavs3e_get_sad_64_arm64(pel *p_org, int i_org, pel *pred, int i_pred, int height)
+//*p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, height->x4
+function uavs3e_get_sad_64_arm64
+    lsl x1, x1, #1      //i_org
+    lsl x3, x3, #1
+    lsl x7, x1, #1      //2 * i_org
+    lsl x8, x3, #1
+    movi v26.16b, #0
+
+get_sad_64_y:
+    mov x5, x0
+    mov x6, x2
+
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x5], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x5], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x6], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x6], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    uaddl v24.4s, v0.4h, v1.4h
+    uaddl2 v25.4s, v0.8h, v1.8h
+    add v0.4s, v24.4s, v25.4s
+    uaddl v24.4s, v2.4h, v3.4h
+    uaddl2 v25.4s, v2.8h, v3.8h
+    add v1.4s, v24.4s, v25.4s
+    uaddl v24.4s, v4.4h, v5.4h
+    uaddl2 v25.4s, v4.8h, v5.8h
+    add v2.4s, v24.4s, v25.4s
+    uaddl v24.4s, v6.4h, v7.4h
+    uaddl2 v25.4s, v6.8h, v7.8h
+    add v3.4s, v24.4s, v25.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v2.4s
+    add v26.4s, v26.4s, v0.4s
+
+    add x5, x0, #64
+    add x6, x2, #64
+
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x5], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x5], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x6], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x6], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    uaddl v24.4s, v0.4h, v1.4h
+    uaddl2 v25.4s, v0.8h, v1.8h
+    add v0.4s, v24.4s, v25.4s
+    uaddl v24.4s, v2.4h, v3.4h
+    uaddl2 v25.4s, v2.8h, v3.8h
+    add v1.4s, v24.4s, v25.4s
+    uaddl v24.4s, v4.4h, v5.4h
+    uaddl2 v25.4s, v4.8h, v5.8h
+    add v2.4s, v24.4s, v25.4s
+    uaddl v24.4s, v6.4h, v7.4h
+    uaddl2 v25.4s, v6.8h, v7.8h
+    add v3.4s, v24.4s, v25.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v2.4s
+    add v26.4s, v26.4s, v0.4s
+
+    add x0, x0, x7
+    add x2, x2, x8
+
+    subs w4, w4, #2
+    bgt get_sad_64_y
+
+    addp v26.4s, v26.4s, v26.4s
+    addp v26.4s, v26.4s, v26.4s
+
+    mov x0, #0
+    umov w0, v26.s[0]
+
+    ret
+
+//void uavs3e_get_sad_128_arm64(pel *p_org, int i_org, pel *pred, int i_pred, int height)
+//*p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, height->x4
+function uavs3e_get_sad_128_arm64
+    lsl x1, x1, #1      //i_org
+    lsl x3, x3, #1      //i_pred
+    lsl x7, x1, #1      //2 * i_org
+    lsl x8, x3, #1      //i_pred
+    movi v26.16b, #0
+
+get_sad_128_y:
+    mov x5, x0
+    mov x6, x2
+
+    //load p_org
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x5], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x5], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x6], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x6], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    uaddl v24.4s, v0.4h, v1.4h
+    uaddl2 v25.4s, v0.8h, v1.8h
+    add v0.4s, v24.4s, v25.4s
+    uaddl v24.4s, v2.4h, v3.4h
+    uaddl2 v25.4s, v2.8h, v3.8h
+    add v1.4s, v24.4s, v25.4s
+    uaddl v24.4s, v4.4h, v5.4h
+    uaddl2 v25.4s, v4.8h, v5.8h
+    add v2.4s, v24.4s, v25.4s
+    uaddl v24.4s, v6.4h, v7.4h
+    uaddl2 v25.4s, v6.8h, v7.8h
+    add v3.4s, v24.4s, v25.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v2.4s
+    add v26.4s, v26.4s, v0.4s
+
+    add x5, x0, #64
+    add x6, x2, #64
+
+    //load p_org + 64
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x5], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x5], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x6], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x6], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    uaddl v24.4s, v0.4h, v1.4h
+    uaddl2 v25.4s, v0.8h, v1.8h
+    add v0.4s, v24.4s, v25.4s
+    uaddl v24.4s, v2.4h, v3.4h
+    uaddl2 v25.4s, v2.8h, v3.8h
+    add v1.4s, v24.4s, v25.4s
+    uaddl v24.4s, v4.4h, v5.4h
+    uaddl2 v25.4s, v4.8h, v5.8h
+    add v2.4s, v24.4s, v25.4s
+    uaddl v24.4s, v6.4h, v7.4h
+    uaddl2 v25.4s, v6.8h, v7.8h
+    add v3.4s, v24.4s, v25.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v2.4s
+    add v26.4s, v26.4s, v0.4s
+
+    add x5, x0, #128
+    add x6, x2, #128
+
+    //load p_org + 128
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x5], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x5], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x6], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x6], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    uaddl v24.4s, v0.4h, v1.4h
+    uaddl2 v25.4s, v0.8h, v1.8h
+    add v0.4s, v24.4s, v25.4s
+    uaddl v24.4s, v2.4h, v3.4h
+    uaddl2 v25.4s, v2.8h, v3.8h
+    add v1.4s, v24.4s, v25.4s
+    uaddl v24.4s, v4.4h, v5.4h
+    uaddl2 v25.4s, v4.8h, v5.8h
+    add v2.4s, v24.4s, v25.4s
+    uaddl v24.4s, v6.4h, v7.4h
+    uaddl2 v25.4s, v6.8h, v7.8h
+    add v3.4s, v24.4s, v25.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v2.4s
+    add v26.4s, v26.4s, v0.4s
+
+    add x5, x0, #192
+    add x6, x2, #192
+
+    //load p_org + 196
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x5], x1
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x5], x1
+    //load pred
+    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x6], x3
+    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x6], x3
+
+    uabd v0.8h, v0.8h, v16.8h
+    uabd v1.8h, v1.8h, v17.8h
+    uabd v2.8h, v2.8h, v18.8h
+    uabd v3.8h, v3.8h, v19.8h
+    uabd v4.8h, v4.8h, v20.8h
+    uabd v5.8h, v5.8h, v21.8h
+    uabd v6.8h, v6.8h, v22.8h
+    uabd v7.8h, v7.8h, v23.8h
+
+    uaddl v24.4s, v0.4h, v1.4h
+    uaddl2 v25.4s, v0.8h, v1.8h
+    add v0.4s, v24.4s, v25.4s
+    uaddl v24.4s, v2.4h, v3.4h
+    uaddl2 v25.4s, v2.8h, v3.8h
+    add v1.4s, v24.4s, v25.4s
+    uaddl v24.4s, v4.4h, v5.4h
+    uaddl2 v25.4s, v4.8h, v5.8h
+    add v2.4s, v24.4s, v25.4s
+    uaddl v24.4s, v6.4h, v7.4h
+    uaddl2 v25.4s, v6.8h, v7.8h
+    add v3.4s, v24.4s, v25.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v2.4s
+    add v26.4s, v26.4s, v0.4s
+
+    add x0, x0, x7
+    add x2, x2, x8
+
+    subs w4, w4, #2
+    bgt get_sad_128_y
+
+    addp v26.4s, v26.4s, v26.4s
+    addp v26.4s, v26.4s, v26.4s
+
+    mov x0, #0
+    umov w0, v26.s[0]
+
+    ret
 
 
 #endif
