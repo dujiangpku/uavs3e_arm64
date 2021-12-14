@@ -3319,10 +3319,11 @@ function uavs3e_intra_pred_ver_arm64
     //branch
     cmp w3, #16
     beq intra_pred_ver_w16
-    bgt intra_pred_ver_w32x
+    bgt intra_pred_ver_w24x
 
     cmp w3, #8
     beq intra_pred_ver_w8
+    bgt intra_pred_ver_w12
 
 //intra_pred_ver_w4:
 
@@ -3332,8 +3333,7 @@ intra_pred_ver_w4_y:
     st1 {v0.4h}, [x1], x2
     st1 {v0.4h}, [x1], x2
     st1 {v0.4h}, [x1], x2
-    sub w4, w4, #4
-    cmp w4, #0
+    subs w4, w4, #4
     bgt intra_pred_ver_w4_y
 
     b intra_pred_ver_end
@@ -3346,9 +3346,26 @@ intra_pred_ver_w8_y:
     st1 {v0.8h}, [x1], x2
     st1 {v0.8h}, [x1], x2
     st1 {v0.8h}, [x1], x2
-    sub w4, w4, #4
-    cmp w4, #0
+    subs w4, w4, #4
     bgt intra_pred_ver_w8_y
+
+    b intra_pred_ver_end
+
+intra_pred_ver_w12:
+    ld1 {v0.8h}, [x0], #16          // load src[x]
+    ld1 {v1.8h}, [x0]
+    sub x2, x2, #16
+intra_pred_ver_w12_y:
+    st1 {v0.8h}, [x1], #16      // store dst[x]
+    st1 {v1.4h}, [x1], x2
+    st1 {v0.8h}, [x1], #16
+    st1 {v1.4h}, [x1], x2
+    st1 {v0.8h}, [x1], #16
+    st1 {v1.4h}, [x1], x2
+    st1 {v0.8h}, [x1], #16
+    st1 {v1.4h}, [x1], x2
+    subs w4, w4, #4
+    bgt intra_pred_ver_w12_y
 
     b intra_pred_ver_end
 
@@ -3360,28 +3377,57 @@ intra_pred_ver_w16_y:
     st1 {v0.8h, v1.8h}, [x1], x2
     st1 {v0.8h, v1.8h}, [x1], x2
     st1 {v0.8h, v1.8h}, [x1], x2
-    sub w4, w4, #4
-    cmp w4, #0
+    subs w4, w4, #4
     bgt intra_pred_ver_w16_y
 
     b intra_pred_ver_end
 
-intra_pred_ver_w32x:
-    cmp w3, #64
-    beq intra_pred_ver_w64
+intra_pred_ver_w24x:
+    cmp w3, #48
+    bgt intra_pred_ver_w64
+    beq intra_pred_ver_w48
+
+    cmp w3, #32
+    beq intra_pred_ver_w32
+
+    ld1 {v0.8h, v1.8h, v2.8h}, [x0]      // load src[x]
+intra_pred_ver_w24_y:
+    st1 {v0.8h, v1.8h, v2.8h}, [x1], x2  // store dst[x]
+    st1 {v0.8h, v1.8h, v2.8h}, [x1], x2
+    st1 {v0.8h, v1.8h, v2.8h}, [x1], x2
+    st1 {v0.8h, v1.8h, v2.8h}, [x1], x2
+    subs w4, w4, #4
+    bgt intra_pred_ver_w24_y
+
+    b intra_pred_ver_end
 
 intra_pred_ver_w32:
-
     ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x0]      // load src[x]
 intra_pred_ver_w32_y:
     st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x1], x2  // store dst[x]
     st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x1], x2
     st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x1], x2
     st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x1], x2
-    sub w4, w4, #4
-    cmp w4, #0
+    subs w4, w4, #4
     bgt intra_pred_ver_w32_y
 
+    b intra_pred_ver_end
+
+intra_pred_ver_w48:
+    sub x2, x2, #64
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x0], #64	    // load src[x]
+    ld1 {v4.8h, v5.8h}, [x0]
+intra_pred_ver_w48_y:
+    st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x1], #64  // store dst[x]
+    st1 {v4.8h, v5.8h}, [x1], x2
+    st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x1], #64  // store dst[x]
+    st1 {v4.8h, v5.8h}, [x1], x2
+    st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x1], #64  // store dst[x]
+    st1 {v4.8h, v5.8h}, [x1], x2
+    st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x1], #64  // store dst[x]
+    st1 {v4.8h, v5.8h}, [x1], x2
+    subs w4, w4, #4
+    bgt intra_pred_ver_w48_y
     b intra_pred_ver_end
 
 intra_pred_ver_w64:
@@ -3397,8 +3443,7 @@ intra_pred_ver_w64_y:
     st1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x1], x2
     st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x1], #64  // store dst[x]
     st1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x1], x2
-    sub w4, w4, #4
-    cmp w4, #0
+    subs w4, w4, #4
     bgt intra_pred_ver_w64_y
 
 intra_pred_ver_end:
@@ -3413,13 +3458,13 @@ function uavs3e_intra_pred_hor_arm64
     lsl x2, x2, #1
     cmp w3, #16
     beq intra_pred_hor_w16
-    bgt intra_pred_hor_w32x
+    bgt intra_pred_hor_w24x
 
     cmp w3, #8
     beq intra_pred_hor_w8
+    bgt intra_pred_hor_w12
 
 //intra_pred_hor_w4:
-
     sub x0, x0, #6
 intra_pred_hor_w4_y:
     ld1 {v4.d}[0], [x0]             // load src[-y]
@@ -3455,6 +3500,34 @@ intra_pred_hor_w8_y:
 
     b intra_pred_hor_end
 
+intra_pred_hor_w12:
+    sub x0, x0, #6
+    sub x2, x2, #16
+intra_pred_hor_w12_y:
+    ld1 {v16.d}[0], [x0]             // load src[-y]
+    dup v0.8h, v16.h[3]
+    dup v2.8h, v16.h[2]
+    subs w4, w4, #4
+    sub x0, x0, #8
+    dup v4.8h, v16.h[1]
+    dup v6.8h, v16.h[0]
+    mov v1.16b, v0.16b
+    mov v3.16b, v2.16b
+    mov v5.16b, v4.16b
+    mov v7.16b, v6.16b
+
+    st1 {v0.8h}, [x1], #16         // store dst[x]
+    st1 {v1.4h}, [x1], x2
+    st1 {v2.8h}, [x1], #16
+    st1 {v3.4h}, [x1], x2
+    st1 {v4.8h}, [x1], #16
+    st1 {v5.4h}, [x1], x2
+    st1 {v6.8h}, [x1], #16
+    st1 {v7.4h}, [x1], x2
+    bgt intra_pred_hor_w12_y
+
+    b intra_pred_hor_end
+
 intra_pred_hor_w16:
     sub x0, x0, #6
 intra_pred_hor_w16_y:
@@ -3478,9 +3551,40 @@ intra_pred_hor_w16_y:
 
     b intra_pred_hor_end
 
-intra_pred_hor_w32x:
-    cmp w3, #64
-    beq intra_pred_hor_w64
+intra_pred_hor_w24x:
+    cmp w3, #48
+    bgt intra_pred_hor_w64
+    beq intra_pred_hor_w48
+
+    cmp w3, #32
+    beq intra_pred_hor_w32
+
+intra_pred_hor_w24:
+    sub x0, x0, #6
+    sub x2, x2, #32
+intra_pred_hor_w24_y:
+    ld1 {v16.d}[0], [x0]            // load rpSrc[-y]
+    dup v0.8h, v16.h[3]
+    dup v2.8h, v16.h[2]
+    dup v4.8h, v16.h[1]
+    dup v6.8h, v16.h[0]
+    mov v1.16b, v0.16b
+    mov v3.16b, v2.16b
+    mov v5.16b, v4.16b
+    mov v7.16b, v6.16b
+    st1 {v0.8h, v1.8h}, [x1], #32 // store dst[x]
+    st1 {v0.8h}, [x1], x2
+    st1 {v2.8h, v3.8h}, [x1], #32
+    st1 {v2.8h}, [x1], x2
+    sub x0, x0, #8
+    subs w4, w4, #4
+    st1 {v4.8h, v5.8h}, [x1], #32
+    st1 {v4.8h}, [x1], x2
+    st1 {v6.8h, v7.8h}, [x1], #32
+    st1 {v6.8h}, [x1], x2
+    bgt intra_pred_hor_w24_y
+
+    b intra_pred_hor_end
 
 intra_pred_hor_w32:
     sub x0, x0, #6
@@ -3506,6 +3610,37 @@ intra_pred_hor_w32_y:
     st1 {v6.8h, v7.8h}, [x1], #32
     st1 {v6.8h, v7.8h}, [x1], x2
     bgt intra_pred_hor_w32_y
+
+    b intra_pred_hor_end
+
+intra_pred_hor_w48:
+    sub x0, x0, #6
+    sub x2, x2, #64
+    intra_pred_hor_w48_y:
+    ld1 {v16.d}[0], [x0]            // load rpSrc[-y]
+    dup v0.8h, v16.h[3]
+    dup v2.8h, v16.h[2]
+    dup v4.8h, v16.h[1]
+    dup v6.8h, v16.h[0]
+    mov v1.16b, v0.16b
+    mov v3.16b, v2.16b
+    mov v5.16b, v4.16b
+    mov v7.16b, v6.16b
+    sub x0, x0, #8
+    st1 {v0.8h, v1.8h}, [x1], #32 // store dst[x]
+    st1 {v0.8h, v1.8h}, [x1], #32
+    st1 {v0.8h, v1.8h}, [x1], x2
+    st1 {v2.8h, v3.8h}, [x1], #32
+    st1 {v2.8h, v3.8h}, [x1], #32
+    st1 {v2.8h, v3.8h}, [x1], x2
+    subs w4, w4, #4
+    st1 {v4.8h, v5.8h}, [x1], #32
+    st1 {v4.8h, v5.8h}, [x1], #32
+    st1 {v4.8h, v5.8h}, [x1], x2
+    st1 {v6.8h, v7.8h}, [x1], #32
+    st1 {v6.8h, v7.8h}, [x1], #32
+    st1 {v6.8h, v7.8h}, [x1], x2
+    bne intra_pred_hor_w48_y
 
     b intra_pred_hor_end
 
@@ -3541,7 +3676,6 @@ intra_pred_hor_w64:
     st1 {v6.8h, v7.8h}, [x1], #32
     st1 {v6.8h, v7.8h}, [x1], x2
     bne intra_pred_hor_w64_y
-    b intra_pred_hor_end
 
 intra_pred_hor_end:
     ret
