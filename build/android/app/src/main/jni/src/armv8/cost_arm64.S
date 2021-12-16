@@ -2924,7 +2924,7 @@ get_sad_x4_128_y:
     add x9, x2, #64
     add x10, x3, #64
     add x11, x4, #64
-    add x12, x4, #64
+    add x12, x5, #64
     //load p_org
     ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x8], x1
     ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x8], x1
@@ -3052,7 +3052,7 @@ get_sad_x4_128_y:
     add x9, x2, #128
     add x10, x3, #128
     add x11, x4, #128
-    add x12, x4, #128
+    add x12, x5, #128
     //load p_org
     ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x8], x1
     ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x8], x1
@@ -3329,6 +3329,11 @@ get_sad_x4_128_y:
 
 ret
 
+//void uavs3e_had_4x4_arm64(pel *org, int s_org, pel *cur, int s_cur)
+//*org->x1, s_org->x2, *cur->x3, s_cur->x4
+function uavs3e_had_4x4_arm64
+
+ret
 
 #endif
 #endif
