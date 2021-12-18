@@ -135,8 +135,8 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.ipflt_ext[IPFILTER_EXT_4][5] = uavs3e_if_hor_ver_chroma_w32x_arm64;
 
     uavs3e_funs_handle.intra_pred_dc        = uavs3e_intra_pred_dc_arm64;
-    //uavs3e_funs_handle.intra_pred_bi        = ipred_bi;
-    //uavs3e_funs_handle.intra_pred_plane     = ipred_plane;
+    //uavs3e_funs_handle.intra_pred_bi        = uavs3e_intra_pred_bi_arm64;
+    uavs3e_funs_handle.intra_pred_plane     = uavs3e_intra_pred_plane_arm64;
     uavs3e_funs_handle.intra_pred_hor       = uavs3e_intra_pred_hor_arm64;
     uavs3e_funs_handle.intra_pred_ver       = uavs3e_intra_pred_ver_arm64;
     //uavs3e_funs_handle.intra_pred_bi_ipf    = ipred_bi_ipf;
