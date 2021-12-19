@@ -92,10 +92,9 @@ recon_w4_end:
 
 /******************************************************************************************************
 *  void uavs3e_recon_w8_arm64(s16 *resi, pel *pred, int i_pred, int width, int height, pel *rec, int i_rec, int cbf, int bit_depth)
-*  resi->x0, pred->x1, i_pred->x2, width->x3, height->x4, rec->x5, i_rec->x6, int cbf->x7, int bit_depth->
+*  resi->x0, pred->x1, i_pred->x2, width->x3, height->x4, rec->x5, i_rec->x6, int cbf->x7
 ******************************************************************************************************/
 function uavs3e_recon_w8_arm64
-    //ldr w8, [sp]
 
     //max_val = (1 << bit_depth) - 1;
     mov w9, #1
