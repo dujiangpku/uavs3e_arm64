@@ -85,6 +85,7 @@ void uavs3e_ipred_bi_arm64(pel *src, pel *dst, int i_dst, int width, int height,
 void uavs3e_ipred_hor_arm64(pel *src, pel *dst, int i_dst, int width, int height);
 void uavs3e_ipred_ver_arm64(pel *src, pel *dst, int i_dst, int width, int height);
 
+// 徐陈缘的部分
 void uavs3e_ipred_ang_x_arm64(pel *pSrc, pel *dst, int i_dst, int uiDirMode, int iWidth, int iHeight);
 void uavs3e_ipred_ang_y_arm64(pel *pSrc, pel *dst, int i_dst, int uiDirMode, int iWidth, int iHeight);
 

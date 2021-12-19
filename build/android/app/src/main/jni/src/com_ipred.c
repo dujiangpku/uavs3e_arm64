@@ -842,6 +842,7 @@ void com_intra_get_mpm(int x_scu, int y_scu, com_scu_t *map_scu, s8 *map_ipm, in
     }
 }
 
+//徐陈缘的部分
 static void ipred_ang_x(pel *src, pel *dst, int i_dst, int mode, int width, int height)
 {
     int i, j;
@@ -1001,6 +1002,7 @@ static void ipred_ang_x_10(pel *pSrc, pel *dst, int i_dst, int uiDirMode, int iW
     }
 }
 
+// 徐陈缘的部分
 static void xPredIntraAngAdi_Y(pel *pSrc, pel *dst, int i_dst, int uiDirMode, int iWidth, int iHeight)
 {
     int i, j;
@@ -1144,6 +1146,7 @@ static void xPredIntraAngAdi_Y_32(pel *pSrc, pel *dst, int i_dst, int uiDirMode,
     }
 }
 
+// 徐陈缘的部分
 static void ipred_ang_xy(pel *pSrc, pel *dst, int i_dst, int uiDirMode, int iWidth, int iHeight)
 {
     int i, j;
