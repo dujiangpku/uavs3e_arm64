@@ -4015,6 +4015,304 @@ intra_pred_dc_fillblock_w64_y:
 intra_pred_dc_end:
     ret
 
+
+intra_plane_mul_shift:
+.byte 13, 7, 17, 10, 5, 11, 11, 15, 23, 19
+
+intra_plane_coef:
+.byte 8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, \
+      16, 17, 14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1
+
+//void uavs3e_intra_pred_plane_arm64(pel *src, pel *dst, int i_dst, int width, int height, int bit_depth)
+//src->x0, dst->x1, i_dst->x2, width->x3, height->x4, bit_depth->x5
+function uavs3e_intra_pred_plane_arm64
+
+    sub sp, sp, #16
+    stp x19, x20, [sp]
+
+    mov x9, #61
+    clz x7, x3
+    clz x8, x4
+    sub x15, x9, x7  					// idx_w = tab_log2[width] - 2
+    sub x14, x9, x8					    // idx_h = tab_log2[height] - 2
+
+    movi v6.2s, #0
+    movi v7.2s, #0
+
+    adr x19, intra_plane_mul_shift
+    lsl w15, w15, #1
+    add x15, x19, x15					// im_h, is_h
+    ld2 {v6.b, v7.b}[0], [x15]
+
+    lsl w14, w14, #1
+    add x14, x19, x14					// im_v, is_v
+    ld2 {v6.b, v7.b}[4], [x14]
+
+    lsr x10, x3, #1						// iW2 = width >> 1;
+    lsr x11, x4, #1						// iH2 = height >> 1;
+
+    add x19, x0, x3					// rpSrc = pSrc + 1;  rpSrc += (iW2 - 1); 注意这里加了两倍的iW2
+
+    mov x9, #1
+    lsl x9, x9, x5
+    sub x9, x9, #1                // max_val = 1 << bit_depth) - 1
+
+    cmp x10, #4
+    beq intra_pred_plane_coef_h_loop4
+    bgt intra_pred_plane_coef_h_loop8
+
+// intra_pred_plane_coef_h_loop2
+
+    ldrh w12, [x19, #2]
+    ldrh w13, [x19, #-2]
+    sub w14, w12, w13
+    ldrh w12, [x19, #4]
+    ldrh w13, [x19, #-4]
+    sub w15, w12, w13
+    lsl w15, w15, #1
+    add w5, w14, w15
+    movi v4.4s, #0
+    mov v4.s[0], w5                 // v4: coef_h
+    b intra_pred_plane_coef_h_end
+
+intra_pred_plane_coef_h_loop4:
+//.byte 8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+//.byte 16,17,14,15,12,13,10,11, 8,9,6,7,4,5,2,3, 0,1
+    adr x12, intra_plane_coef
+    add x12, x12, #4
+    ld1 {v2.8b}, [x12]
+    uxtl v3.8h, v2.8b               // 获得x：4, 3, 2, 1
+
+    add x12, x12, #36               // 获得查表索引index
+    ld1 {v2.8b}, [x12]			    // 89,67,45,23
+
+    ld1 {v0.8h}, [x19]              // rsrc[0,1,2,3,4,5,6,7]
+    sub x19, x19, #8
+    ld1 {v1.4h}, [x19]              // rsrc[-4,-3,-2,-1]            v1.4h
+    tbl v0.8b, {v0.16b}, v2.8b      // rsrc[ 4, 3, 2, 1, ...]       v0.4h
+//    rev16 v0.8b, v0.8b              // 大小端问题：调整顺序
+
+    sub v0.4h, v0.4h, v1.4h
+    smull v4.4s, v0.4h, v3.4h
+
+    b intra_pred_plane_coef_h_end
+
+intra_pred_plane_coef_h_loop8:
+
+    mov w13, w10
+
+    adr x12, intra_plane_coef
+    ld1 {v2.8b}, [x12]			        // 获得x：8, 7, 6, 5, 4, 3, 2, 1
+    uxtl v3.8h, v2.8b
+
+    add x12, x12, #34               // 获得查表索引14 15,12 13,10 11,89,67,45,23,01
+    ld1 {v2.16b}, [x12]
+
+    movi v4.4s, #0
+    movi v16.8h, #8
+    sub x20, x19, #16
+    add x19, x19, #2
+
+intra_pred_plane_coef_h_loop8_x:
+
+    ld1 {v0.8h}, [x19]             // rsrc[1,2,3,4,5,6,7,8]
+    ld1 {v1.8h}, [x20]              // rsrc[-8,-7,-6,-5,-4,-3,-2,-1]        v1.8h
+    tbl v0.16b, {v0.16b}, v2.16b    // rsrc[ 8, 7, 6, 5, 4, 3, 2, 1]        v0.8h
+
+    sub v0.8h, v0.8h, v1.8h
+    smlal v4.4s, v0.4h, v3.4h
+    smlal2 v4.4s, v0.8h, v3.8h      // sum of 8 values
+
+    add v3.8h, v3.8h, v16.8h        // x = 16, 15, 14, ..., 9
+    subs w13, w13, #8               // iw2 -= 8
+    add x19, x19, #16               // rsrc += 8
+    sub x20, x20, #16
+    bgt intra_pred_plane_coef_h_loop8_x
+
+//v4 -> coef_h
+intra_pred_plane_coef_h_end:
+
+    sub x19, x0, x4					// rpSrc = pSrc - 1;  rpSrc -= (iH2 - 1); 注意这里减了两倍的iH2
+
+    cmp x11, #4
+    beq intra_pred_plane_coef_v_loop4
+    bgt intra_pred_plane_coef_v_loop8
+
+// intra_pred_plane_coef_v_loop2
+
+    ldrh w12, [x19, #2]
+    ldrh w13, [x19, #-2]
+    sub w14, w13, w12
+    ldrh w12, [x19, #4]
+    ldrh w13, [x19, #-4]
+    sub w15, w13, w12
+    lsl w15, w15, #1
+    add w5, w14, w15
+    movi v5.4s, #0
+    mov v5.s[1], w5
+    b intra_pred_plane_coef_v_end
+
+intra_pred_plane_coef_v_loop4:
+
+    adr x12, intra_plane_coef
+    add x12, x12, #4
+    ld1 {v2.8b}, [x12]			// 4, 3, 2, 1
+    uxtl v3.8h, v2.8b
+
+    add x12, x12, #36               // 获得查表索引index
+    ld1 {v2.8b}, [x12]			    // 89,67,45,23
+
+    ld1 {v0.8h}, [x19]
+    sub x19, x19, #8
+    ld1 {v1.4h}, [x19]
+    tbl v0.8b, {v0.16b}, v2.8b
+
+    sub v0.4h, v1.4h, v0.4h
+    smull v5.4s, v0.4h, v3.4h
+
+    b intra_pred_plane_coef_v_end
+
+intra_pred_plane_coef_v_loop8:
+
+    mov w13, w11
+
+    adr x12, intra_plane_coef
+    ld1 {v2.8b}, [x12]			// 8, 7, 6, 5, 4, 3, 2, 1
+    uxtl v3.8h, v2.8b
+
+    add x12, x12, #34               // 获得查表索引14 15,12 13,10 11,89,67,45,23,01
+    ld1 {v2.16b}, [x12]
+
+    movi v5.4s, #0
+    movi v16.8h, #8
+    sub x20, x19, #16
+    add x19, x19, #2
+
+intra_pred_plane_coef_v_loop8_x:
+
+    ld1 {v0.8h}, [x19]
+    ld1 {v1.8h}, [x20]
+    tbl v0.16b, {v0.16b}, v2.16b
+
+    sub v0.8h, v1.8h, v0.8h
+    smlal v5.4s, v0.4h, v3.4h
+    smlal2 v5.4s, v0.8h, v3.8h
+
+    add v3.8h, v3.8h, v16.8h
+    subs w13, w13, #8
+    add x19, x19, #16
+    sub x20, x20, #16
+    bgt intra_pred_plane_coef_v_loop8_x
+
+//v5 -> coef_v
+intra_pred_plane_coef_v_end:
+
+    addp v4.4s, v4.4s, v5.4s
+    addp v4.4s, v4.4s, v4.4s      // v4.4s[0]->coef_h; v4.4s[1]->coef_v;
+
+    // iA = (pSrc[-1 - (height - 1)] + pSrc[1 + width - 1]) << 4
+    sub x6, x0, x4
+    sub x6, x6, x4                  // todo：这里能不能一次减俩？
+    ldrh w7, [x6]
+    add x6, x0, x3
+    add x6, x6, x3
+    ldrh w8, [x6]
+    add w6, w7, w8
+    lsl w6, w6, #4
+
+    // iB = ((coef_h << 5) * im_h + (1 << (is_h - 1))) >> is_h;
+    // iC = ((coef_v << 5) * im_v + (1 << (is_v - 1))) >> is_v;
+    shl v4.2s, v4.2s, #5
+    mul v4.2s, v4.2s, v6.2s
+    neg v7.2s, v7.2s
+    srshl v4.2s, v4.2s, v7.2s
+    umov w12, v4.s[0]
+    umov w13, v4.s[1]
+    dup v30.8h, w12				//v30->iB
+    dup v31.8h, w13				//v31->iC
+
+    // iTmp = iA - (iH2 - 1) * iC - (iW2 - 1) * iB + 16
+    sub w10, w10, #1
+    sub w11, w11, #1
+    mul w10, w10, w12
+    mul w11, w11, w13
+    sub w6, w6, w10
+    sub w6, w6, w11
+    add w6, w6, #16
+    dup v0.8h, w6				// v0->iTmp
+
+//.byte 8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+//.byte 16,17,14,15,12,13,10,11, 8,9,6,7,4,5,2,3, 0,1
+    adr x12, intra_plane_coef
+    add x12, x12, #8
+    ld1 {v2.8b}, [x12]			// 0, 1, 2, 3, 4, 5, 6, 7
+    lsl x2, x2, #1              // i_dst << 1
+
+    cmp x3, #4
+    bne intra_pred_plane_fill_loop8
+
+//intra_pred_plane_fill_loop4:
+
+    sxtl v2.8h, v2.8b
+    mul v30.4h, v30.4h, v2.4h   // 0, b, 2b, 3b
+
+    movi v28.4h, #0			//max and min val
+    dup v29.4h, w9
+
+    add v0.4h, v0.4h, v30.4h    // temp, temp + b, temp + 2b, temp + 3b
+intra_pred_plane_fill_loop4_y:
+
+// dst[x] = Clip3(0, vmax, iTmp2 >> 5);
+    sshr v1.4h, v0.4h, #5
+    smax v1.4h, v1.4h, v28.4h
+    smin v1.4h, v1.4h, v29.4h
+//    xtn v1.8b, v1.8h
+    st1 {v1.4h}, [x1], x2
+
+    subs w4, w4, #1
+    add v0.4h, v0.4h, v31.4h   //iTmp += iC;
+    bgt intra_pred_plane_fill_loop4_y
+
+    b intra_pred_plane_fill_end
+
+intra_pred_plane_fill_loop8:
+
+    sxtl v2.8h, v2.8b
+    mul v26.8h, v30.8h, v2.8h   // 0, b, 2b, 3b, 4b, 5b, 6b, 7b
+
+    movi v28.8h, #0			    //max and min val
+    dup v29.8h, w9
+
+    shl v27.8h, v30.8h, #3      // iB * 8
+
+    add v0.8h, v0.8h, v26.8h    // temp, temp + b, temp + 2b, temp + 3b, ..., temp + 7b
+intra_pred_plane_fill_loop8_x:
+
+    mov v1.16b, v0.16b
+    mov x19, x1
+    mov w8, w4
+intra_pred_plane_fill_loop8_y:
+
+    sshr v2.8h, v1.8h, #5
+    smax v2.8h, v2.8h, v28.8h
+    smin v2.8h, v2.8h, v29.8h
+
+//    xtn v2.8b, v2.8h
+    st1 {v2.8h}, [x19], x2
+
+    subs w8, w8, #1
+    add v1.8h, v1.8h, v31.8h   //iTmp += iC;
+    bgt intra_pred_plane_fill_loop8_y
+
+    add x1, x1, #16
+    subs w3, w3, #8
+    add v0.8h, v0.8h, v27.8h
+    bgt intra_pred_plane_fill_loop8_x
+
+intra_pred_plane_fill_end:
+    ldp x19, x20, [sp], #16
+    ret
+
 #endif
 #endif
 

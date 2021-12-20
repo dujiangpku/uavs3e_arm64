@@ -80,8 +80,8 @@ void uavs3e_conv_fmt_16to8bit_arm64(unsigned char *src_y, unsigned char *src_uv,
 void uavs3e_ipred_ipf_core_arm64(pel *src, pel *dst, int i_dst, int ipm, int w, int h, int bit_depth);
 void uavs3e_ipred_ipf_core_s16_arm64(pel *src, pel *dst, int i_dst, s16 *pred, int ipm, int w, int h, int bit_depth);
 void uavs3e_intra_pred_dc_arm64(pel *src, pel *dst, int i_dst, int width, int height, u16 avail_cu, int bit_depth);
-void uavs3e_ipred_plane_arm64(pel *src, pel *dst, int i_dst, int width, int height, int bit_depth);
-void uavs3e_ipred_bi_arm64(pel *src, pel *dst, int i_dst, int width, int height, int bit_depth);
+void uavs3e_intra_pred_plane_arm64(pel *src, pel *dst, int i_dst, int width, int height, int bit_depth);
+void uavs3e_intra_pred_bi_arm64(pel *src, pel *dst, int i_dst, int width, int height, int bit_depth);
 void uavs3e_intra_pred_hor_arm64(pel *src, pel *dst, int i_dst, int width, int height);
 void uavs3e_intra_pred_ver_arm64(pel *src, pel *dst, int i_dst, int width, int height);
 
