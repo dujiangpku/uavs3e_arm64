@@ -185,12 +185,12 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.recon[3] = uavs3e_recon_w32_arm64;
     uavs3e_funs_handle.recon[4] = uavs3e_recon_w64_arm64;
 
-    //uavs3e_funs_handle.cost_satd[0][0] = uavs3e_had_4x4_arm64;
-    //uavs3e_funs_handle.cost_satd[1][0] = uavs3e_had_8x4_arm64;
-    //uavs3e_funs_handle.cost_satd[0][1] = uavs3e_had_4x8_arm64;
-    //uavs3e_funs_handle.cost_satd[1][1] = uavs3e_had_8x8_arm64;
-    //uavs3e_funs_handle.cost_satd[2][1] = uavs3e_had_16x8_arm64;
-    //uavs3e_funs_handle.cost_satd[1][2] = uavs3e_had_8x16_arm64;
+    uavs3e_funs_handle.cost_satd[0][0] = uavs3e_had_4x4_arm64;
+    uavs3e_funs_handle.cost_satd[1][0] = uavs3e_had_8x4_arm64;
+    uavs3e_funs_handle.cost_satd[0][1] = uavs3e_had_4x8_arm64;
+    uavs3e_funs_handle.cost_satd[1][1] = uavs3e_had_8x8_arm64;
+    uavs3e_funs_handle.cost_satd[2][1] = uavs3e_had_16x8_arm64;
+    uavs3e_funs_handle.cost_satd[1][2] = uavs3e_had_8x16_arm64;
 
     /*
     uavs3e_funs_handle.cost_var[0] = uavs3e_get_var_4_arm64;

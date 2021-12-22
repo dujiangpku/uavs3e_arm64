@@ -3330,10 +3330,1245 @@ get_sad_x4_128_y:
 ret
 
 //void uavs3e_had_4x4_arm64(pel *org, int s_org, pel *cur, int s_cur)
-//*org->x1, s_org->x2, *cur->x3, s_cur->x4
+//*org->x0, s_org->x1, *cur->x2, s_cur->x3
 function uavs3e_had_4x4_arm64
+    lsl x1, x1, #1
+    lsl x3, x3, #1
+
+    ld1 {v0.d}[0], [x0], x1
+    ld1 {v0.d}[1], [x0], x1
+    ld1 {v2.d}[0], [x0], x1
+    ld1 {v2.d}[1], [x0], x1
+
+    ld1 {v1.d}[0], [x2], x3
+    ld1 {v1.d}[1], [x2], x3
+    ld1 {v3.d}[0], [x2], x3
+    ld1 {v3.d}[1], [x2], x3
+
+    sub v0.8h, v0.8h, v1.8h
+    sub v1.8h, v2.8h, v3.8h
+
+    uzp1 v2.8h, v0.8h, v1.8h    //d0, d2, d4, d6
+    uzp2 v3.8h, v0.8h, v1.8h    //d1, d3, d5, d7
+
+    add v0.8h, v2.8h, v3.8h     //d0 + d1
+    sub v1.8h, v2.8h, v3.8h     //d0 - d1
+
+    trn1 v2.8h, v0.8h, v1.8h    //d0 + d1, d0 - d1, d4 + d5, d4 - d5
+    trn2 v3.8h, v0.8h, v1.8h    //d2 + d3, d2 - d3, d6 + d7, d6 - d7
+
+    add v0.8h, v2.8h, v3.8h     //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3
+    sub v1.8h, v2.8h, v3.8h     //d0 + d1 - d2 - d3, d0 - d1 - d2 + d3
+
+    trn1 v2.4s, v0.4s, v1.4s    //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3, d0 + d1 - d2 - d3, d0 - d1 - d2 + d3
+    trn2 v3.4s, v0.4s, v1.4s    //d4 + d5 + d6 + d7, d4 - d5 + d6 - d7, d4 + d5 - d6 - d7, d4 - d5 - d6 + d7
+
+    add v0.8h, v2.8h, v3.8h
+    sub v1.8h, v2.8h, v3.8h
+
+    trn1 v2.2d, v0.2d, v1.2d
+    trn2 v3.2d, v0.2d, v1.2d
+
+    add v0.8h, v2.8h, v3.8h
+    sub v1.8h, v2.8h, v3.8h
+
+    abs v0.8h, v0.8h
+    abs v1.8h, v1.8h
+
+    uaddl v2.4s, v0.4h, v1.4h
+    uaddl2 v3.4s, v0.8h, v1.8h
+    add v0.4s, v2.4s, v3.4s
+    addp v0.4s, v0.4s, v0.4s
+    addp v0.4s, v0.4s, v0.4s
+
+    mov x0, #0
+    umov w0, v0.s[0]
+    add x0, x0, #1
+    lsr x0, x0, #1
 
 ret
 
+//void uavs3e_had_8x8_arm64(pel *org, int s_org, pel *cur, int s_cur)
+//*org->x0, s_org->x1, *cur->x2, s_cur->x3
+function uavs3e_had_8x8_arm64
+    lsl x1, x1, #1
+    lsl x3, x3, #1
+
+    ld1 {v0.8h}, [x0], x1
+    ld1 {v1.8h}, [x0], x1
+    ld1 {v2.8h}, [x0], x1
+    ld1 {v3.8h}, [x0], x1
+    ld1 {v4.8h}, [x0], x1
+    ld1 {v5.8h}, [x0], x1
+    ld1 {v6.8h}, [x0], x1
+    ld1 {v7.8h}, [x0], x1
+
+    ld1 {v16.8h}, [x2], x3
+    ld1 {v17.8h}, [x2], x3
+    ld1 {v18.8h}, [x2], x3
+    ld1 {v19.8h}, [x2], x3
+    ld1 {v20.8h}, [x2], x3
+    ld1 {v21.8h}, [x2], x3
+    ld1 {v22.8h}, [x2], x3
+    ld1 {v23.8h}, [x2], x3
+
+    sub v0.8h, v0.8h, v16.8h
+    sub v1.8h, v1.8h, v17.8h
+    sub v2.8h, v2.8h, v18.8h
+    sub v3.8h, v3.8h, v19.8h
+    sub v4.8h, v4.8h, v20.8h
+    sub v5.8h, v5.8h, v21.8h
+    sub v6.8h, v6.8h, v22.8h
+    sub v7.8h, v7.8h, v23.8h
+
+    uzp1 v16.8h, v0.8h, v1.8h       //d0, d2, d4, d6, d8, d10, d12, d14
+    uzp2 v17.8h, v0.8h, v1.8h       //d1, d3, d5, d7,
+    uzp1 v18.8h, v2.8h, v3.8h       //d16, d18, d20, d22,
+    uzp2 v19.8h, v2.8h, v3.8h       //d17, d19, d21, d23,
+    uzp1 v20.8h, v4.8h, v5.8h       //d32, d34, d36, d38,
+    uzp2 v21.8h, v4.8h, v5.8h       //d33, d35, d37, d39,
+    uzp1 v22.8h, v6.8h, v7.8h       //d48, d50, d52, d54,
+    uzp2 v23.8h, v6.8h, v7.8h       //d49, d51, d53, d55,
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1, d2 + d3,
+    sub v1.8h, v16.8h, v17.8h       //d0 - d1, d2 - d3,
+    add v2.8h, v18.8h, v19.8h       //d16 + d17, d18 + d19
+    sub v3.8h, v18.8h, v19.8h       //d16 - d17, d18 - d19
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+
+    trn1 v16.8h, v0.8h, v1.8h       //d0 + d1, d0 - d1, d4 + d5, d4 - d5
+    trn2 v17.8h, v0.8h, v1.8h       //d2 + d3, d2 - d3, d6 + d7, d5 - d7
+    trn1 v18.8h, v2.8h, v3.8h
+    trn2 v19.8h, v2.8h, v3.8h
+    trn1 v20.8h, v4.8h, v5.8h
+    trn2 v21.8h, v4.8h, v5.8h
+    trn1 v22.8h, v6.8h, v7.8h
+    trn2 v23.8h, v6.8h, v7.8h
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3
+    sub v1.8h, v16.8h, v17.8h       //d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    add v2.8h, v18.8h, v19.8h       //d16 + d17 + d18 + d19, d16 - d17 + (d18 - d19)
+    sub v3.8h, v18.8h, v19.8h       //d16 + d17 - d18 + d19, d16 - d17 - (d18 - d19)
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+
+    trn1 v16.4s, v0.4s, v1.4s       //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3, d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    trn2 v17.4s, v0.4s, v1.4s       //d4 + d5 + d6 + d7, d4 - d5 + d6 - d7, d4 + d5 - (d6 + d7), d4 - d5 - (d6 - d7)
+    trn1 v18.4s, v2.4s, v3.4s
+    trn2 v19.4s, v2.4s, v3.4s
+    trn1 v20.4s, v4.4s, v5.4s
+    trn2 v21.4s, v4.4s, v5.4s
+    trn1 v22.4s, v6.4s, v7.4s
+    trn2 v23.4s, v6.4s, v7.4s
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7, d0 - d1 + d2 - d3 + d4 - d5 + d6 - d7
+    sub v1.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3 - (d4 + d5 + d6 + d7)
+    add v2.8h, v18.8h, v19.8h       //d16 + d17 + d18 + d19 + d20 + d21 + d22 + d23
+    sub v3.8h, v18.8h, v19.8h       //d16 + d17 + d18 + d19 - (d20 + d21 + d22 + d23)
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+
+    trn1 v16.2d, v0.2d, v1.2d
+    trn2 v17.2d, v0.2d, v1.2d
+    trn1 v18.2d, v2.2d, v3.2d
+    trn2 v19.2d, v2.2d, v3.2d
+    trn1 v20.2d, v4.2d, v5.2d
+    trn2 v21.2d, v4.2d, v5.2d
+    trn1 v22.2d, v6.2d, v7.2d
+    trn2 v23.2d, v6.2d, v7.2d
+
+    add v0.8h, v16.8h, v17.8h
+    sub v1.8h, v16.8h, v17.8h
+    add v2.8h, v18.8h, v19.8h
+    sub v3.8h, v18.8h, v19.8h
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+
+    add v16.8h, v0.8h, v2.8h
+    sub v17.8h, v0.8h, v2.8h
+    add v18.8h, v1.8h, v3.8h
+    sub v19.8h, v1.8h, v3.8h
+    add v20.8h, v4.8h, v6.8h
+    sub v21.8h, v4.8h, v6.8h
+    add v22.8h, v5.8h, v7.8h
+    sub v23.8h, v5.8h, v7.8h
+
+    saddl v0.4s, v16.4h, v20.4h
+    saddl2 v1.4s, v16.8h, v20.8h
+    saddl v2.4s, v17.4h, v21.4h
+    saddl2 v3.4s, v17.8h, v21.8h
+    saddl v4.4s, v18.4h, v22.4h
+    saddl2 v5.4s, v18.8h, v22.8h
+    saddl v6.4s, v19.4h, v23.4h
+    saddl2 v7.4s, v19.8h, v23.8h
+    ssubl v24.4s, v16.4h, v20.4h
+    ssubl2 v25.4s, v16.8h, v20.8h
+    ssubl v26.4s, v17.4h, v21.4h
+    ssubl2 v27.4s, v17.8h, v21.8h
+    ssubl v28.4s, v18.4h, v22.4h
+    ssubl2 v29.4s, v18.8h, v22.8h
+    ssubl v30.4s, v19.4h, v23.4h
+    ssubl2 v31.4s, v19.8h, v23.8h
+
+    abs v0.4s, v0.4s
+    abs v1.4s, v1.4s
+    abs v2.4s, v2.4s
+    abs v3.4s, v3.4s
+    abs v4.4s, v4.4s
+    abs v5.4s, v5.4s
+    abs v6.4s, v6.4s
+    abs v7.4s, v7.4s
+    abs v24.4s, v24.4s
+    abs v25.4s, v25.4s
+    abs v26.4s, v26.4s
+    abs v27.4s, v27.4s
+    abs v28.4s, v28.4s
+    abs v29.4s, v29.4s
+    abs v30.4s, v30.4s
+    abs v31.4s, v31.4s
+
+    add v0.4s, v0.4s, v24.4s
+    add v1.4s, v1.4s, v25.4s
+    add v2.4s, v2.4s, v26.4s
+    add v3.4s, v3.4s, v27.4s
+    add v4.4s, v4.4s, v28.4s
+    add v5.4s, v5.4s, v29.4s
+    add v6.4s, v6.4s, v30.4s
+    add v7.4s, v7.4s, v31.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v4.4s, v4.4s, v5.4s
+    add v6.4s, v6.4s, v7.4s
+    add v0.4s, v0.4s, v2.4s
+    add v4.4s, v4.4s, v6.4s
+    add v0.4s, v0.4s, v4.4s
+
+    addp v0.4s, v0.4s, v0.4s
+    addp v0.4s, v0.4s, v0.4s
+
+    mov x0, #0
+    umov w0, v0.s[0]
+    add x0, x0, #2
+    lsr x0, x0, #2
+
+ret
+
+//void uavs3e_had_8x4_arm64(pel *org, int s_org, pel *cur, int s_cur)
+//*org->x0, s_org->x1, *cur->x2, s_cur->x3
+function uavs3e_had_8x4_arm64
+    lsl x1, x1, #1
+    lsl x3, x3, #1
+
+    ld1 {v0.8h}, [x0], x1
+    ld1 {v1.8h}, [x0], x1
+    ld1 {v2.8h}, [x0], x1
+    ld1 {v3.8h}, [x0], x1
+
+    ld1 {v4.8h}, [x2], x3
+    ld1 {v5.8h}, [x2], x3
+    ld1 {v6.8h}, [x2], x3
+    ld1 {v7.8h}, [x2], x3
+
+    sub v0.8h, v0.8h, v4.8h
+    sub v1.8h, v1.8h, v5.8h
+    sub v2.8h, v2.8h, v6.8h
+    sub v3.8h, v3.8h, v7.8h
+
+    uzp1 v4.8h, v0.8h, v1.8h       //d0, d2, d4, d6, d8, d10, d12, d14
+    uzp2 v5.8h, v0.8h, v1.8h       //d1, d3, d5, d7, d9, d11, d13, d15
+    uzp1 v6.8h, v2.8h, v3.8h       //d16, d18, d20, d22, d24, d26, d28, d30
+    uzp2 v7.8h, v2.8h, v3.8h       //d17, d19, d21, d23, d25, d27, d29, d31
+
+
+    add v0.8h, v4.8h, v5.8h        //d0 + d1, d2 + d3,
+    sub v1.8h, v4.8h, v5.8h        //d0 - d1, d2 - d3,
+    add v2.8h, v6.8h, v7.8h        //d16 + d17, d18 + d19
+    sub v3.8h, v6.8h, v7.8h        //d16 - d17, d18 - d19
+
+
+    trn1 v4.8h, v0.8h, v1.8h       //d0 + d1, d0 - d1, d4 + d5, d4 - d5
+    trn2 v5.8h, v0.8h, v1.8h       //d2 + d3, d2 - d3, d6 + d7, d5 - d7
+    trn1 v6.8h, v2.8h, v3.8h       //d16 + d17, d16 - d17
+    trn2 v7.8h, v2.8h, v3.8h       //d18 + d19, d18 - d19
+
+    add v0.8h, v4.8h, v5.8h        //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3
+    sub v1.8h, v4.8h, v5.8h        //d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    add v2.8h, v6.8h, v7.8h        //d16 + d17 + d18 + d19, d16 - d17 + (d18 - d19)
+    sub v3.8h, v6.8h, v7.8h        //d16 + d17 - d18 + d19, d16 - d17 - (d18 - d19)
+
+    trn1 v4.4s, v0.4s, v1.4s      //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3, d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    trn2 v5.4s, v0.4s, v1.4s      //d4 + d5 + d6 + d7, d4 - d5 + d6 - d7, d4 + d5 - (d6 + d7), d4 - d5 - (d6 - d7)
+    trn1 v6.4s, v2.4s, v3.4s
+    trn2 v7.4s, v2.4s, v3.4s
+
+    add v0.8h, v4.8h, v5.8h        //d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7, d0 - d1 + d2 - d3 + d4 - d5 + d6 - d7
+    sub v1.8h, v4.8h, v5.8h        //d0 + d1 + d2 + d3 - (d4 + d5 + d6 + d7)
+    add v2.8h, v6.8h, v7.8h        //d16 + d17 + d18 + d19 + d20 + d21 + d22 + d23
+    sub v3.8h, v6.8h, v7.8h        //d16 + d17 + d18 + d19 - (d20 + d21 + d22 + d23)
+
+    trn1 v4.2d, v0.2d, v1.2d       //d0...7
+    trn2 v5.2d, v0.2d, v1.2d       //d8...15
+    trn1 v6.2d, v2.2d, v3.2d       //d16...d23
+    trn2 v7.2d, v2.2d, v3.2d       //d24...d31
+
+    add v0.8h, v4.8h, v6.8h
+    add v1.8h, v5.8h, v7.8h
+    sub v2.8h, v4.8h, v6.8h
+    sub v3.8h, v5.8h, v7.8h
+
+    add v4.8h, v0.8h, v1.8h
+    sub v5.8h, v0.8h, v1.8h
+    add v6.8h, v2.8h, v3.8h
+    sub v7.8h, v2.8h, v3.8h
+
+    abs v0.8h, v4.8h
+    abs v1.8h, v5.8h
+    abs v2.8h, v6.8h
+    abs v3.8h, v7.8h
+
+    uaddl v4.4s, v0.4h, v1.4h
+    uaddl2 v5.4s, v0.8h, v1.8h
+    uaddl v6.4s, v2.4h, v3.4h
+    uaddl2 v7.4s, v2.8h, v3.8h
+
+    add v4.4s, v4.4s, v5.4s
+    add v6.4s, v6.4s, v7.4s
+    add v0.4s, v4.4s, v6.4s
+
+    addp v0.4s, v0.4s, v0.4s
+    addp v0.4s, v0.4s, v0.4s
+
+    mov x0, #0
+    umov w0, v0.s[0]
+    mov x1, #32
+    ucvtf d0, x1
+    fsqrt d0, d0
+    ucvtf d1, x0
+    fdiv d0, d1, d0
+    fmov d1, #2.0
+    fmul d0, d0, d1
+    fcvtms x0, d0
+
+    ret
+
+//void uavs3e_had_4x8_arm64(pel *org, int s_org, pel *cur, int s_cur)
+//*org->x0, s_org->x1, *cur->x2, s_cur->x3
+function uavs3e_had_4x8_arm64
+    lsl x1, x1, #1
+    lsl x3, x3, #1
+
+    ld1 {v0.d}[0], [x0], x1
+    ld1 {v0.d}[1], [x0], x1
+    ld1 {v1.d}[0], [x0], x1
+    ld1 {v1.d}[1], [x0], x1
+    ld1 {v2.d}[0], [x0], x1
+    ld1 {v2.d}[1], [x0], x1
+    ld1 {v3.d}[0], [x0], x1
+    ld1 {v3.d}[1], [x0], x1
+
+    ld1 {v4.d}[0], [x2], x3
+    ld1 {v4.d}[1], [x2], x3
+    ld1 {v5.d}[0], [x2], x3
+    ld1 {v5.d}[1], [x2], x3
+    ld1 {v6.d}[0], [x2], x3
+    ld1 {v6.d}[1], [x2], x3
+    ld1 {v7.d}[0], [x2], x3
+    ld1 {v7.d}[1], [x2], x3
+
+    sub v0.8h, v0.8h, v4.8h
+    sub v1.8h, v1.8h, v5.8h
+    sub v2.8h, v2.8h, v6.8h
+    sub v3.8h, v3.8h, v7.8h
+
+    uzp1 v4.8h, v0.8h, v1.8h        //d0, d2, d4, d6, d8, d10, d12, d14
+    uzp2 v5.8h, v0.8h, v1.8h        //d1, d3, d5, d7, d9, d11, d13, d15
+    uzp1 v6.8h, v2.8h, v3.8h        //d16, d18, d20, d22, d24, d26, d28, d30
+    uzp2 v7.8h, v2.8h, v3.8h        //d17, d19, d21, d23, d25, d27, d29, d31
+
+    add v0.8h, v4.8h, v5.8h         //d0 + d1, d2 + d3
+    sub v1.8h, v4.8h, v5.8h         //d0 - d1, d2 - d3
+    add v2.8h, v6.8h, v7.8h         //d16 + d17, d18 + d19
+    sub v3.8h, v6.8h, v7.8h         //d16 - d17, d18 - d19
+
+    trn1 v4.8h, v0.8h, v1.8h        //d0 + d1, d0 - d1
+    trn2 v5.8h, v0.8h, v1.8h        //d2 + d3, d2 - d3
+    trn1 v6.8h, v2.8h, v3.8h        //d16 + d17, d16 - d17
+    trn2 v7.8h, v2.8h, v3.8h        //d18 + d19, d18 - d19
+
+    add v0.8h, v4.8h, v5.8h         //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3
+    sub v1.8h, v4.8h, v5.8h         //d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    add v2.8h, v6.8h, v7.8h         //d16 + d17 + d18 + d19
+    sub v3.8h, v6.8h, v7.8h         //d16 + d17 - (d18 + d19)
+
+    trn1 v4.4s, v0.4s, v1.4s        //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3, d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    trn2 v5.4s, v0.4s, v1.4s        //d4 + d5 + d6 + d7, d4 - d5 + d6 - d7, d4 + d5 - (d6 + d7), d4 - d5 - (d6 - d7)
+    trn1 v6.4s, v2.4s, v3.4s
+    trn2 v7.4s, v2.4s, v3.4s
+
+    add v0.8h, v4.8h, v6.8h
+    add v1.8h, v5.8h, v7.8h
+    sub v2.8h, v4.8h, v6.8h
+    sub v3.8h, v5.8h, v7.8h
+
+    trn1 v4.2d, v0.2d, v1.2d
+    trn2 v5.2d, v0.2d, v1.2d
+    trn1 v6.2d, v2.2d, v3.2d
+    trn2 v7.2d, v2.2d, v3.2d
+
+    add v0.8h, v4.8h, v5.8h
+    sub v1.8h, v4.8h, v5.8h
+    add v2.8h, v6.8h, v7.8h
+    sub v3.8h, v6.8h, v7.8h
+
+    trn1 v4.2d, v0.2d, v1.2d
+    trn2 v5.2d, v0.2d, v1.2d
+    trn1 v6.2d, v2.2d, v3.2d
+    trn2 v7.2d, v2.2d, v3.2d
+
+    add v0.8h, v4.8h, v5.8h
+    sub v1.8h, v4.8h, v5.8h
+    add v2.8h, v6.8h, v7.8h
+    sub v3.8h, v6.8h, v7.8h
+
+    abs v0.8h, v0.8h
+    abs v1.8h, v1.8h
+    abs v2.8h, v2.8h
+    abs v3.8h, v3.8h
+
+    uaddl v4.4s, v0.4h, v1.4h
+    uaddl2 v5.4s, v0.8h, v1.8h
+    uaddl v6.4s, v2.4h, v3.4h
+    uaddl2 v7.4s, v2.8h, v3.8h
+
+    add v4.4s, v4.4s, v5.4s
+    add v6.4s, v6.4s, v7.4s
+    add v0.4s, v4.4s, v6.4s
+
+    addp v0.4s, v0.4s, v0.4s
+    addp v0.4s, v0.4s, v0.4s
+
+    mov x0, #0
+    umov w0, v0.s[0]
+    mov x1, #32
+    ucvtf d0, x1
+    fsqrt d0, d0
+    ucvtf d1, x0
+    fdiv d0, d1, d0
+    fmov d1, #2.0
+    fmul d0, d0, d1
+    fcvtms x0, d0
+    ret
+
+//void uavs3e_had_8x16_arm64(pel *org, int s_org, pel *cur, int s_cur)
+//*org->x0, s_org->x1, *cur->x2, s_cur->x3
+function uavs3e_had_8x16_arm64
+    sub sp, sp, #64
+    st1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp]
+    sub sp, sp, #64
+    st1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp]
+
+    lsl x1, x1, #1
+    lsl x3, x3, #1
+
+    ld1 {v0.8h}, [x0], x1
+    ld1 {v1.8h}, [x0], x1
+    ld1 {v2.8h}, [x0], x1
+    ld1 {v3.8h}, [x0], x1
+    ld1 {v4.8h}, [x0], x1
+    ld1 {v5.8h}, [x0], x1
+    ld1 {v6.8h}, [x0], x1
+    ld1 {v7.8h}, [x0], x1
+    ld1 {v8.8h}, [x0], x1
+    ld1 {v9.8h}, [x0], x1
+    ld1 {v10.8h}, [x0], x1
+    ld1 {v11.8h}, [x0], x1
+    ld1 {v12.8h}, [x0], x1
+    ld1 {v13.8h}, [x0], x1
+    ld1 {v14.8h}, [x0], x1
+    ld1 {v15.8h}, [x0], x1
+
+    ld1 {v16.8h}, [x2], x3
+    ld1 {v17.8h}, [x2], x3
+    ld1 {v18.8h}, [x2], x3
+    ld1 {v19.8h}, [x2], x3
+    ld1 {v20.8h}, [x2], x3
+    ld1 {v21.8h}, [x2], x3
+    ld1 {v22.8h}, [x2], x3
+    ld1 {v23.8h}, [x2], x3
+    ld1 {v24.8h}, [x2], x3
+    ld1 {v25.8h}, [x2], x3
+    ld1 {v26.8h}, [x2], x3
+    ld1 {v27.8h}, [x2], x3
+    ld1 {v28.8h}, [x2], x3
+    ld1 {v29.8h}, [x2], x3
+    ld1 {v30.8h}, [x2], x3
+    ld1 {v31.8h}, [x2], x3
+
+    sub v0.8h, v0.8h, v16.8h
+    sub v1.8h, v1.8h, v17.8h
+    sub v2.8h, v2.8h, v18.8h
+    sub v3.8h, v3.8h, v19.8h
+    sub v4.8h, v4.8h, v20.8h
+    sub v5.8h, v5.8h, v21.8h
+    sub v6.8h, v6.8h, v22.8h
+    sub v7.8h, v7.8h, v23.8h
+    sub v8.8h, v8.8h, v24.8h
+    sub v9.8h, v9.8h, v25.8h
+    sub v10.8h, v10.8h, v26.8h
+    sub v11.8h, v11.8h, v27.8h
+    sub v12.8h, v12.8h, v28.8h
+    sub v13.8h, v13.8h, v29.8h
+    sub v14.8h, v14.8h, v30.8h
+    sub v15.8h, v15.8h, v31.8h
+
+    uzp1 v16.8h, v0.8h, v1.8h       //d0, d2, d4, d6
+    uzp2 v17.8h, v0.8h, v1.8h       //d1, d3, d5, d7
+    uzp1 v18.8h, v2.8h, v3.8h       //d16, d18, d20, d22
+    uzp2 v19.8h, v2.8h, v3.8h       //d17, d19, d21, d23
+    uzp1 v20.8h, v4.8h, v5.8h
+    uzp2 v21.8h, v4.8h, v5.8h
+    uzp1 v22.8h, v6.8h, v7.8h
+    uzp2 v23.8h, v6.8h, v7.8h
+    uzp1 v24.8h, v8.8h, v9.8h
+    uzp2 v25.8h, v8.8h, v9.8h
+    uzp1 v26.8h, v10.8h, v11.8h
+    uzp2 v27.8h, v10.8h, v11.8h
+    uzp1 v28.8h, v12.8h, v13.8h
+    uzp2 v29.8h, v12.8h, v13.8h
+    uzp1 v30.8h, v14.8h, v15.8h
+    uzp2 v31.8h, v14.8h, v15.8h
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1, d2 + d3
+    sub v1.8h, v16.8h, v17.8h       //d0 - d1, d2 - d3
+    add v2.8h, v18.8h, v19.8h
+    sub v3.8h, v18.8h, v19.8h
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+    add v8.8h, v24.8h, v25.8h
+    sub v9.8h, v24.8h, v25.8h
+    add v10.8h, v26.8h, v27.8h
+    sub v11.8h, v26.8h, v27.8h
+    add v12.8h, v28.8h, v29.8h
+    sub v13.8h, v28.8h, v29.8h
+    add v14.8h, v30.8h, v31.8h
+    sub v15.8h, v30.8h, v31.8h
+
+    trn1 v16.8h, v0.8h, v1.8h       //d0 + d1, d0 - d1
+    trn2 v17.8h, v0.8h, v1.8h       //d2 + d3, d2 - d3
+    trn1 v18.8h, v2.8h, v3.8h
+    trn2 v19.8h, v2.8h, v3.8h
+    trn1 v20.8h, v4.8h, v5.8h
+    trn2 v21.8h, v4.8h, v5.8h
+    trn1 v22.8h, v6.8h, v7.8h
+    trn2 v23.8h, v6.8h, v7.8h
+    trn1 v24.8h, v8.8h, v9.8h
+    trn2 v25.8h, v8.8h, v9.8h
+    trn1 v26.8h, v10.8h, v11.8h
+    trn2 v27.8h, v10.8h, v11.8h
+    trn1 v28.8h, v12.8h, v13.8h
+    trn2 v29.8h, v12.8h, v13.8h
+    trn1 v30.8h, v14.8h, v15.8h
+    trn2 v31.8h, v14.8h, v15.8h
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3
+    sub v1.8h, v16.8h, v17.8h       //d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    add v2.8h, v18.8h, v19.8h
+    sub v3.8h, v18.8h, v19.8h
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+    add v8.8h, v24.8h, v25.8h
+    sub v9.8h, v24.8h, v25.8h
+    add v10.8h, v26.8h, v27.8h
+    sub v11.8h, v26.8h, v27.8h
+    add v12.8h, v28.8h, v29.8h
+    sub v13.8h, v28.8h, v29.8h
+    add v14.8h, v30.8h, v31.8h
+    sub v15.8h, v30.8h, v31.8h
+
+    trn1 v16.4s, v0.4s, v1.4s       //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3, d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    trn2 v17.4s, v0.4s, v1.4s       //d4 + d5 + d6 + d7, d4 - d5 + d6 - d7, d4 + d5 - (d6 + d7), d4 - d5 - (d6 - d7)
+    trn1 v18.4s, v2.4s, v3.4s
+    trn2 v19.4s, v2.4s, v3.4s
+    trn1 v20.4s, v4.4s, v5.4s
+    trn2 v21.4s, v4.4s, v5.4s
+    trn1 v22.4s, v6.4s, v7.4s
+    trn2 v23.4s, v6.4s, v7.4s
+    trn1 v24.4s, v8.4s, v9.4s
+    trn2 v25.4s, v8.4s, v9.4s
+    trn1 v26.4s, v10.4s, v11.4s
+    trn2 v27.4s, v10.4s, v11.4s
+    trn1 v28.4s, v12.4s, v13.4s
+    trn2 v29.4s, v12.4s, v13.4s
+    trn1 v30.4s, v14.4s, v15.4s
+    trn2 v31.4s, v14.4s, v15.4s
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7
+    sub v1.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3 - (d4 + d5 + d6 + d7)
+    add v2.8h, v18.8h, v19.8h
+    sub v3.8h, v18.8h, v19.8h
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+    add v8.8h, v24.8h, v25.8h
+    sub v9.8h, v24.8h, v25.8h
+    add v10.8h, v26.8h, v27.8h
+    sub v11.8h, v26.8h, v27.8h
+    add v12.8h, v28.8h, v29.8h
+    sub v13.8h, v28.8h, v29.8h
+    add v14.8h, v30.8h, v31.8h
+    sub v15.8h, v30.8h, v31.8h
+
+    trn1 v16.2d, v0.2d, v1.2d
+    trn2 v17.2d, v0.2d, v1.2d
+    trn1 v18.2d, v2.2d, v3.2d
+    trn2 v19.2d, v2.2d, v3.2d
+    trn1 v20.2d, v4.2d, v5.2d
+    trn2 v21.2d, v4.2d, v5.2d
+    trn1 v22.2d, v6.2d, v7.2d
+    trn2 v23.2d, v6.2d, v7.2d
+    trn1 v24.2d, v8.2d, v9.2d
+    trn2 v25.2d, v8.2d, v9.2d
+    trn1 v26.2d, v10.2d, v11.2d
+    trn2 v27.2d, v10.2d, v11.2d
+    trn1 v28.2d, v12.2d, v13.2d
+    trn2 v29.2d, v12.2d, v13.2d
+    trn1 v30.2d, v14.2d, v15.2d
+    trn2 v31.2d, v14.2d, v15.2d
+
+    add v0.8h, v16.8h, v24.8h
+    add v1.8h, v17.8h, v25.8h
+    add v2.8h, v18.8h, v26.8h
+    add v3.8h, v19.8h, v27.8h
+    add v4.8h, v20.8h, v28.8h
+    add v5.8h, v21.8h, v29.8h
+    add v6.8h, v22.8h, v30.8h
+    add v7.8h, v23.8h, v31.8h
+    sub v8.8h, v16.8h, v24.8h
+    sub v9.8h, v17.8h, v25.8h
+    sub v10.8h, v18.8h, v26.8h
+    sub v11.8h, v19.8h, v27.8h
+    sub v12.8h, v20.8h, v28.8h
+    sub v13.8h, v21.8h, v29.8h
+    sub v14.8h, v22.8h, v30.8h
+    sub v15.8h, v23.8h, v31.8h
+
+    add v16.8h, v0.8h, v4.8h
+    add v17.8h, v1.8h, v5.8h
+    add v18.8h, v2.8h, v6.8h
+    add v19.8h, v3.8h, v7.8h
+    sub v20.8h, v0.8h, v4.8h
+    sub v21.8h, v1.8h, v5.8h
+    sub v22.8h, v2.8h, v6.8h
+    sub v23.8h, v3.8h, v7.8h
+    add v24.8h, v8.8h, v12.8h
+    add v25.8h, v9.8h, v13.8h
+    add v26.8h, v10.8h, v14.8h
+    add v27.8h, v11.8h, v15.8h
+    sub v28.8h, v8.8h, v12.8h
+    sub v29.8h, v9.8h, v13.8h
+    sub v30.8h, v10.8h, v14.8h
+    sub v31.8h, v11.8h, v15.8h
+
+    saddl v0.4s, v16.4h, v18.4h
+    saddl2 v1.4s, v16.8h, v18.8h
+    saddl v2.4s, v17.4h, v19.4h
+    saddl2 v3.4s, v17.8h, v19.8h
+    ssubl v4.4s, v16.4h, v18.4h
+    ssubl2 v5.4s, v16.8h, v18.8h
+    ssubl v6.4s, v17.4h, v19.4h
+    ssubl2 v7.4s, v17.8h, v19.8h
+    saddl v8.4s, v20.4h, v22.4h
+    saddl2 v9.4s, v20.8h, v22.8h
+    saddl v10.4s, v21.4h, v23.4h
+    saddl2 v11.4s, v21.8h, v23.8h
+    ssubl v12.4s, v20.4h, v22.4h
+    ssubl2 v13.4s, v20.8h, v22.8h
+    ssubl v14.4s, v21.4h, v23.4h
+    ssubl2 v15.4s, v21.8h, v23.8h
+    saddl v16.4s, v24.4h, v26.4h
+    saddl2 v17.4s, v24.8h, v26.8h
+    saddl v18.4s, v25.4h, v27.4h
+    saddl2 v19.4s, v25.8h, v27.8h
+    ssubl v20.4s, v24.4h, v26.4h
+    ssubl2 v21.4s, v24.8h, v26.8h
+    ssubl v22.4s, v25.4h, v27.4h
+    ssubl2 v23.4s, v25.8h, v27.8h
+    saddl v24.4s, v28.4h, v30.4h
+    saddl2 v25.4s, v28.8h, v30.8h
+    saddl v26.4s, v29.4h, v31.4h
+    saddl2 v27.4s, v29.8h, v31.8h
+    sub sp, sp, #64
+    st1 {v24.8h, v25.8h, v26.8h, v27.8h}, [sp]
+    ssubl v24.4s, v28.4h, v30.4h
+    ssubl2 v25.4s, v28.8h, v30.8h
+    ssubl v26.4s, v29.4h, v31.4h
+    ssubl2 v27.4s, v29.8h, v31.8h
+    mov v28.16b, v24.16b
+    mov v29.16b, v25.16b
+    mov v30.16b, v26.16b
+    mov v31.16b, v27.16b
+
+    add v24.4s, v0.4s, v2.4s
+    add v25.4s, v1.4s, v3.4s
+    sub v26.4s, v0.4s, v2.4s
+    sub v27.4s, v1.4s, v3.4s
+    mov v0.16b, v24.16b
+    mov v1.16b, v25.16b
+    mov v2.16b, v26.16b
+    mov v3.16b, v27.16b
+    add v24.4s, v4.4s, v6.4s
+    add v25.4s, v5.4s, v7.4s
+    sub v26.4s, v4.4s, v6.4s
+    sub v27.4s, v5.4s, v7.4s
+    mov v4.16b, v24.16b
+    mov v5.16b, v25.16b
+    mov v6.16b, v26.16b
+    mov v7.16b, v27.16b
+    add v24.4s, v8.4s, v10.4s
+    add v25.4s, v9.4s, v11.4s
+    sub v26.4s, v8.4s, v10.4s
+    sub v27.4s, v9.4s, v11.4s
+    mov v8.16b, v24.16b
+    mov v9.16b, v25.16b
+    mov v10.16b, v26.16b
+    mov v11.16b, v27.16b
+    add v24.4s, v12.4s, v14.4s
+    add v25.4s, v13.4s, v15.4s
+    sub v26.4s, v12.4s, v14.4s
+    sub v27.4s, v13.4s, v15.4s
+    mov v12.16b, v24.16b
+    mov v13.16b, v25.16b
+    mov v14.16b, v26.16b
+    mov v15.16b, v27.16b
+    add v24.4s, v16.4s, v18.4s
+    add v25.4s, v17.4s, v19.4s
+    sub v26.4s, v16.4s, v18.4s
+    sub v27.4s, v17.4s, v19.4s
+    mov v16.16b, v24.16b
+    mov v17.16b, v25.16b
+    mov v18.16b, v26.16b
+    mov v19.16b, v27.16b
+    add v24.4s, v20.4s, v22.4s
+    add v25.4s, v21.4s, v23.4s
+    sub v26.4s, v20.4s, v22.4s
+    sub v27.4s, v21.4s, v23.4s
+    mov v20.16b, v24.16b
+    mov v21.16b, v25.16b
+    mov v22.16b, v26.16b
+    mov v23.16b, v27.16b
+    ld1 {v24.8h, v25.8h, v26.8h, v27.8h}, [sp]
+    st1 {v0.8h, v1.8h, v2.8h, v3.8h}, [sp]
+    add v0.4s, v24.4s, v26.4s
+    add v1.4s, v25.4s, v27.4s
+    sub v2.4s, v24.4s, v26.4s
+    sub v3.4s, v25.4s, v27.4s
+    mov v24.16b, v0.16b
+    mov v25.16b, v1.16b
+    mov v26.16b, v2.16b
+    mov v27.16b, v3.16b
+    add v0.4s, v28.4s, v30.4s
+    add v1.4s, v29.4s, v31.4s
+    sub v2.4s, v28.4s, v30.4s
+    sub v3.4s, v29.4s, v31.4s
+    mov v28.16b, v0.16b
+    mov v29.16b, v1.16b
+    mov v30.16b, v2.16b
+    mov v31.16b, v3.16b
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [sp], #64
+
+    abs v0.4s, v0.4s
+    abs v1.4s, v1.4s
+    abs v2.4s, v2.4s
+    abs v3.4s, v3.4s
+    abs v4.4s, v4.4s
+    abs v5.4s, v5.4s
+    abs v6.4s, v6.4s
+    abs v7.4s, v7.4s
+    abs v8.4s, v8.4s
+    abs v9.4s, v9.4s
+    abs v10.4s, v10.4s
+    abs v11.4s, v11.4s
+    abs v12.4s, v12.4s
+    abs v13.4s, v13.4s
+    abs v14.4s, v14.4s
+    abs v15.4s, v15.4s
+    abs v16.4s, v16.4s
+    abs v17.4s, v17.4s
+    abs v18.4s, v18.4s
+    abs v19.4s, v19.4s
+    abs v20.4s, v20.4s
+    abs v21.4s, v21.4s
+    abs v22.4s, v22.4s
+    abs v23.4s, v23.4s
+    abs v24.4s, v24.4s
+    abs v25.4s, v25.4s
+    abs v26.4s, v26.4s
+    abs v27.4s, v27.4s
+    abs v28.4s, v28.4s
+    abs v29.4s, v29.4s
+    abs v30.4s, v30.4s
+    abs v31.4s, v31.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v4.4s, v4.4s, v5.4s
+    add v6.4s, v6.4s, v7.4s
+    add v8.4s, v8.4s, v9.4s
+    add v10.4s, v10.4s, v11.4s
+    add v12.4s, v12.4s, v13.4s
+    add v14.4s, v14.4s, v15.4s
+    add v16.4s, v16.4s, v17.4s
+    add v18.4s, v18.4s, v19.4s
+    add v20.4s, v20.4s, v21.4s
+    add v22.4s, v22.4s, v23.4s
+    add v24.4s, v24.4s, v25.4s
+    add v26.4s, v26.4s, v27.4s
+    add v28.4s, v28.4s, v29.4s
+    add v30.4s, v30.4s, v31.4s
+    add v0.4s, v0.4s, v2.4s
+    add v1.4s, v4.4s, v6.4s
+    add v2.4s, v8.4s, v10.4s
+    add v3.4s, v12.4s, v14.4s
+    add v4.4s, v16.4s, v18.4s
+    add v5.4s, v20.4s, v22.4s
+    add v6.4s, v24.4s, v26.4s
+    add v7.4s, v28.4s, v30.4s
+    add v0.4s, v0.4s, v1.4s
+    add v1.4s, v2.4s, v3.4s
+    add v2.4s, v4.4s, v5.4s
+    add v3.4s, v6.4s, v7.4s
+    add v0.4s, v0.4s, v1.4s
+    add v1.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v1.4s
+    addp v0.4s, v0.4s, v0.4s
+    addp v0.4s, v0.4s, v0.4s
+
+    mov x1, #128
+    ucvtf d1, x1
+    fsqrt d1, d1
+    mov x0, #0
+    umov w0, v0.s[0]
+    ucvtf d0, x0
+    fdiv d0, d0, d1
+    fmov d1, #2.0
+    fmul d0, d0, d1
+    fcvtms x0, d0
+
+    ld1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp], #64
+    ld1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp], #64
+    ret
+
+//void uavs3e_had_16x8_arm64(pel *org, int s_org, pel *cur, int s_cur)
+//*org->x0, s_org->x1, *cur->x2, s_cur->x3
+function uavs3e_had_16x8_arm64
+    sub sp, sp, #64
+    st1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp]
+    sub sp, sp, #64
+    st1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp]
+
+    lsl x1, x1, #1
+    lsl x3, x3, #1
+
+    ld1 {v0.8h, v1.8h}, [x0], x1
+    ld1 {v2.8h, v3.8h}, [x0], x1
+    ld1 {v4.8h, v5.8h}, [x0], x1
+    ld1 {v6.8h, v7.8h}, [x0], x1
+    ld1 {v8.8h, v9.8h}, [x0], x1
+    ld1 {v10.8h, v11.8h}, [x0], x1
+    ld1 {v12.8h, v13.8h}, [x0], x1
+    ld1 {v14.8h, v15.8h}, [x0], x1
+
+    ld1 {v16.8h, v17.8h}, [x2], x3
+    ld1 {v18.8h, v19.8h}, [x2], x3
+    ld1 {v20.8h, v21.8h}, [x2], x3
+    ld1 {v22.8h, v23.8h}, [x2], x3
+    ld1 {v24.8h, v25.8h}, [x2], x3
+    ld1 {v26.8h, v27.8h}, [x2], x3
+    ld1 {v28.8h, v29.8h}, [x2], x3
+    ld1 {v30.8h, v31.8h}, [x2], x3
+
+    sub v0.8h, v0.8h, v16.8h
+    sub v1.8h, v1.8h, v17.8h
+    sub v2.8h, v2.8h, v18.8h
+    sub v3.8h, v3.8h, v19.8h
+    sub v4.8h, v4.8h, v20.8h
+    sub v5.8h, v5.8h, v21.8h
+    sub v6.8h, v6.8h, v22.8h
+    sub v7.8h, v7.8h, v23.8h
+    sub v8.8h, v8.8h, v24.8h
+    sub v9.8h, v9.8h, v25.8h
+    sub v10.8h, v10.8h, v26.8h
+    sub v11.8h, v11.8h, v27.8h
+    sub v12.8h, v12.8h, v28.8h
+    sub v13.8h, v13.8h, v29.8h
+    sub v14.8h, v14.8h, v30.8h
+    sub v15.8h, v15.8h, v31.8h
+
+    uzp1 v16.8h, v0.8h, v1.8h       //d0, d2, d4, d6, d8, d10, d12, d14
+    uzp2 v17.8h, v0.8h, v1.8h       //d1, d3, d5, d7, d9, d11, d13, d15
+    uzp1 v18.8h, v2.8h, v3.8h       //d16, d18, d20, d22
+    uzp2 v19.8h, v2.8h, v3.8h       //d17, d19, d21, d23
+    uzp1 v20.8h, v4.8h, v5.8h
+    uzp2 v21.8h, v4.8h, v5.8h
+    uzp1 v22.8h, v6.8h, v7.8h
+    uzp2 v23.8h, v6.8h, v7.8h
+    uzp1 v24.8h, v8.8h, v9.8h
+    uzp2 v25.8h, v8.8h, v9.8h
+    uzp1 v26.8h, v10.8h, v11.8h
+    uzp2 v27.8h, v10.8h, v11.8h
+    uzp1 v28.8h, v12.8h, v13.8h
+    uzp2 v29.8h, v12.8h, v13.8h
+    uzp1 v30.8h, v14.8h, v15.8h
+    uzp2 v31.8h, v14.8h, v15.8h
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1, d2 + d3
+    sub v1.8h, v16.8h, v17.8h       //d0 - d1, d2 - d3
+    add v2.8h, v18.8h, v19.8h
+    sub v3.8h, v18.8h, v19.8h
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+    add v8.8h, v24.8h, v25.8h
+    sub v9.8h, v24.8h, v25.8h
+    add v10.8h, v26.8h, v27.8h
+    sub v11.8h, v26.8h, v27.8h
+    add v12.8h, v28.8h, v29.8h
+    sub v13.8h, v28.8h, v29.8h
+    add v14.8h, v30.8h, v31.8h
+    sub v15.8h, v30.8h, v31.8h
+
+    trn1 v16.8h, v0.8h, v1.8h       //d0 + d1, d0 - d1
+    trn2 v17.8h, v0.8h, v1.8h       //d2 + d3, d2 - d3
+    trn1 v18.8h, v2.8h, v3.8h
+    trn2 v19.8h, v2.8h, v3.8h
+    trn1 v20.8h, v4.8h, v5.8h
+    trn2 v21.8h, v4.8h, v5.8h
+    trn1 v22.8h, v6.8h, v7.8h
+    trn2 v23.8h, v6.8h, v7.8h
+    trn1 v24.8h, v8.8h, v9.8h
+    trn2 v25.8h, v8.8h, v9.8h
+    trn1 v26.8h, v10.8h, v11.8h
+    trn2 v27.8h, v10.8h, v11.8h
+    trn1 v28.8h, v12.8h, v13.8h
+    trn2 v29.8h, v12.8h, v13.8h
+    trn1 v30.8h, v14.8h, v15.8h
+    trn2 v31.8h, v14.8h, v15.8h
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3
+    sub v1.8h, v16.8h, v17.8h       //d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    add v2.8h, v18.8h, v19.8h
+    sub v3.8h, v18.8h, v19.8h
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+    add v8.8h, v24.8h, v25.8h
+    sub v9.8h, v24.8h, v25.8h
+    add v10.8h, v26.8h, v27.8h
+    sub v11.8h, v26.8h, v27.8h
+    add v12.8h, v28.8h, v29.8h
+    sub v13.8h, v28.8h, v29.8h
+    add v14.8h, v30.8h, v31.8h
+    sub v15.8h, v30.8h, v31.8h
+
+    trn1 v16.4s, v0.4s, v1.4s       //d0 + d1 + d2 + d3, d0 - d1 + d2 - d3, d0 + d1 - (d2 + d3), d0 - d1 - (d2 - d3)
+    trn2 v17.4s, v0.4s, v1.4s       //d4 + d5 + d6 + d7, d4 - d5 + d6 - d7, d4 + d5 - (d6 + d7), d4 - d5 - (d6 - d7)
+    trn1 v18.4s, v2.4s, v3.4s
+    trn2 v19.4s, v2.4s, v3.4s
+    trn1 v20.4s, v4.4s, v5.4s
+    trn2 v21.4s, v4.4s, v5.4s
+    trn1 v22.4s, v6.4s, v7.4s
+    trn2 v23.4s, v6.4s, v7.4s
+    trn1 v24.4s, v8.4s, v9.4s
+    trn2 v25.4s, v8.4s, v9.4s
+    trn1 v26.4s, v10.4s, v11.4s
+    trn2 v27.4s, v10.4s, v11.4s
+    trn1 v28.4s, v12.4s, v13.4s
+    trn2 v29.4s, v12.4s, v13.4s
+    trn1 v30.4s, v14.4s, v15.4s
+    trn2 v31.4s, v14.4s, v15.4s
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7
+    sub v1.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3 - (d4 + d5 + d6 + d7)
+    add v2.8h, v18.8h, v19.8h
+    sub v3.8h, v18.8h, v19.8h
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+    add v8.8h, v24.8h, v25.8h
+    sub v9.8h, v24.8h, v25.8h
+    add v10.8h, v26.8h, v27.8h
+    sub v11.8h, v26.8h, v27.8h
+    add v12.8h, v28.8h, v29.8h
+    sub v13.8h, v28.8h, v29.8h
+    add v14.8h, v30.8h, v31.8h
+    sub v15.8h, v30.8h, v31.8h
+
+    trn1 v16.2d, v0.2d, v1.2d       //d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7
+    trn2 v17.2d, v0.2d, v1.2d       //d8 + d9 + d10 + d11 + d12 + d13 + d14 + d15
+    trn1 v18.2d, v2.2d, v3.2d
+    trn2 v19.2d, v2.2d, v3.2d
+    trn1 v20.2d, v4.2d, v5.2d
+    trn2 v21.2d, v4.2d, v5.2d
+    trn1 v22.2d, v6.2d, v7.2d
+    trn2 v23.2d, v6.2d, v7.2d
+    trn1 v24.2d, v8.2d, v9.2d
+    trn2 v25.2d, v8.2d, v9.2d
+    trn1 v26.2d, v10.2d, v11.2d
+    trn2 v27.2d, v10.2d, v11.2d
+    trn1 v28.2d, v12.2d, v13.2d
+    trn2 v29.2d, v12.2d, v13.2d
+    trn1 v30.2d, v14.2d, v15.2d
+    trn2 v31.2d, v14.2d, v15.2d
+
+    add v0.8h, v16.8h, v17.8h       //d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7 + d8 + d9 + d10 + d11 + d12 + d13 + d14 + d15
+    sub v1.8h, v16.8h, v17.8h
+    add v2.8h, v18.8h, v19.8h
+    sub v3.8h, v18.8h, v19.8h
+    add v4.8h, v20.8h, v21.8h
+    sub v5.8h, v20.8h, v21.8h
+    add v6.8h, v22.8h, v23.8h
+    sub v7.8h, v22.8h, v23.8h
+    add v8.8h, v24.8h, v25.8h
+    sub v9.8h, v24.8h, v25.8h
+    add v10.8h, v26.8h, v27.8h
+    sub v11.8h, v26.8h, v27.8h
+    add v12.8h, v28.8h, v29.8h
+    sub v13.8h, v28.8h, v29.8h
+    add v14.8h, v30.8h, v31.8h
+    sub v15.8h, v30.8h, v31.8h
+
+    add v16.8h, v0.8h, v8.8h
+    add v17.8h, v1.8h, v9.8h
+    add v18.8h, v2.8h, v10.8h
+    add v19.8h, v3.8h, v11.8h
+    add v20.8h, v4.8h, v12.8h
+    add v21.8h, v5.8h, v13.8h
+    add v22.8h, v6.8h, v14.8h
+    add v23.8h, v7.8h, v15.8h
+    sub v24.8h, v0.8h, v8.8h
+    sub v25.8h, v1.8h, v9.8h
+    sub v26.8h, v2.8h, v10.8h
+    sub v27.8h, v3.8h, v11.8h
+    sub v28.8h, v4.8h, v12.8h
+    sub v29.8h, v5.8h, v13.8h
+    sub v30.8h, v6.8h, v14.8h
+    sub v31.8h, v7.8h, v15.8h
+
+    saddl v0.4s, v16.4h, v20.4h
+    saddl2 v1.4s, v16.8h, v20.8h
+    saddl v2.4s, v17.4h, v21.4h
+    saddl2 v3.4s, v17.8h, v21.8h
+    saddl v4.4s, v18.4h, v22.4h
+    saddl2 v5.4s, v18.8h, v22.8h
+    saddl v6.4s, v19.4h, v23.4h
+    saddl2 v7.4s, v19.8h, v23.8h
+    ssubl v8.4s, v16.4h, v20.4h
+    ssubl2 v9.4s, v16.8h, v20.8h
+    ssubl v10.4s, v17.4h, v21.4h
+    ssubl2 v11.4s, v17.8h, v21.8h
+    ssubl v12.4s, v18.4h, v22.4h
+    ssubl2 v13.4s, v18.8h, v22.8h
+    ssubl v14.4s, v19.4h, v23.4h
+    ssubl2 v15.4s, v19.8h, v23.8h
+    saddl v16.4s, v24.4h, v28.4h
+    saddl2 v17.4s, v24.8h, v28.8h
+    saddl v18.4s, v25.4h, v29.4h
+    saddl2 v19.4s, v25.8h, v29.8h
+    saddl v20.4s, v26.4h, v30.4h
+    saddl2 v21.4s, v26.8h, v30.8h
+    saddl v22.4s, v27.4h, v31.4h
+    saddl2 v23.4s, v27.8h, v31.8h
+    sub sp, sp, #64
+    st1 {v20.4s, v21.4s, v22.4s, v23.4s}, [sp]
+    ssubl v20.4s, v24.4h, v28.4h
+    ssubl2 v21.4s, v24.8h, v28.8h
+    ssubl v22.4s, v25.4h, v29.4h
+    ssubl2 v23.4s, v25.8h, v29.8h
+    ssubl v24.4s, v26.4h, v30.4h
+    ssubl2 v25.4s, v26.8h, v30.8h
+    ssubl v26.4s, v27.4h, v31.4h
+    ssubl2 v27.4s, v27.8h, v31.8h
+    mov v31.16b, v27.16b
+    mov v30.16b, v26.16b
+    mov v29.16b, v25.16b
+    mov v28.16b, v24.16b
+    mov v27.16b, v23.16b
+    mov v26.16b, v22.16b
+    mov v25.16b, v21.16b
+    mov v24.16b, v20.16b
+
+    sub sp, sp, #64
+    st1 {v24.4s, v25.4s, v26.4s, v27.4s}, [sp]
+    add v20.4s, v0.4s, v4.4s
+    add v21.4s, v1.4s, v5.4s
+    add v22.4s, v2.4s, v6.4s
+    add v23.4s, v3.4s, v7.4s
+    sub v24.4s, v0.4s, v4.4s
+    sub v25.4s, v1.4s, v5.4s
+    sub v26.4s, v2.4s, v6.4s
+    sub v27.4s, v3.4s, v7.4s
+    mov v0.16b, v20.16b
+    mov v1.16b, v21.16b
+    mov v2.16b, v22.16b
+    mov v3.16b, v23.16b
+    mov v4.16b, v24.16b
+    mov v5.16b, v25.16b
+    mov v6.16b, v26.16b
+    mov v7.16b, v27.16b
+    ld1 {v24.4s, v25.4s, v26.4s, v27.4s}, [sp], #64
+    ld1 {v20.4s, v21.4s, v22.4s, v23.4s}, [sp]
+    st1 {v0.4s, v1.4s, v2.4s, v3.4s}, [sp]
+    sub sp, sp, #64
+    st1 {v4.4s, v5.4s, v6.4s, v7.4s}, [sp]
+    add v0.4s, v8.4s, v12.4s
+    add v1.4s, v9.4s, v13.4s
+    add v2.4s, v10.4s, v14.4s
+    add v3.4s, v11.4s, v15.4s
+    sub v4.4s, v8.4s, v12.4s
+    sub v5.4s, v9.4s, v13.4s
+    sub v6.4s, v10.4s, v14.4s
+    sub v7.4s, v11.4s, v15.4s
+    mov v8.16b, v0.16b
+    mov v9.16b, v1.16b
+    mov v10.16b, v2.16b
+    mov v11.16b, v3.16b
+    mov v12.16b, v4.16b
+    mov v13.16b, v5.16b
+    mov v14.16b, v6.16b
+    mov v15.16b, v7.16b
+    add v0.4s, v16.4s, v20.4s
+    add v1.4s, v17.4s, v21.4s
+    add v2.4s, v18.4s, v22.4s
+    add v3.4s, v19.4s, v23.4s
+    sub v4.4s, v16.4s, v20.4s
+    sub v5.4s, v17.4s, v21.4s
+    sub v6.4s, v18.4s, v22.4s
+    sub v7.4s, v19.4s, v23.4s
+    mov v16.16b, v0.16b
+    mov v17.16b, v1.16b
+    mov v18.16b, v2.16b
+    mov v19.16b, v3.16b
+    mov v20.16b, v4.16b
+    mov v21.16b, v5.16b
+    mov v22.16b, v6.16b
+    mov v23.16b, v7.16b
+    add v0.4s, v24.4s, v28.4s
+    add v1.4s, v25.4s, v29.4s
+    add v2.4s, v26.4s, v30.4s
+    add v3.4s, v27.4s, v31.4s
+    sub v4.4s, v24.4s, v28.4s
+    sub v5.4s, v25.4s, v29.4s
+    sub v6.4s, v26.4s, v30.4s
+    sub v7.4s, v27.4s, v31.4s
+    mov v24.16b, v0.16b
+    mov v25.16b, v1.16b
+    mov v26.16b, v2.16b
+    mov v27.16b, v3.16b
+    mov v28.16b, v4.16b
+    mov v29.16b, v5.16b
+    mov v30.16b, v6.16b
+    mov v31.16b, v7.16b
+    ld1 {v4.4s, v5.4s, v6.4s, v7.4s}, [sp], #64
+    ld1 {v0.4s, v1.4s, v2.4s, v3.4s}, [sp], #64
+
+    abs v0.4s, v0.4s
+    abs v1.4s, v1.4s
+    abs v2.4s, v2.4s
+    abs v3.4s, v3.4s
+    abs v4.4s, v4.4s
+    abs v5.4s, v5.4s
+    abs v6.4s, v6.4s
+    abs v7.4s, v7.4s
+    abs v8.4s, v8.4s
+    abs v9.4s, v9.4s
+    abs v10.4s, v10.4s
+    abs v11.4s, v11.4s
+    abs v12.4s, v12.4s
+    abs v13.4s, v13.4s
+    abs v14.4s, v14.4s
+    abs v15.4s, v15.4s
+    abs v16.4s, v16.4s
+    abs v17.4s, v17.4s
+    abs v18.4s, v18.4s
+    abs v19.4s, v19.4s
+    abs v20.4s, v20.4s
+    abs v21.4s, v21.4s
+    abs v22.4s, v22.4s
+    abs v23.4s, v23.4s
+    abs v24.4s, v24.4s
+    abs v25.4s, v25.4s
+    abs v26.4s, v26.4s
+    abs v27.4s, v27.4s
+    abs v28.4s, v28.4s
+    abs v29.4s, v29.4s
+    abs v30.4s, v30.4s
+    abs v31.4s, v31.4s
+
+    add v0.4s, v0.4s, v1.4s
+    add v2.4s, v2.4s, v3.4s
+    add v4.4s, v4.4s, v5.4s
+    add v6.4s, v6.4s, v7.4s
+    add v8.4s, v8.4s, v9.4s
+    add v10.4s, v10.4s, v11.4s
+    add v12.4s, v12.4s, v13.4s
+    add v14.4s, v14.4s, v15.4s
+    add v16.4s, v16.4s, v17.4s
+    add v18.4s, v18.4s, v19.4s
+    add v20.4s, v20.4s, v21.4s
+    add v22.4s, v22.4s, v23.4s
+    add v24.4s, v24.4s, v25.4s
+    add v26.4s, v26.4s, v27.4s
+    add v28.4s, v28.4s, v29.4s
+    add v30.4s, v30.4s, v31.4s
+    add v0.4s, v0.4s, v2.4s
+    add v1.4s, v4.4s, v6.4s
+    add v2.4s, v8.4s, v10.4s
+    add v3.4s, v12.4s, v14.4s
+    add v4.4s, v16.4s, v18.4s
+    add v5.4s, v20.4s, v22.4s
+    add v6.4s, v24.4s, v26.4s
+    add v7.4s, v28.4s, v30.4s
+    add v0.4s, v0.4s, v1.4s
+    add v1.4s, v2.4s, v3.4s
+    add v2.4s, v4.4s, v5.4s
+    add v3.4s, v6.4s, v7.4s
+    add v0.4s, v0.4s, v1.4s
+    add v1.4s, v2.4s, v3.4s
+    add v0.4s, v0.4s, v1.4s
+    addp v0.4s, v0.4s, v0.4s
+    addp v0.4s, v0.4s, v0.4s
+
+    mov x1, #128
+    ucvtf d1, x1
+    fsqrt d1, d1
+    mov x0, #0
+    umov w0, v0.s[0]
+    ucvtf d0, x0
+    fdiv d0, d0, d1
+    fmov d1, #2.0
+    fmul d0, d0, d1
+    fcvtms x0, d0
+
+    ld1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp], #64
+    ld1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp], #64
+    ret
 #endif
 #endif
