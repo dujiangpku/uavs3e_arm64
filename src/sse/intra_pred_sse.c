@@ -1319,6 +1319,7 @@ void uavs3e_ipred_dc_sse(pel *src, pel *dst, int i_dst, int width, int height, u
     int left_avail = IS_AVAIL(avail_cu, AVAIL_LE);
     int above_avail = IS_AVAIL(avail_cu, AVAIL_UP);
 
+    // .s文件中的 intra_pred_dc_above_left
     if (left_avail && above_avail) {
         int length = width + height + 1;
         __m128i sum = _mm_setzero_si128();
@@ -1327,6 +1328,7 @@ void uavs3e_ipred_dc_sse(pel *src, pel *dst, int i_dst, int width, int height, u
         p_src = src - height;
 
         for (i = 0; i < length - 7; i += 8) {
+            // 将*（p_src+i）的值放到
             val = _mm_cvtepu8_epi16(_mm_loadl_epi64((__m128i *)(p_src + i)));
             sum = _mm_add_epi16(sum, val);
         }

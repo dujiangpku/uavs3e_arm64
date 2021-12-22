@@ -135,10 +135,12 @@ static void ipred_dc(pel *src, pel *dst, int i_dst, int w, int h, u16 avail_cu, 
 
     int dc = 0;
     int i, j;
+    // AVAIL_LE=1
     if (IS_AVAIL(avail_cu, AVAIL_LE)) {
         for (i = 0; i < h; i++) {
             dc += src[-i-1];
         }
+        // AVAIL_UP=0
         if (IS_AVAIL(avail_cu, AVAIL_UP)) {
             for (j = 0; j < w; j++) {
                 dc += src[j+1];

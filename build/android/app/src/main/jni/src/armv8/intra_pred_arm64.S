@@ -3684,16 +3684,17 @@ intra_pred_hor_end:
 //src->x0, dst->x1, i_dst->x2, w->x3, h->x4, avail_cu->x5, bit_depth->x6
 function uavs3e_intra_pred_dc_arm64
 
-    lsl x2, x2, #1
-    lsl x12, x4, #1
-    lsl x13, x5, #1
+    lsl x2, x2, #1          //x2 = x2*2,i_dst = i_dst*2
+    lsl x12, x4, #1         //x12 = x4*2, x12: h*2
+    lsl x13, x5, #1         //x13 = x5*2, x13: avail_cu*2
 
-    and w7, w5, #2          // left avail
-    and w8, w5, #1          // up avail
-    lsr w7, w7, #1
+    and w7, w5, #2          // left avail  w7 = w5 & 010 对应IS_AVAIL(avail_cu, AVAIL_LE)
+    and w8, w5, #1          // up avail    w8 = w5 & 001 对应IS_AVAIL(avail_cu, AVAIL_UP)
+    lsr w7, w7, #1          // 若left avail, w7 = 1
 
-    and w9, w7, w8          //left up
-    cmp w9, #0
+    // 若left avail, w7 = 1; 若up avail, w8 = 1
+    and w9, w7, w8          //left up   w9 = w7 and w8
+    cmp w9, #0              //compare w9 0，如果w9 != 0，则执行intra_pred
     bne intra_pred_dc_above_left
 
     cmp w8, #0
@@ -3817,10 +3818,10 @@ intra_pred_dc_none:
 
 intra_pred_dc_above_left:
 
-    add x10, x0, #2 			// rpSrc = pSrc + 1;
+    add x10, x0, #2 			// rpSrc = pSrc + 1; rpSrc是个什么东西啊？？？
 
     //branch
-    cmp w3, #16
+    cmp w3, #16     // 如果w3 == 16，即width=16，则执行intra_pred_dc_abobe_left_w16
     beq intra_pred_dc_above_left_w16
     bgt intra_pred_dc_above_left_w32x
 
@@ -3838,7 +3839,7 @@ intra_pred_dc_above_left_w8:
     b intra_pred_dc_above_left_h
 
 intra_pred_dc_above_left_w16:
-    ld1 {v0.8h, v1.8h}, [x10]
+    ld1 {v0.8h, v1.8h}, [x10]       // x10 = x0+2
     add v0.8h, v0.8h, v1.8h
     b intra_pred_dc_above_left_h
 
@@ -3922,6 +3923,7 @@ intra_pred_dc_above_left_h64:
 
 intra_pred_dc_above_left_dcvalue:
 
+    // v0.s[0]才是最后的结果dc
     uaddlp v0.4s, v0.8h
     addp v0.4s, v0.4s, v0.4s
     addp v0.4s, v0.4s, v0.4s
@@ -3936,7 +3938,7 @@ intra_pred_dc_above_left_dcvalue:
     udiv w11, w11, w10
     mul w8, w8, w11
     lsr w8, w8, #12
-    dup v0.8h, w8
+    dup v0.8h, w8   // 将w8也就是dc复制到v0.8h中
 
 intra_pred_dc_fillblock:
 

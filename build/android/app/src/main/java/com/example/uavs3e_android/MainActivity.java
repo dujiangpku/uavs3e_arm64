@@ -39,9 +39,9 @@ public class MainActivity extends AppCompatActivity {
         //String[] streams = new String[18];
         String stream_path = "/avs3/"; //"/avs3/hpm3.3/";
         String[] streams = {
-//                "MarketPlace_1920x1080_60fps_10bit_420.yuv"
+                "MarketPlace_1920x1080_60fps_10bit_420.yuv"
                 //"Cactus_1920x1080_50.yuv",
-                "akiyocif.yuv",
+//                "akiyocif.yuv",
                 //"BasketballDrive_1920x1080_50_34.yuv"
         };
         for (int i = 0; i < stream_num; i++) {
