@@ -155,6 +155,40 @@ void uavs3e_itrans_dst7_pb4_arm64(s16 *coeff, s16 *block, int shift, int line, i
 void uavs3e_itrans_dst7_pb8_arm64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT);
 void uavs3e_itrans_dst7_pb16_arm64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val, s8 *iT);
 
+void uavs3e_trans_dct2_w4_h4_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w4_h8_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w4_h16_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w4_h32_arm64(s16 *src, s16 *dst, int bit_depth);
+
+void uavs3e_trans_dct2_w8_h4_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w8_h8_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w8_h16_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w8_h32_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w8_h64_arm64(s16 *src, s16 *dst, int bit_depth);
+
+void uavs3e_trans_dct2_w16_h4_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w16_h8_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w16_h16_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w16_h32_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w16_h64_arm64(s16 *src, s16 *dst, int bit_depth);
+
+void uavs3e_trans_dct2_w32_h4_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w32_h8_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w32_h16_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w32_h32_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w32_h64_arm64(s16 *src, s16 *dst, int bit_depth);
+
+void uavs3e_trans_dct2_w64_h8_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w64_h16_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w64_h32_arm64(s16 *src, s16 *dst, int bit_depth);
+void uavs3e_trans_dct2_w64_h64_arm64(s16 *src, s16 *dst, int bit_depth);
+
+void tx_dct2_pb4_arm64(s16* src, s16* dst, int line, int limit_line, int shift);
+void tx_dct2_pb8_arm64(s16* src, s16* dst, int line, int limit_line, int shift);
+void tx_dct2_pb16_arm64(s16* src, s16* dst, int line, int limit_line, int shift);
+void tx_dct2_pb32_arm64(s16* src, s16* dst, int line, int limit_line, int shift);
+void tx_dct2_pb64_arm64(s16* src, s16* dst, int line, int limit_line, int shift);
+
 u32 uavs3e_get_sad_4_arm64(pel *p_org, int i_org, pel *p_pred, int i_pred, int height);
 u32 uavs3e_get_sad_8_arm64(pel *p_org, int i_org, pel *p_pred, int i_pred, int height);
 u32 uavs3e_get_sad_16_arm64(pel *p_org, int i_org, pel *p_pred, int i_pred, int height);
@@ -189,9 +223,6 @@ u32 uavs3e_had_8x4_arm64(pel *org, int s_org, pel *cur, int s_cur);
 u32 uavs3e_had_8x8_arm64(pel *org, int s_org, pel *cur, int s_cur);
 u32 uavs3e_had_16x8_arm64(pel *org, int s_org, pel *cur, int s_cur);
 u32 uavs3e_had_8x16_arm64(pel *org, int s_org, pel *cur, int s_cur);
-
-u64 uavs3e_var_8_arm64(pel* pix, int i_pix);
-u64 uavs3e_var_16_arm64(pel* pix, int i_pix);
 
 void uavs3e_pel_diff_4_arm64(pel *p_org, int i_org, pel *p_pred, int i_pred, s16 *p_resi, int i_resi, int height);
 void uavs3e_pel_diff_8_arm64(pel *p_org, int i_org, pel *p_pred, int i_pred, s16 *p_resi, int i_resi, int height);
