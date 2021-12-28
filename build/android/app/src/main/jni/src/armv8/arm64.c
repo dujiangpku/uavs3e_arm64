@@ -6,6 +6,8 @@ void uavs3e_funs_init_arm64()
 #if(BIT_DEPTH==8)
     uavs3e_funs_handle.recon[0] = uavs3e_recon_w4_arm64;
     uavs3e_funs_handle.recon[1] = uavs3e_recon_w8_arm64;
+    uavs3e_funs_handle.recon[2] = uavs3e_recon_w16_arm64;
+    uavs3e_funs_handle.recon[3] = uavs3e_recon_w32_arm64;
 
     uavs3e_funs_handle.itrans_dct2[1][1] = uavs3e_itrans_dct2_h4_w4_arm64;
     uavs3e_funs_handle.itrans_dct2[1][2] = uavs3e_itrans_dct2_h4_w8_arm64;
