@@ -240,6 +240,9 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.pel_avrg[5] = uavs3e_pel_avrg_128_arm64;
 
     */
+
+    uavs3e_funs_handle.sao = uavs3e_sao_on_lcu_arm64;
+    //todo uavs3e_funs_handle.sao_stat
 #endif
 
 }
