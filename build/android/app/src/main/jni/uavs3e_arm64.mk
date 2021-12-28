@@ -11,3 +11,5 @@ uavs3e_srcs_arm += $(ARM64_SRC_PATH)/deblock_arm64.S
 uavs3e_srcs_arm += $(ARM64_SRC_PATH)/alf_arm64.S
 uavs3e_srcs_arm += $(ARM64_SRC_PATH)/intra_pred_arm64.S
 uavs3e_srcs_arm += $(ARM64_SRC_PATH)/cost_arm64.S
+uavs3e_srcs_arm += $(ARM64_SRC_PATH)/sao_arm64.c
+uavs3e_srcs_arm += $(ARM64_SRC_PATH)/sao_kernel_arm64.S
