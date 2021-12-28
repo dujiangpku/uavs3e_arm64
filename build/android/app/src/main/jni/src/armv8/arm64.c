@@ -51,6 +51,34 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.alf      = uavs3e_alf_filter_block_arm64;
 
 #else
+    //uavs3e_funs_handle.trans_dct2[1][1] = uavs3e_trans_dct2_w4_h4_arm64;
+    //uavs3e_funs_handle.trans_dct2[1][2] = uavs3e_trans_dct2_w4_h8_arm64;
+    //uavs3e_funs_handle.trans_dct2[1][3] = uavs3e_trans_dct2_w4_h16_arm64;
+    //uavs3e_funs_handle.trans_dct2[1][4] = uavs3e_trans_dct2_w4_h32_arm64;
+
+    //uavs3e_funs_handle.trans_dct2[2][1] = uavs3e_trans_dct2_w8_h4_arm64;
+    //uavs3e_funs_handle.trans_dct2[2][2] = uavs3e_trans_dct2_w8_h8_arm64;
+    //uavs3e_funs_handle.trans_dct2[2][3] = uavs3e_trans_dct2_w8_h16_arm64;
+    //uavs3e_funs_handle.trans_dct2[2][4] = uavs3e_trans_dct2_w8_h32_arm64;
+    //uavs3e_funs_handle.trans_dct2[2][5] = uavs3e_trans_dct2_w8_h64_arm64;
+
+    //uavs3e_funs_handle.trans_dct2[3][1] = uavs3e_trans_dct2_w16_h16_arm64;
+    //uavs3e_funs_handle.trans_dct2[3][2] = uavs3e_trans_dct2_w16_h8_arm64;
+    //uavs3e_funs_handle.trans_dct2[3][3] = uavs3e_trans_dct2_w16_h16_arm64;
+    //uavs3e_funs_handle.trans_dct2[3][4] = uavs3e_trans_dct2_w16_h32_arm64;
+    //uavs3e_funs_handle.trans_dct2[3][5] = uavs3e_trans_dct2_w16_h64_arm64;
+
+    //uavs3e_funs_handle.trans_dct2[4][1] = uavs3e_trans_dct2_w32_h4_arm64;
+    //uavs3e_funs_handle.trans_dct2[4][2] = uavs3e_trans_dct2_w32_h8_arm64;
+    //uavs3e_funs_handle.trans_dct2[4][3] = uavs3e_trans_dct2_w32_h16_arm64;
+    //uavs3e_funs_handle.trans_dct2[4][4] = uavs3e_trans_dct2_w32_h32_arm64;
+    //uavs3e_funs_handle.trans_dct2[4][5] = uavs3e_trans_dct2_w32_h64_arm64;
+
+    //uavs3e_funs_handle.trans_dct2[5][2] = uavs3e_trans_dct2_w64_h8_arm64;
+    //uavs3e_funs_handle.trans_dct2[5][3] = uavs3e_trans_dct2_w64_h16_arm64;
+    //uavs3e_funs_handle.trans_dct2[5][4] = uavs3e_trans_dct2_w64_h32_arm64;
+    //uavs3e_funs_handle.trans_dct2[5][5] = uavs3e_trans_dct2_w64_h64_arm64;
+
     uavs3e_funs_handle.itrans_dct2[1][1] = uavs3e_itrans_dct2_h4_w4_arm64;
     uavs3e_funs_handle.itrans_dct2[1][2] = uavs3e_itrans_dct2_h4_w8_arm64;
     uavs3e_funs_handle.itrans_dct2[1][3] = uavs3e_itrans_dct2_h4_w16_arm64;
@@ -179,21 +207,19 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.cost_sad_x4[4] = uavs3e_get_sad_x4_64_arm64;
     uavs3e_funs_handle.cost_sad_x4[5] = uavs3e_get_sad_x4_128_arm64;
 
-    //uavs3e_funs_handle.cost_satd[0][0] = uavs3e_had_4x4_arm64;
-    //uavs3e_funs_handle.cost_satd[1][0] = uavs3e_had_8x4_arm64;
-    //uavs3e_funs_handle.cost_satd[0][1] = uavs3e_had_4x8_arm64;
-    //uavs3e_funs_handle.cost_satd[1][1] = uavs3e_had_8x8_arm64;
-    //uavs3e_funs_handle.cost_satd[2][1] = uavs3e_had_16x8_arm64;
-    //uavs3e_funs_handle.cost_satd[1][2] = uavs3e_had_8x16_arm64;
+    uavs3e_funs_handle.recon[0] = uavs3e_recon_w4_arm64;
+    uavs3e_funs_handle.recon[1] = uavs3e_recon_w8_arm64;
+    uavs3e_funs_handle.recon[2] = uavs3e_recon_w16_arm64;
+    uavs3e_funs_handle.recon[3] = uavs3e_recon_w32_arm64;
+
+    uavs3e_funs_handle.cost_satd[0][0] = uavs3e_had_4x4_arm64;
+    uavs3e_funs_handle.cost_satd[1][0] = uavs3e_had_8x4_arm64;
+    uavs3e_funs_handle.cost_satd[0][1] = uavs3e_had_4x8_arm64;
+    uavs3e_funs_handle.cost_satd[1][1] = uavs3e_had_8x8_arm64;
+    uavs3e_funs_handle.cost_satd[2][1] = uavs3e_had_16x8_arm64;
+    uavs3e_funs_handle.cost_satd[1][2] = uavs3e_had_8x16_arm64;
 
     /*
-    uavs3e_funs_handle.cost_var[0] = uavs3e_get_var_4_arm64;
-    uavs3e_funs_handle.cost_var[1] = uavs3e_get_var_8_arm64;
-    uavs3e_funs_handle.cost_var[2] = uavs3e_get_var_16_arm64;
-    uavs3e_funs_handle.cost_var[3] = uavs3e_get_var_32_arm64;
-    uavs3e_funs_handle.cost_var[4] = uavs3e_get_var_64_arm64;
-    uavs3e_funs_handle.cost_var[5] = uavs3e_get_var_128_arm64;
-
     uavs3e_funs_handle.ssim_4x4x2_core = ssim_4x4x2_core;
     uavs3e_funs_handle.ssim_end4 = ssim_end4;
 
@@ -213,12 +239,6 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.pel_avrg[4] = uavs3e_pel_avrg_64_arm64;
     uavs3e_funs_handle.pel_avrg[5] = uavs3e_pel_avrg_128_arm64;
 
-    uavs3e_funs_handle.recon[0] = uavs3e_recon_w4_arm64;
-    uavs3e_funs_handle.recon[1] = uavs3e_recon_w8_arm64;
-    uavs3e_funs_handle.recon[2] = uavs3e_recon_w16_arm64;
-    uavs3e_funs_handle.recon[3] = uavs3e_recon_w32_arm64;
-    uavs3e_funs_handle.recon[4] = uavs3e_recon_w64_arm64;
-    uavs3e_funs_handle.recon[5] = uavs3e_recon_w128_arm64;
     */
 
     uavs3e_funs_handle.sao = uavs3e_sao_on_lcu_arm64;
