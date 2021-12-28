@@ -58,8 +58,6 @@ void uavs3e_deblock_ver_luma_arm64(pel *src, int stride, int alpha, int beta, in
 void uavs3e_deblock_hor_luma_arm64(pel *src, int stride, int alpha, int beta, int flt_flag);
 void uavs3e_deblock_ver_chroma_arm64(pel *src_u, pel *src_v, int stride, int alpha_u, int beta_u, int alpha_v, int beta_v, int flt_flag);
 void uavs3e_deblock_hor_chroma_arm64(pel *src_u, pel *src_v, int stride, int alpha_u, int beta_u, int alpha_v, int beta_v, int flt_flag);
-//void uavs3e_sao_on_lcu_arm64(pel *src, int i_src, pel *dst, int i_dst, com_sao_param_t *sao_params, int smb_pix_height,
-//                           int smb_pix_width, int smb_available_left, int smb_available_right, int smb_available_up, int smb_available_down, int sample_bit_depth);
 void uavs3e_sao_on_lcu_arm64(pel *src, int i_src, pel *dst, int i_dst, com_sao_param_t *sao_params, int height,
                              int width, int available_left, int available_right, int available_up, int available_down, int sample_bit_depth);
 void uavs3e_sao_on_lcu_chroma_arm64(pel *src, int i_src, pel *dst, int i_dst, com_sao_param_t *sao_params, int smb_pix_height,
