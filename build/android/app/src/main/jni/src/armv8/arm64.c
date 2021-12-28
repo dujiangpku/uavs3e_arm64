@@ -50,6 +50,13 @@ void uavs3e_funs_init_arm64()
 
     uavs3e_funs_handle.alf      = uavs3e_alf_filter_block_arm64;
 
+    uavs3e_funs_handle.pel_diff[0] = uavs3e_pel_diff_4_arm64;
+    uavs3e_funs_handle.pel_diff[1] = uavs3e_pel_diff_8_arm64;
+    uavs3e_funs_handle.pel_diff[2] = uavs3e_pel_diff_16_arm64;
+    uavs3e_funs_handle.pel_diff[3] = uavs3e_pel_diff_32_arm64;
+    uavs3e_funs_handle.pel_diff[4] = uavs3e_pel_diff_64_arm64;
+    uavs3e_funs_handle.pel_diff[5] = uavs3e_pel_diff_128_arm64;
+
 #else
     //uavs3e_funs_handle.trans_dct2[1][1] = uavs3e_trans_dct2_w4_h4_arm64;
     //uavs3e_funs_handle.trans_dct2[1][2] = uavs3e_trans_dct2_w4_h8_arm64;
@@ -219,18 +226,19 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.cost_satd[2][1] = uavs3e_had_16x8_arm64;
     uavs3e_funs_handle.cost_satd[1][2] = uavs3e_had_8x16_arm64;
 
-    /*
-    uavs3e_funs_handle.ssim_4x4x2_core = ssim_4x4x2_core;
-    uavs3e_funs_handle.ssim_end4 = ssim_end4;
-
-    uavs3e_funs_handle.sobel_cost = sobel_cost;
-
     uavs3e_funs_handle.pel_diff[0] = uavs3e_pel_diff_4_arm64;
     uavs3e_funs_handle.pel_diff[1] = uavs3e_pel_diff_8_arm64;
     uavs3e_funs_handle.pel_diff[2] = uavs3e_pel_diff_16_arm64;
     uavs3e_funs_handle.pel_diff[3] = uavs3e_pel_diff_32_arm64;
     uavs3e_funs_handle.pel_diff[4] = uavs3e_pel_diff_64_arm64;
     uavs3e_funs_handle.pel_diff[5] = uavs3e_pel_diff_128_arm64;
+
+    /*
+    uavs3e_funs_handle.ssim_4x4x2_core = ssim_4x4x2_core;
+    uavs3e_funs_handle.ssim_end4 = ssim_end4;
+
+    uavs3e_funs_handle.sobel_cost = sobel_cost;
+
 
     uavs3e_funs_handle.pel_avrg[0] = uavs3e_pel_avrg_4_arm64;
     uavs3e_funs_handle.pel_avrg[1] = uavs3e_pel_avrg_8_arm64;
