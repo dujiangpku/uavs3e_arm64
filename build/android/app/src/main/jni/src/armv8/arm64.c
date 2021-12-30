@@ -184,6 +184,8 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.deblock_chroma[0] = uavs3e_deblock_ver_chroma_arm64;
     uavs3e_funs_handle.deblock_chroma[1] = uavs3e_deblock_hor_chroma_arm64;
 
+    uavs3e_funs_handle.sao = uavs3e_sao_on_lcu_arm64;
+
     uavs3e_funs_handle.alf      = uavs3e_alf_filter_block_arm64;
 
     uavs3e_funs_handle.cost_sad[0] = uavs3e_get_sad_4_arm64;
@@ -233,13 +235,6 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.pel_diff[4] = uavs3e_pel_diff_64_arm64;
     uavs3e_funs_handle.pel_diff[5] = uavs3e_pel_diff_128_arm64;
 
-    /*
-    uavs3e_funs_handle.ssim_4x4x2_core = ssim_4x4x2_core;
-    uavs3e_funs_handle.ssim_end4 = ssim_end4;
-
-    uavs3e_funs_handle.sobel_cost = sobel_cost;
-
-
     uavs3e_funs_handle.pel_avrg[0] = uavs3e_pel_avrg_4_arm64;
     uavs3e_funs_handle.pel_avrg[1] = uavs3e_pel_avrg_8_arm64;
     uavs3e_funs_handle.pel_avrg[2] = uavs3e_pel_avrg_16_arm64;
@@ -247,10 +242,6 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.pel_avrg[4] = uavs3e_pel_avrg_64_arm64;
     uavs3e_funs_handle.pel_avrg[5] = uavs3e_pel_avrg_128_arm64;
 
-    */
-
-    uavs3e_funs_handle.sao = uavs3e_sao_on_lcu_arm64;
-    //todo uavs3e_funs_handle.sao_stat
 #endif
 
 }

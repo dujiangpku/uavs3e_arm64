@@ -915,16 +915,15 @@ diff_w128_end:
     ret
 
 #else
+
 /******************************************************************************************************
 *  void uavs3e_recon_w4_arm64(s16 *resi, pel *pred, int i_pred, int width, int height, pel *rec, int i_rec, int cbf, int bit_depth)
 *  resi->x0, pred->x1, i_pred->x2, width->x3, height->x4, rec->x5, i_rec->x6, int cbf->x7, int bit_depth->
 ******************************************************************************************************/
 function uavs3e_recon_w4_arm64
-    ldr w8, [sp]        //10
-
     //max_val = (1 << bit_depth) - 1;
     mov w9, #1
-    lsl w9, w9, w8      //10
+    lsl w9, w9, #10      //10
     sub w9, w9, #1      //max_val
     mov w10, #0
 
@@ -937,37 +936,31 @@ function uavs3e_recon_w4_arm64
 
 recon_w4_loopx:
     //load *resi
-    ld1 {v0.4h, v1.4h, v2.4h, v3.4h}, [x0], #32
+    ld1 {v0.8h, v1.8h}, [x0], #32
 
     //load *pred
-    ld1 {v4.4h}, [x1], x2
-    ld1 {v5.4h}, [x1], x2
-    ld1 {v6.4h}, [x1], x2
-    ld1 {v7.4h}, [x1], x2
+    ld1 {v2.d}[0], [x1], x2
+    ld1 {v2.d}[1], [x1], x2
+    ld1 {v3.d}[0], [x1], x2
+    ld1 {v3.d}[1], [x1], x2
 
     //加
-    sqadd v0.4h, v0.4h, v4.4h
-    sqadd v1.4h, v1.4h, v5.4h
-    sqadd v2.4h, v2.4h, v6.4h
-    sqadd v3.4h, v3.4h, v7.4h
+    add v0.8h, v0.8h, v2.8h
+    add v1.8h, v1.8h, v3.8h
 
     //clip
-    dup v4.4h, w9   //max_val
-    dup v5.4h, w10  //0
-    smin v0.4h, v0.4h, v4.4h
-    smax v0.4h, v0.4h, v5.4h
-    smin v1.4h, v1.4h, v4.4h
-    smax v1.4h, v1.4h, v5.4h
-    smin v2.4h, v2.4h, v4.4h
-    smax v2.4h, v2.4h, v5.4h
-    smin v3.4h, v3.4h, v4.4h
-    smax v3.4h, v3.4h, v5.4h
+    dup v2.8h, w9   //max_val
+    dup v3.8h, w10  //0
+    smin v0.8h, v0.8h, v2.8h
+    smax v0.8h, v0.8h, v3.8h
+    smin v1.8h, v1.8h, v2.8h
+    smax v1.8h, v1.8h, v3.8h
 
     //store to blk
-    st1 {v0.4h}, [x5], x6
-    st1 {v1.4h}, [x5], x6
-    st1 {v2.4h}, [x5], x6
-    st1 {v3.4h}, [x5], x6
+    st1 {v0.d}[0], [x5], x6
+    st1 {v0.d}[1], [x5], x6
+    st1 {v1.d}[0], [x5], x6
+    st1 {v1.d}[1], [x5], x6
 
     sub x4, x4, #4
     cmp x4, #0
@@ -998,8 +991,6 @@ recon_w4_end:
 *  resi->x0, pred->x1, i_pred->x2, width->x3, height->x4, rec->x5, i_rec->x6, int cbf->x7, int bit_depth->
 ******************************************************************************************************/
 function uavs3e_recon_w8_arm64
-    //ldr w8, [sp]
-
     //max_val = (1 << bit_depth) - 1;
     mov w9, #1
     lsl w9, w9, #10
@@ -1014,7 +1005,7 @@ function uavs3e_recon_w8_arm64
 
 recon_w8_loopx:
     //load *resi
-    ld1 {v0.8h, v1.8h, v2.8h, v3.8h}, [x0], #64
+    ld1 {v0.8h - v3.8h}, [x0], #64
 
     //load *pred
     ld1 {v4.8h}, [x1], x2
@@ -1022,10 +1013,10 @@ recon_w8_loopx:
     ld1 {v6.8h}, [x1], x2
     ld1 {v7.8h}, [x1], x2
 
-    sqadd v0.8h, v0.8h, v4.8h
-    sqadd v1.8h, v1.8h, v5.8h
-    sqadd v2.8h, v2.8h, v6.8h
-    sqadd v3.8h, v3.8h, v7.8h
+    add v0.8h, v0.8h, v4.8h
+    add v1.8h, v1.8h, v5.8h
+    add v2.8h, v2.8h, v6.8h
+    add v3.8h, v3.8h, v7.8h
 
     //clip
     dup v4.8h, w9   //max_val
@@ -1044,7 +1035,6 @@ recon_w8_loopx:
     st1 {v1.8h}, [x5], x6
     st1 {v2.8h}, [x5], x6
     st1 {v3.8h}, [x5], x6
-
 
     sub x4, x4, #4
     cmp x4, #0
@@ -1067,7 +1057,6 @@ cbf_zero_w8:
     bgt cbf_zero_w8
 
 recon_w8_end:
-
     ret
 
 /******************************************************************************************************
@@ -1075,8 +1064,6 @@ recon_w8_end:
 *  resi->x0, pred->x1, i_pred->x2, width->x3, height->x4, rec->x5, i_rec->x6, int cbf->x7, int bit_depth->
 ******************************************************************************************************/
 function uavs3e_recon_w16_arm64
-    //ldr w8, [sp]
-
     //max_val = (1 << bit_depth) - 1;
     //bit_depth = 10
     mov w9, #1
@@ -1091,7 +1078,6 @@ function uavs3e_recon_w16_arm64
     beq cbf_zero_w16
 
 recon_w16_loopx:
-
     ld1 {v0.8h, v1.8h}, [x0], #32
     ld1 {v2.8h, v3.8h}, [x0], #32
     ld1 {v4.8h, v5.8h}, [x0], #32
@@ -1103,14 +1089,14 @@ recon_w16_loopx:
     ld1 {v20.8h, v21.8h}, [x1], x2
     ld1 {v22.8h, v23.8h}, [x1], x2
 
-    sqadd v0.8h, v0.8h, v16.8h
-    sqadd v1.8h, v1.8h, v17.8h
-    sqadd v2.8h, v2.8h, v18.8h
-    sqadd v3.8h, v3.8h, v19.8h
-    sqadd v4.8h, v4.8h, v20.8h
-    sqadd v5.8h, v5.8h, v21.8h
-    sqadd v6.8h, v6.8h, v22.8h
-    sqadd v7.8h, v7.8h, v23.8h
+    add v0.8h, v0.8h, v16.8h
+    add v1.8h, v1.8h, v17.8h
+    add v2.8h, v2.8h, v18.8h
+    add v3.8h, v3.8h, v19.8h
+    add v4.8h, v4.8h, v20.8h
+    add v5.8h, v5.8h, v21.8h
+    add v6.8h, v6.8h, v22.8h
+    add v7.8h, v7.8h, v23.8h
 
     //clip
     dup v16.8h, w9   //max_val
@@ -1133,10 +1119,10 @@ recon_w16_loopx:
     smax v7.8h, v7.8h, v17.8h
 
     //store to blk
-    st1 {v0.2d,v1.2d}, [x5], x6
-    st1 {v2.2d,v3.2d}, [x5], x6
-    st1 {v4.2d,v5.2d}, [x5], x6
-    st1 {v6.2d,v7.2d}, [x5], x6
+    st1 {v0.8h, v1.8h}, [x5], x6
+    st1 {v2.8h, v3.8h}, [x5], x6
+    st1 {v4.8h, v5.8h}, [x5], x6
+    st1 {v6.8h, v7.8h}, [x5], x6
 
     sub x4, x4, #4
     cmp x4, #0
@@ -1150,7 +1136,6 @@ cbf_zero_w16:
     ld1 {v4.8h,v5.8h}, [x1], x2
     ld1 {v6.8h,v7.8h}, [x1], x2
 
-
     st1 {v0.8h,v1.8h}, [x5], x6
     st1 {v2.8h,v3.8h}, [x5], x6
     st1 {v4.8h,v5.8h}, [x5], x6
@@ -1160,7 +1145,6 @@ cbf_zero_w16:
     bgt cbf_zero_w16
 
 recon_w16_end:
-
     ret
 
 /******************************************************************************************************
@@ -1168,17 +1152,12 @@ recon_w16_end:
 *  resi->x0, pred->x1, i_pred->x2, width->x3, height->x4, rec->x5, i_rec->x6, int cbf->x7, int bit_depth->
 ******************************************************************************************************/
 function uavs3e_recon_w32_arm64
-
-    //ldr w8, [sp]
+    sub sp, sp, #64
+    st1 {v8.8h - v11.8h}, [sp]
+    sub sp, sp, #64
+    st1 {v12.8h - v15.8h}, [sp]
 
     //max_val = (1 << bit_depth) - 1;
-    //bit_depth = 10
-
-    sub sp, sp, #64
-    st1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp]
-    sub sp, sp, #64
-    st1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp]
-
     mov w9, #1
     lsl w9, w9, #10
     sub w9, w9, #1
@@ -1191,36 +1170,34 @@ function uavs3e_recon_w32_arm64
     beq cbf_zero_w32
 
 recon_w32_loopx:
-
     //load *resi
-    ld1 {v0.8h, v1.8h, v2.8h, v3.8h},      [x0], #64
-    ld1 {v4.8h, v5.8h, v6.8h, v7.8h},      [x0], #64
-    ld1 {v8.8h, v9.8h, v10.8h, v11.8h},    [x0], #64
-    ld1 {v12.8h, v13.8h, v14.8h, v15.8h},  [x0], #64
+    ld1 {v0.8h - v3.8h}, [x0], #64
+    ld1 {v4.8h - v7.8h}, [x0], #64
+    ld1 {v8.8h - v11.8h}, [x0], #64
+    ld1 {v12.8h - v15.8h}, [x0], #64
 
     //load *pred
-    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x1], x2
-    ld1 {v20.8h, v21.8h, v22.8h, v23.8h}, [x1], x2
-    ld1 {v24.8h, v25.8h, v26.8h, v27.8h}, [x1], x2
-    ld1 {v28.8h, v29.8h, v30.8h, v31.8h}, [x1], x2
+    ld1 {v16.8h - v19.8h}, [x1], x2
+    ld1 {v20.8h - v23.8h}, [x1], x2
+    ld1 {v24.8h - v27.8h}, [x1], x2
+    ld1 {v28.8h - v31.8h}, [x1], x2
 
-
-    sqadd v0.8h, v0.8h, v16.8h
-    sqadd v1.8h, v1.8h, v17.8h
-    sqadd v2.8h, v2.8h, v18.8h
-    sqadd v3.8h, v3.8h, v19.8h
-    sqadd v4.8h, v4.8h, v20.8h
-    sqadd v5.8h, v5.8h, v21.8h
-    sqadd v6.8h, v6.8h, v22.8h
-    sqadd v7.8h, v7.8h, v23.8h
-    sqadd v8.8h, v8.8h, v24.8h
-    sqadd v9.8h, v9.8h, v25.8h
-    sqadd v10.8h, v10.8h, v26.8h
-    sqadd v11.8h, v11.8h, v27.8h
-    sqadd v12.8h, v12.8h, v28.8h
-    sqadd v13.8h, v13.8h, v29.8h
-    sqadd v14.8h, v14.8h, v30.8h
-    sqadd v15.8h, v15.8h, v31.8h
+    add v0.8h, v0.8h, v16.8h
+    add v1.8h, v1.8h, v17.8h
+    add v2.8h, v2.8h, v18.8h
+    add v3.8h, v3.8h, v19.8h
+    add v4.8h, v4.8h, v20.8h
+    add v5.8h, v5.8h, v21.8h
+    add v6.8h, v6.8h, v22.8h
+    add v7.8h, v7.8h, v23.8h
+    add v8.8h, v8.8h, v24.8h
+    add v9.8h, v9.8h, v25.8h
+    add v10.8h, v10.8h, v26.8h
+    add v11.8h, v11.8h, v27.8h
+    add v12.8h, v12.8h, v28.8h
+    add v13.8h, v13.8h, v29.8h
+    add v14.8h, v14.8h, v30.8h
+    add v15.8h, v15.8h, v31.8h
 
     //clip
     dup v16.8h, w9   //max_val
@@ -1259,10 +1236,10 @@ recon_w32_loopx:
     smax v15.8h, v15.8h, v17.8h
 
     //store to blk
-    st1 {v0.2d, v1.2d, v2.2d, v3.2d},      [x5], x6
-    st1 {v4.2d, v5.2d, v6.2d, v7.2d},      [x5], x6
-    st1 {v8.2d, v9.2d, v10.2d, v11.2d},    [x5], x6
-    st1 {v12.2d, v13.2d, v14.2d, v15.2d},  [x5], x6
+    st1 {v0.8h - v3.8h}, [x5], x6
+    st1 {v4.8h - v7.8h}, [x5], x6
+    st1 {v8.8h - v11.8h}, [x5], x6
+    st1 {v12.8h - v15.8h}, [x5], x6
 
     sub x4, x4, #4
     cmp x4, #0
@@ -1270,103 +1247,82 @@ recon_w32_loopx:
     b recon_w32_end
 
 cbf_zero_w32:
+    ld1 {v4.8h - v7.8h}, [x1], x2
+    ld1 {v8.8h - v11.8h}, [x1], x2
+    ld1 {v12.8h - v15.8h}, [x1], x2
+    ld1 {v16.8h - v19.8h}, [x1], x2
 
-    ld1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x1], x2
-    ld1 {v8.8h, v9.8h, v10.8h, v11.8h}, [x1], x2
-    ld1 {v12.8h, v13.8h, v14.8h, v15.8h}, [x1], x2
-    ld1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x1], x2
-
-    st1 {v4.8h, v5.8h, v6.8h, v7.8h}, [x5], x6
-    st1 {v8.8h, v9.8h, v10.8h, v11.8h}, [x5], x6
-    st1 {v12.8h, v13.8h, v14.8h, v15.8h}, [x5], x6
-    st1 {v16.8h, v17.8h, v18.8h, v19.8h}, [x5], x6
+    st1 {v4.8h - v7.8h}, [x5], x6
+    st1 {v8.8h - v11.8h}, [x5], x6
+    st1 {v12.8h - v15.8h}, [x5], x6
+    st1 {v16.8h - v19.8h}, [x5], x6
 
     sub x4, x4, #4
     cmp x4, #0
     bgt cbf_zero_w32
 
 recon_w32_end:
-
-    ld1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp], #64
-    ld1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp], #64
-
+    ld1 {v12.8h - v15.8h}, [sp], #64
+    ld1 {v8.8h - v11.8h}, [sp], #64
     ret
 
 /******************************************************************************************************
 *  void uavs3e_pel_diff_4_arm64(pel *p_org, int i_org, pel *p_pred, int i_pred, s16 *p_resi, int i_resi, int height)
 *  p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, p_resi->x4, i_resi->x5, height>x6->
 ******************************************************************************************************/
-
 function uavs3e_pel_diff_4_arm64
-
     lsl x1, x1, #1
     lsl x3, x3, #1
     lsl x5, x5, #1
 
 diff_w4_loopx:
-
     //load *org
-    //ld4 {v0.4h,v1.4h,v2.4h,v3.4h}, [x0], x1
-    ld1 {v0.4h}, [x0], x1
-    ld1 {v1.4h}, [x0], x1
-    ld1 {v2.4h}, [x0], x1
-    ld1 {v3.4h}, [x0], x1
+    ld1 {v0.d}[0], [x0], x1
+    ld1 {v0.d}[1], [x0], x1
+    ld1 {v1.d}[0], [x0], x1
+    ld1 {v1.d}[1], [x0], x1
 
     //load *pred
-    //ld1 {v4.4h,v5.4h,v6.4h,v7.4h,}, [x2], x3
-    ld1 {v4.4h}, [x2], x3
-    ld1 {v5.4h}, [x2], x3
-    ld1 {v6.4h}, [x2], x3
-    ld1 {v7.4h}, [x2], x3
+    ld1 {v2.d}[0], [x2], x3
+    ld1 {v2.d}[1], [x2], x3
+    ld1 {v3.d}[0], [x2], x3
+    ld1 {v3.d}[1], [x2], x3
 
-    //减
-    sub v0.4h, v0.4h, v4.4h
-    sub v1.4h, v1.4h, v5.4h
-    sub v2.4h, v2.4h, v6.4h
-    sub v3.4h, v3.4h, v7.4h
+    sub v0.8h, v0.8h, v2.8h
+    sub v1.8h, v1.8h, v3.8h
 
     //p_resi[i] = p_org[i] - p_pred[i]
-    st1 {v0.4h}, [x4], x5
-    st1 {v1.4h}, [x4], x5
-    st1 {v2.4h}, [x4], x5
-    st1 {v3.4h}, [x4], x5
+    st1 {v0.d}[0], [x4], x5
+    st1 {v0.d}[1], [x4], x5
+    st1 {v1.d}[0], [x4], x5
+    st1 {v1.d}[1], [x4], x5
 
-    sub x6,x6,#4
-    cmp x6,#0
+    subs x6, x6, #4
     bgt diff_w4_loopx
-    b diff_w4_end
-
-diff_w4_end:
     ret
 
 /******************************************************************************************************
 *  void uavs3e_pel_diff_8_arm64(pel *p_org, int i_org, pel *p_pred, int i_pred, s16 *p_resi, int i_resi, int height)
 *  p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, p_resi->x4, i_resi->x5, height>x6->
 ******************************************************************************************************/
-
 function uavs3e_pel_diff_8_arm64
-
     lsl x1, x1, #1
     lsl x3, x3, #1
     lsl x5, x5, #1
 
 diff_w8_loopx:
-
     //load *org
-    //ld4 {v0.8h,v1.8h,v2.8h,v3.8h}, [x0], x1
     ld1 {v0.8h}, [x0], x1
     ld1 {v1.8h}, [x0], x1
     ld1 {v2.8h}, [x0], x1
     ld1 {v3.8h}, [x0], x1
 
     //load *pred
-    //ld1 {v4.8h,v5.8h,v6.8h,v7.8h,}, [x2], x3
     ld1 {v4.8h}, [x2], x3
     ld1 {v5.8h}, [x2], x3
     ld1 {v6.8h}, [x2], x3
     ld1 {v7.8h}, [x2], x3
 
-    //减
     sub v0.8h, v0.8h, v4.8h
     sub v1.8h, v1.8h, v5.8h
     sub v2.8h, v2.8h, v6.8h
@@ -1378,12 +1334,8 @@ diff_w8_loopx:
     st1 {v2.8h}, [x4], x5
     st1 {v3.8h}, [x4], x5
 
-    sub x6,x6,#4
-    cmp x6,#0
+    subs x6, x6, #4
     bgt diff_w8_loopx
-    b diff_w8_end
-
-diff_w8_end:
     ret
 
 /******************************************************************************************************
@@ -1392,7 +1344,6 @@ diff_w8_end:
 ******************************************************************************************************/
 
 function uavs3e_pel_diff_16_arm64
-
     lsl x1, x1, #1
     lsl x3, x3, #1
     lsl x5, x5, #1
@@ -1400,20 +1351,17 @@ function uavs3e_pel_diff_16_arm64
 diff_w16_loopx:
 
     //load *org
-    //ld4 {v0.8h,v1.8h,v2.8h,v3.8h,v4.8h,v5.8h,v6.8h,v7.8h}, [x0], x1
     ld1 {v0.8h,v1.8h}, [x0], x1
     ld1 {v2.8h,v3.8h}, [x0], x1
     ld1 {v4.8h,v5.8h}, [x0], x1
     ld1 {v6.8h,v7.8h}, [x0], x1
 
     //load *pred
-    //ld1 {v16.8h,v17.8h,v18.8h,v19.8h,v20.8h,v21.8h,v22.8h,v23.8h}, [x2], x3
     ld1 {v16.8h,v17.8h}, [x2], x3
     ld1 {v18.8h,v19.8h}, [x2], x3
     ld1 {v20.8h,v21.8h}, [x2], x3
     ld1 {v22.8h,v23.8h}, [x2], x3
 
-    //减
     sub v0.8h, v0.8h, v16.8h
     sub v1.8h, v1.8h, v17.8h
     sub v2.8h, v2.8h, v18.8h
@@ -1429,12 +1377,8 @@ diff_w16_loopx:
     st1 {v4.8h,v5.8h}, [x4], x5
     st1 {v6.8h,v7.8h}, [x4], x5
 
-    sub x6,x6,#4
-    cmp x6,#0
+    subs x6, x6, #4
     bgt diff_w16_loopx
-    b diff_w16_end
-
-diff_w16_end:
     ret
 
 /******************************************************************************************************
@@ -1443,31 +1387,27 @@ diff_w16_end:
 ******************************************************************************************************/
 
 function uavs3e_pel_diff_32_arm64
-
     sub sp, sp, #64
-    st1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp]
+    st1 {v8.8h - v11.8h}, [sp]
     sub sp, sp, #64
-    st1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp]
+    st1 {v12.8h - v15.8h}, [sp]
 
     lsl x1, x1, #1
     lsl x3, x3, #1
     lsl x5, x5, #1
 
 diff_w32_loopx:
-
     //load *org
-    //ld4 {v0.8h-v15.8h}, [x0], x1
-    ld1 {v0.8h,v1.8h,v2.8h,v3.8h}, [x0], x1
-    ld1 {v4.8h,v5.8h,v6.8h,v7.8h}, [x0], x1
-    ld1 {v8.8h,v9.8h,v10.8h,v11.8h}, [x0], x1
-    ld1 {v12.8h,v13.8h,v14.8h,v15.8h}, [x0], x1
+    ld1 {v0.8h - v3.8h}, [x0], x1
+    ld1 {v4.8h - v7.8h}, [x0], x1
+    ld1 {v8.8h - v11.8h}, [x0], x1
+    ld1 {v12.8h - v15.8h}, [x0], x1
 
     //load *pred
-    //ld1 {v16.8h-v31.8h}, [x2], x3
-    ld1 {v16.8h,v17.8h,v18.8h,v19.8h}, [x2], x3
-    ld1 {v20.8h,v21.8h,v22.8h,v23.8h}, [x2], x3
-    ld1 {v24.8h,v25.8h,v26.8h,v27.8h}, [x2], x3
-    ld1 {v28.8h,v29.8h,v30.8h,v31.8h}, [x2], x3
+    ld1 {v16.8h - v19.8h}, [x2], x3
+    ld1 {v20.8h - v23.8h}, [x2], x3
+    ld1 {v24.8h - v27.8h}, [x2], x3
+    ld1 {v28.8h - v31.8h}, [x2], x3
 
     //减
     sub v0.8h, v0.8h, v16.8h
@@ -1488,20 +1428,16 @@ diff_w32_loopx:
     sub v15.8h, v15.8h, v31.8h
 
     //p_resi[i] = p_org[i] - p_pred[i]
-    st1 {v0.8h,v1.8h,v2.8h,v3.8h}, [x4], x5
-    st1 {v4.8h,v5.8h,v6.8h,v7.8h}, [x4], x5
-    st1 {v8.8h,v9.8h,v10.8h,v11.8h}, [x4], x5
-    st1 {v12.8h,v13.8h,v14.8h,v15.8h}, [x4], x5
+    st1 {v0.8h - v3.8h}, [x4], x5
+    st1 {v4.8h - v7.8h}, [x4], x5
+    st1 {v8.8h - v11.8h}, [x4], x5
+    st1 {v12.8h - v15.8h}, [x4], x5
 
-    sub x6,x6,#4
-    cmp x6,#0
+    subs x6, x6, #4
     bgt diff_w32_loopx
-    b diff_w32_end
 
-diff_w32_end:
-
-    ld1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp], #64
-    ld1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp], #64
+    ld1 {v12.8h - v15.8h}, [sp], #64
+    ld1 {v8.8h - v11.8h}, [sp], #64
 
     ret
 
@@ -1511,11 +1447,10 @@ diff_w32_end:
 ******************************************************************************************************/
 
 function uavs3e_pel_diff_64_arm64
-
     sub sp, sp, #64
-    st1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp]
+    st1 {v8.8h - v11.8h}, [sp]
     sub sp, sp, #64
-    st1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp]
+    st1 {v12.8h - v15.8h}, [sp]
 
     lsl x1, x1, #1
     lsl x3, x3, #1
@@ -1526,20 +1461,17 @@ function uavs3e_pel_diff_64_arm64
     sub x5, x5, #64
 
 diff_w64_loopx:
-
     //load *org
-    //ld4 {v0.8h-v15.8h}, [x0], x1
-    ld1 {v0.8h,v1.8h,v2.8h,v3.8h}, [x0], #64
-    ld1 {v4.8h,v5.8h,v6.8h,v7.8h}, [x0], x1
-    ld1 {v8.8h,v9.8h,v10.8h,v11.8h}, [x0], #64
-    ld1 {v12.8h,v13.8h,v14.8h,v15.8h}, [x0], x1
+    ld1 {v0.8h - v3.8h}, [x0], #64
+    ld1 {v4.8h - v7.8h}, [x0], x1
+    ld1 {v8.8h - v11.8h}, [x0], #64
+    ld1 {v12.8h - v15.8h}, [x0], x1
 
     //load *pred
-    //ld1 {v16.8h-v31.8h}, [x2], x3
-    ld1 {v16.8h,v17.8h,v18.8h,v19.8h}, [x2], #64
-    ld1 {v20.8h,v21.8h,v22.8h,v23.8h}, [x2], x3
-    ld1 {v24.8h,v25.8h,v26.8h,v27.8h}, [x2], #64
-    ld1 {v28.8h,v29.8h,v30.8h,v31.8h}, [x2], x3
+    ld1 {v16.8h - v19.8h}, [x2], #64
+    ld1 {v20.8h - v23.8h}, [x2], x3
+    ld1 {v24.8h - v27.8h}, [x2], #64
+    ld1 {v28.8h - v31.8h}, [x2], x3
 
     //减
     sub v0.8h, v0.8h, v16.8h
@@ -1560,62 +1492,48 @@ diff_w64_loopx:
     sub v15.8h, v15.8h, v31.8h
 
     //p_resi[i] = p_org[i] - p_pred[i]
-    st1 {v0.8h,v1.8h,v2.8h,v3.8h}, [x4], #64
-    st1 {v4.8h,v5.8h,v6.8h,v7.8h}, [x4], x5
-    st1 {v8.8h,v9.8h,v10.8h,v11.8h}, [x4], #64
-    st1 {v12.8h,v13.8h,v14.8h,v15.8h}, [x4], x5
+    st1 {v0.8h - v3.8h}, [x4], #64
+    st1 {v4.8h - v7.8h}, [x4], x5
+    st1 {v8.8h - v11.8h}, [x4], #64
+    st1 {v12.8h - v15.8h}, [x4], x5
 
-    sub x6,x6,#2
-    cmp x6,#0
+    subs x6, x6, #2
     bgt diff_w64_loopx
-    b diff_w64_end
 
-diff_w64_end:
-
-    ld1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp], #64
-    ld1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp], #64
-
+    ld1 {v12.8h - v15.8h}, [sp], #64
+    ld1 {v8.8h - v11.8h}, [sp], #64
     ret
 
 /******************************************************************************************************
 *  void uavs3e_pel_diff_128_arm64(pel *p_org, int i_org, pel *p_pred, int i_pred, s16 *p_resi, int i_resi, int height)
 *  p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, p_resi->x4, i_resi->x5, height>x6->
 ******************************************************************************************************/
-
 function uavs3e_pel_diff_128_arm64
-
     sub sp, sp, #64
-    st1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp]
+    st1 {v8.8h - v11.8h}, [sp]
     sub sp, sp, #64
-    st1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp]
+    st1 {v12.8h - v15.8h}, [sp]
 
     lsl x1, x1, #1
     lsl x3, x3, #1
     lsl x5, x5, #1
-
     sub x1, x1, #192
     sub x3, x3, #192
     sub x5, x5, #192
 
 diff_w128_loopx:
-
     //load *org
-    //ld4 {v0.8h-v15.8h}, [x0], x1
-    ld1 {v0.8h,v1.8h,v2.8h,v3.8h}, [x0], #64
-    ld1 {v4.8h,v5.8h,v6.8h,v7.8h}, [x0], #64
-    ld1 {v8.8h,v9.8h,v10.8h,v11.8h}, [x0], #64
-    ld1 {v12.8h,v13.8h,v14.8h,v15.8h}, [x0], x1
-
+    ld1 {v0.8h - v3.8h}, [x0], #64
+    ld1 {v4.8h - v7.8h}, [x0], #64
+    ld1 {v8.8h - v11.8h}, [x0], #64
+    ld1 {v12.8h - v15.8h}, [x0], x1
 
     //load *pred
-    //ld1 {v16.8h-v31.8h}, [x2], x3
-    ld1 {v16.8h,v17.8h,v18.8h,v19.8h}, [x2], #64
-    ld1 {v20.8h,v21.8h,v22.8h,v23.8h}, [x2], #64
-    ld1 {v24.8h,v25.8h,v26.8h,v27.8h}, [x2], #64
-    ld1 {v28.8h,v29.8h,v30.8h,v31.8h}, [x2], x3
+    ld1 {v16.8h - v19.8h}, [x2], #64
+    ld1 {v20.8h - v23.8h}, [x2], #64
+    ld1 {v24.8h - v27.8h}, [x2], #64
+    ld1 {v28.8h - v31.8h}, [x2], x3
 
-
-    //减
     sub v0.8h, v0.8h, v16.8h
     sub v1.8h, v1.8h, v17.8h
     sub v2.8h, v2.8h, v18.8h
@@ -1634,24 +1552,198 @@ diff_w128_loopx:
     sub v15.8h, v15.8h, v31.8h
 
     //p_resi[i] = p_org[i] - p_pred[i]
-    st1 {v0.8h,v1.8h,v2.8h,v3.8h}, [x4], #64
-    st1 {v4.8h,v5.8h,v6.8h,v7.8h}, [x4], #64
-    st1 {v8.8h,v9.8h,v10.8h,v11.8h}, [x4], #64
-    st1 {v12.8h,v13.8h,v14.8h,v15.8h}, [x4], x5
+    st1 {v0.8h - v3.8h}, [x4], #64
+    st1 {v4.8h - v7.8h}, [x4], #64
+    st1 {v8.8h - v11.8h}, [x4], #64
+    st1 {v12.8h - v15.8h}, [x4], x5
 
-
-    sub x6,x6,#1
-    cmp x6,#0
+    subs x6, x6, #1
     bgt diff_w128_loopx
-    b diff_w128_end
 
-diff_w128_end:
+    ld1 {v12.8h - v15.8h}, [sp], #64
+    ld1 {v8.8h - v11.8h}, [sp], #64
+    ret
 
-    ld1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp], #64
-    ld1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp], #64
+// void uavs3e_pel_avrg_4_arm64(pel *dst, int i_dst, pel *src1, pel *src2, int height)
+// dst->x0, i_dst->x1, src1->x2, src2->x3, height->x4
+function uavs3e_pel_avrg_4_arm64
+    lsl x1, x1, #1
+
+avg_pel_w4_y:
+    ld1 {v0.8h, v1.8h}, [x2], #32
+    ld1 {v2.8h, v3.8h}, [x3], #32
+
+    urhadd v0.8h, v0.8h, v2.8h
+    urhadd v1.8h, v1.8h, v3.8h
+
+    st1  {v0.d}[0], [x0], x1
+    st1  {v0.d}[1], [x0], x1
+    st1  {v1.d}[0], [x0], x1
+    st1  {v1.d}[1], [x0], x1
+
+    subs w4, w4, #4
+    bgt avg_pel_w4_y
 
     ret
 
+
+// void uavs3e_pel_avrg_8_arm64(pel *dst, int i_dst, pel *src1, pel *src2, int height);
+// dst->x0, i_dst->x1, src1->x2, src2->x3, height->x4
+function uavs3e_pel_avrg_8_arm64
+    lsl x1, x1, #1
+
+avg_pel_w8_y:
+    ld1 {v0.8h - v3.8h}, [x2], #64
+    ld1 {v4.8h - v7.8h}, [x3], #64
+
+    urhadd v0.8h, v0.8h, v4.8h
+    urhadd v1.8h, v1.8h, v5.8h
+    urhadd v2.8h, v2.8h, v6.8h
+    urhadd v3.8h, v3.8h, v7.8h
+
+    subs w4, w4, #4
+    st1  {v0.8h}, [x0], x1
+    st1  {v1.8h}, [x0], x1
+    st1  {v2.8h}, [x0], x1
+    st1  {v3.8h}, [x0], x1
+
+    bgt avg_pel_w8_y
+
+    ret
+
+// void uavs3e_pel_avrg_16_arm64(pel *dst, int i_dst, pel *src1, pel *src2, int height);
+// dst->x0, i_dst->x1, src1->x2, src2->x3, height->x4
+function uavs3e_pel_avrg_16_arm64
+    lsl x1, x1, #1
+avg_pel_w16_y:
+    ld1 {v0.8h - v3.8h}, [x2], #64
+    ld1 {v4.8h - v7.8h}, [x2], #64
+
+    ld1 {v20.8h - v23.8h}, [x3], #64
+    ld1 {v24.8h - v27.8h}, [x3], #64
+
+    urhadd v0.8h, v0.8h, v20.8h
+    urhadd v1.8h, v1.8h, v21.8h
+    urhadd v2.8h, v2.8h, v22.8h
+    urhadd v3.8h, v3.8h, v23.8h
+    urhadd v4.8h, v4.8h, v24.8h
+    urhadd v5.8h, v5.8h, v25.8h
+    urhadd v6.8h, v6.8h, v26.8h
+    urhadd v7.8h, v7.8h, v27.8h
+
+    subs w4, w4, #4
+    st1  {v0.8h, v1.8h}, [x0], x1
+    st1  {v2.8h, v3.8h}, [x0], x1
+    st1  {v4.8h, v5.8h}, [x0], x1
+    st1  {v6.8h, v7.8h}, [x0], x1
+
+    bgt avg_pel_w16_y
+
+    ret
+
+// void uavs3e_pel_avrg_32_arm64(pel *dst, int i_dst, pel *src1, pel *src2, int height);
+// dst->x0, i_dst->x1, src1->x2, src2->x3, height->x4
+function uavs3e_pel_avrg_32_arm64
+    lsl x1, x1, #1
+avg_pel_w32_y:
+    ld1 {v0.8h - v3.8h}, [x2], #64
+    ld1 {v4.8h - v7.8h}, [x2], #64
+
+    ld1 {v20.8h - v23.8h}, [x3], #64
+    ld1 {v24.8h - v27.8h}, [x3], #64
+
+    urhadd v0.8h, v0.8h, v20.8h
+    urhadd v1.8h, v1.8h, v21.8h
+    urhadd v2.8h, v2.8h, v22.8h
+    urhadd v3.8h, v3.8h, v23.8h
+    urhadd v4.8h, v4.8h, v24.8h
+    urhadd v5.8h, v5.8h, v25.8h
+    urhadd v6.8h, v6.8h, v26.8h
+    urhadd v7.8h, v7.8h, v27.8h
+
+    subs w4, w4, #2
+    st1  {v0.8h - v3.8h}, [x0], x1
+    st1  {v4.8h - v7.8h}, [x0], x1
+    bgt avg_pel_w32_y
+
+    ret
+
+// void uavs3e_pel_avrg_64_arm64(pel *dst, int i_dst, pel *src1, pel *src2, int height);
+// dst->x0, i_dst->x1, src1->x2, src2->x3, height->x4
+function uavs3e_pel_avrg_64_arm64
+    lsl x1, x1, #1
+    sub x1, x1, #64
+avg_pel_w64_y:
+    ld1 {v0.8h - v3.8h}, [x2], #64
+    ld1 {v4.8h - v7.8h}, [x2], #64
+
+    ld1 {v20.8h - v23.8h}, [x3], #64
+    ld1 {v24.8h - v27.8h}, [x3], #64
+
+    urhadd v0.8h, v0.8h, v20.8h
+    urhadd v1.8h, v1.8h, v21.8h
+    urhadd v2.8h, v2.8h, v22.8h
+    urhadd v3.8h, v3.8h, v23.8h
+    urhadd v4.8h, v4.8h, v24.8h
+    urhadd v5.8h, v5.8h, v25.8h
+    urhadd v6.8h, v6.8h, v26.8h
+    urhadd v7.8h, v7.8h, v27.8h
+
+    subs w4, w4, #1
+    st1  {v0.8h - v3.8h}, [x0], #64
+    st1  {v4.8h - v7.8h}, [x0], x1
+    bgt avg_pel_w64_y
+
+    ret
+
+
+// void uavs3e_pel_avrg_128_arm64(pel *dst, int i_dst, pel *src1, pel *src2, int height);
+// dst->x0, i_dst->x1, src1->x2, src2->x3, height->x4
+function uavs3e_pel_avrg_128_arm64
+    lsl x1, x1, #1
+    sub x1, x1, #192
+
+avg_pel_w128_y:
+    ld1 {v0.8h - v3.8h}, [x2], #64
+    ld1 {v4.8h - v7.8h}, [x2], #64
+
+    ld1 {v20.8h - v23.8h}, [x3], #64
+    ld1 {v24.8h - v27.8h}, [x3], #64
+
+    urhadd v0.8h, v0.8h, v20.8h
+    urhadd v1.8h, v1.8h, v21.8h
+    urhadd v2.8h, v2.8h, v22.8h
+    urhadd v3.8h, v3.8h, v23.8h
+    urhadd v4.8h, v4.8h, v24.8h
+    urhadd v5.8h, v5.8h, v25.8h
+    urhadd v6.8h, v6.8h, v26.8h
+    urhadd v7.8h, v7.8h, v27.8h
+
+    st1 {v0.8h - v3.8h}, [x0], #64
+    st1 {v4.8h - v7.8h}, [x0], #64
+
+    ld1 {v16.8h - v19.8h}, [x2], #64
+    ld1 {v28.8h - v31.8h}, [x2], #64
+
+    ld1 {v20.8h - v23.8h}, [x3], #64
+    ld1 {v24.8h - v27.8h}, [x3], #64
+
+    urhadd v16.8h, v16.8h, v20.8h
+    urhadd v17.8h, v17.8h, v21.8h
+    urhadd v18.8h, v18.8h, v22.8h
+    urhadd v19.8h, v19.8h, v23.8h
+    urhadd v28.8h, v28.8h, v24.8h
+    urhadd v29.8h, v29.8h, v25.8h
+    urhadd v30.8h, v30.8h, v26.8h
+    urhadd v31.8h, v31.8h, v27.8h
+
+    st1  {v16.8h - v19.8h}, [x0], #64
+    st1  {v28.8h - v31.8h}, [x0], x1
+
+    subs w4, w4, #1
+    bgt avg_pel_w128_y
+
+    ret
 #endif
 
 #endif
