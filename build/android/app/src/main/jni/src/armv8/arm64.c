@@ -214,17 +214,17 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.cost_sad_x4[4] = uavs3e_get_sad_x4_64_arm64;
     uavs3e_funs_handle.cost_sad_x4[5] = uavs3e_get_sad_x4_128_arm64;
 
-    uavs3e_funs_handle.recon[0] = uavs3e_recon_w4_arm64;
-    uavs3e_funs_handle.recon[1] = uavs3e_recon_w8_arm64;
-    uavs3e_funs_handle.recon[2] = uavs3e_recon_w16_arm64;
-    uavs3e_funs_handle.recon[3] = uavs3e_recon_w32_arm64;
-
     uavs3e_funs_handle.cost_satd[0][0] = uavs3e_had_4x4_arm64;
     uavs3e_funs_handle.cost_satd[1][0] = uavs3e_had_8x4_arm64;
     uavs3e_funs_handle.cost_satd[0][1] = uavs3e_had_4x8_arm64;
     uavs3e_funs_handle.cost_satd[1][1] = uavs3e_had_8x8_arm64;
     uavs3e_funs_handle.cost_satd[2][1] = uavs3e_had_16x8_arm64;
     uavs3e_funs_handle.cost_satd[1][2] = uavs3e_had_8x16_arm64;
+
+    uavs3e_funs_handle.recon[0] = uavs3e_recon_w4_arm64;
+    uavs3e_funs_handle.recon[1] = uavs3e_recon_w8_arm64;
+    uavs3e_funs_handle.recon[2] = uavs3e_recon_w16_arm64;
+    uavs3e_funs_handle.recon[3] = uavs3e_recon_w32_arm64;
 
     uavs3e_funs_handle.pel_diff[0] = uavs3e_pel_diff_4_arm64;
     uavs3e_funs_handle.pel_diff[1] = uavs3e_pel_diff_8_arm64;

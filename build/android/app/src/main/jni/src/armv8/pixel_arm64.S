@@ -175,6 +175,262 @@ recon_w8_end:
     ret
 
 /******************************************************************************************************
+*  void uavs3e_recon_w16_arm64(s16 *resi, pel *pred, int i_pred, int width, int height, pel *rec, int i_rec, int cbf, int bit_depth)
+*  resi->x0, pred->x1, i_pred->x2, width->x3, height->x4, rec->x5, i_rec->x6, int cbf->x7
+******************************************************************************************************/
+function uavs3e_recon_w16_arm64
+
+    //max_val = (1 << bit_depth) - 1;
+    mov w9, #1
+    lsl w9, w9, #8
+    sub w9, w9, #1      //max_val
+    mov w10, #0         //0
+
+    cmp x7, #0
+    beq cbf_zero_w16
+
+recon_w16_loopx:
+    //load *resi
+    //ld4 {v0.d,v1.d,v2.d,v3.d}[0], [x0], #32
+    ld1 {v0.8h,v1.8h}, [x0], #32
+    ld1 {v2.8h,v3.8h}, [x0], #32
+    ld1 {v4.8h,v5.8h}, [x0], #32
+    ld1 {v6.8h,v7.8h}, [x0], #32
+    //load *pred
+
+    ld1 {v16.8b,v17.8b}, [x1], x2
+    ld1 {v18.8b,v19.8b}, [x1], x2
+    ld1 {v20.8b,v21.8b}, [x1], x2
+    ld1 {v22.8b,v23.8b}, [x1], x2
+
+    uxtl v16.8h, v16.8b
+    uxtl v17.8h, v17.8b
+    uxtl v18.8h, v18.8b
+    uxtl v19.8h, v19.8b
+    uxtl v20.8h, v20.8b
+    uxtl v21.8h, v21.8b
+    uxtl v22.8h, v22.8b
+    uxtl v23.8h, v23.8b
+
+    sqadd v0.8h, v0.8h, v16.8h
+    sqadd v1.8h, v1.8h, v17.8h
+    sqadd v2.8h, v2.8h, v18.8h
+    sqadd v3.8h, v3.8h, v19.8h
+    sqadd v4.8h, v4.8h, v20.8h
+    sqadd v5.8h, v5.8h, v21.8h
+    sqadd v6.8h, v6.8h, v22.8h
+    sqadd v7.8h, v7.8h, v23.8h
+
+    //clip
+    dup v16.8h, w9   //max_val
+    dup v17.8h, w10  //0
+    smin v0.8h, v0.8h, v16.8h
+    smax v0.8h, v0.8h, v17.8h
+    smin v1.8h, v1.8h, v16.8h
+    smax v1.8h, v1.8h, v17.8h
+    smin v2.8h, v2.8h, v16.8h
+    smax v2.8h, v2.8h, v17.8h
+    smin v3.8h, v3.8h, v16.8h
+    smax v3.8h, v3.8h, v17.8h
+    smin v4.8h, v4.8h, v16.8h
+    smax v4.8h, v4.8h, v17.8h
+    smin v5.8h, v5.8h, v16.8h
+    smax v5.8h, v5.8h, v17.8h
+    smin v6.8h, v6.8h, v16.8h
+    smax v6.8h, v6.8h, v17.8h
+    smin v7.8h, v7.8h, v16.8h
+    smax v7.8h, v7.8h, v17.8h
+
+    xtn v0.8b, v0.8h
+    xtn v1.8b, v1.8h
+    xtn v2.8b, v2.8h
+    xtn v3.8b, v3.8h
+    xtn v4.8b, v4.8h
+    xtn v5.8b, v5.8h
+    xtn v6.8b, v6.8h
+    xtn v7.8b, v7.8h
+
+    //store to blk
+    st1 {v0.8b,v1.8b}, [x5], x6
+    st1 {v2.8b,v3.8b}, [x5], x6
+    st1 {v4.8b,v5.8b}, [x5], x6
+    st1 {v6.8b,v7.8b}, [x5], x6
+
+    sub x4, x4, #4
+    cmp x4, #0
+    bgt recon_w16_loopx
+    b recon_w16_end
+
+cbf_zero_w16:
+    //
+    ld1 {v4.16b}, [x1], x2
+    ld1 {v5.16b}, [x1], x2
+    ld1 {v6.16b}, [x1], x2
+    ld1 {v7.16b}, [x1], x2
+
+    st1 {v4.16b}, [x5], x6
+    st1 {v5.16b}, [x5], x6
+    st1 {v6.16b}, [x5], x6
+    st1 {v7.16b}, [x5], x6
+    sub x4, x4, #4
+    cmp x4, #0
+    bgt cbf_zero_w16
+
+recon_w16_end:
+
+    ret
+
+/******************************************************************************************************
+*  void uavs3e_recon_w32_arm64(s16 *resi, pel *pred, int i_pred, int width, int height, pel *rec, int i_rec, int cbf, int bit_depth)
+*  resi->x0, pred->x1, i_pred->x2, width->x3, height->x4, rec->x5, i_rec->x6, int cbf->x7
+******************************************************************************************************/
+function uavs3e_recon_w32_arm64
+
+    sub sp, sp, #64
+    st1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp]
+    sub sp, sp, #64
+    st1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp]
+
+    //max_val = (1 << bit_depth) - 1;
+    mov w9, #1
+    lsl w9, w9, #8
+    sub w9, w9, #1
+    mov w10, #0
+
+    cmp x7, #0
+    beq cbf_zero_w32
+
+recon_w32_loopx:
+    //load *resi
+    //ld4 {v0.d,v1.d,v2.d,v3.d}[0], [x0], #32
+    ld1 {v0.8h, v1.8h, v2.8h, v3.8h},      [x0], #64
+    ld1 {v4.8h, v5.8h, v6.8h, v7.8h},      [x0], #64
+    ld1 {v8.8h, v9.8h, v10.8h, v11.8h},    [x0], #64
+    ld1 {v12.8h, v13.8h, v14.8h, v15.8h},  [x0], #64
+    //load *pred
+    ld1 {v16.8b,v17.8b,v18.8b,v19.8b}, [x1], x2
+    ld1 {v20.8b,v21.8b,v22.8b,v23.8b}, [x1], x2
+    ld1 {v24.8b,v25.8b,v26.8b,v27.8b}, [x1], x2
+    ld1 {v28.8b,v29.8b,v30.8b,v31.8b}, [x1], x2
+
+    uxtl v16.8h, v16.8b
+    uxtl v17.8h, v17.8b
+    uxtl v18.8h, v18.8b
+    uxtl v19.8h, v19.8b
+    uxtl v20.8h, v20.8b
+    uxtl v21.8h, v21.8b
+    uxtl v22.8h, v22.8b
+    uxtl v23.8h, v23.8b
+    uxtl v24.8h, v24.8b
+    uxtl v25.8h, v25.8b
+    uxtl v26.8h, v26.8b
+    uxtl v27.8h, v27.8b
+    uxtl v28.8h, v28.8b
+    uxtl v29.8h, v29.8b
+    uxtl v30.8h, v30.8b
+    uxtl v31.8h, v31.8b
+
+    sqadd v0.8h, v0.8h, v16.8h
+    sqadd v1.8h, v1.8h, v17.8h
+    sqadd v2.8h, v2.8h, v18.8h
+    sqadd v3.8h, v3.8h, v19.8h
+    sqadd v4.8h, v4.8h, v20.8h
+    sqadd v5.8h, v5.8h, v21.8h
+    sqadd v6.8h, v6.8h, v22.8h
+    sqadd v7.8h, v7.8h, v23.8h
+    sqadd v8.8h, v8.8h, v24.8h
+    sqadd v9.8h, v9.8h, v25.8h
+    sqadd v10.8h, v10.8h, v26.8h
+    sqadd v11.8h, v11.8h, v27.8h
+    sqadd v12.8h, v12.8h, v28.8h
+    sqadd v13.8h, v13.8h, v29.8h
+    sqadd v14.8h, v14.8h, v30.8h
+    sqadd v15.8h, v15.8h, v31.8h
+
+    //clip
+    dup v16.8h, w9   //max_val
+    dup v17.8h, w10  //0
+    smin v0.8h, v0.8h, v16.8h
+    smax v0.8h, v0.8h, v17.8h
+    smin v1.8h, v1.8h, v16.8h
+    smax v1.8h, v1.8h, v17.8h
+    smin v2.8h, v2.8h, v16.8h
+    smax v2.8h, v2.8h, v17.8h
+    smin v3.8h, v3.8h, v16.8h
+    smax v3.8h, v3.8h, v17.8h
+    smin v4.8h, v4.8h, v16.8h
+    smax v4.8h, v4.8h, v17.8h
+    smin v5.8h, v5.8h, v16.8h
+    smax v5.8h, v5.8h, v17.8h
+    smin v6.8h, v6.8h, v16.8h
+    smax v6.8h, v6.8h, v17.8h
+    smin v7.8h, v7.8h, v16.8h
+    smax v7.8h, v7.8h, v17.8h
+    smin v8.8h, v8.8h, v16.8h
+    smax v8.8h, v8.8h, v17.8h
+    smin v9.8h, v9.8h, v16.8h
+    smax v9.8h, v9.8h, v17.8h
+    smin v10.8h, v10.8h, v16.8h
+    smax v10.8h, v10.8h, v17.8h
+    smin v11.8h, v11.8h, v16.8h
+    smax v11.8h, v11.8h, v17.8h
+    smin v12.8h, v12.8h, v16.8h
+    smax v12.8h, v12.8h, v17.8h
+    smin v13.8h, v13.8h, v16.8h
+    smax v13.8h, v13.8h, v17.8h
+    smin v14.8h, v14.8h, v16.8h
+    smax v14.8h, v14.8h, v17.8h
+    smin v15.8h, v15.8h, v16.8h
+    smax v15.8h, v15.8h, v17.8h
+
+    xtn v0.8b, v0.8h
+    xtn v1.8b, v1.8h
+    xtn v2.8b, v2.8h
+    xtn v3.8b, v3.8h
+    xtn v4.8b, v4.8h
+    xtn v5.8b, v5.8h
+    xtn v6.8b, v6.8h
+    xtn v7.8b, v7.8h
+    xtn v8.8b, v8.8h
+    xtn v9.8b, v9.8h
+    xtn v10.8b, v10.8h
+    xtn v11.8b, v11.8h
+    xtn v12.8b, v12.8h
+    xtn v13.8b, v13.8h
+    xtn v14.8b, v14.8h
+    xtn v15.8b, v15.8h
+
+    //store to blk
+    st1 {v0.8b,v1.8b,v2.8b,v3.8b}, [x5], x6
+    st1 {v4.8b,v5.8b,v6.8b,v7.8b}, [x5], x6
+    st1 {v8.8b,v9.8b,v10.8b,v11.8b}, [x5], x6
+    st1 {v12.8b,v13.8b,v14.8b,v15.8b}, [x5], x6
+
+    sub x4, x4, #4
+    cmp x4, #0
+    bgt recon_w32_loopx
+    b recon_w32_end
+
+cbf_zero_w32:
+    //
+    ld1 {v4.16b,v5.16b}, [x1], x2
+    ld1 {v6.16b,v7.16b}, [x1], x2
+    ld1 {v8.16b,v9.16b}, [x1], x2
+    ld1 {v10.16b,v11.16b}, [x1], x2
+    st1 {v4.16b,v5.16b}, [x5], x6
+    st1 {v6.16b,v7.16b}, [x5], x6
+    st1 {v8.16b,v9.16b}, [x5], x6
+    st1 {v10.16b,v11.16b}, [x5], x6
+    sub x4, x4, #4
+    cmp x4, #0
+    bgt cbf_zero_w32
+
+recon_w32_end:
+    ld1 {v12.8h, v13.8h, v14.8h, v15.8h}, [sp], #64
+    ld1 {v8.8h, v9.8h, v10.8h, v11.8h}, [sp], #64
+    ret
+
+/******************************************************************************************************
 *  void uavs3e_pel_diff_4_arm64(pel *p_org, int i_org, pel *p_pred, int i_pred, s16 *p_resi, int i_resi, int height)
 *  p_org->x0, i_org->x1, p_pred->x2, i_pred->x3, p_resi->x4, i_resi->x5, height>x6->
 ******************************************************************************************************/
