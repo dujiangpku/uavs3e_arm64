@@ -1,9 +1,6 @@
 #include "arm64.h"
 #if defined(__arm64__)
 
-#define trans_test 0
-
-#ifndef trans_test
 void uavs3e_trans_dct2_w4_h4_arm64(s16 *src, s16 *dst, int bit_depth)
 {
     ALIGNED_16(s16 tmp[4*4]);
@@ -164,6 +161,5 @@ void uavs3e_trans_dct2_w64_h64_arm64(s16 *src, s16 *dst, int bit_depth)
     tx_dct2_pb64_arm64(src, tmp, 64, 64, 4 + bit_depth - 8);
     tx_dct2_pb64_arm64(tmp, dst, 64, 32, 11);
 }
-#endif
 
 #endif
