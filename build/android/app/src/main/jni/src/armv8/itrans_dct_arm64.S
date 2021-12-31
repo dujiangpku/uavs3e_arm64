@@ -4335,4 +4335,1162 @@ dct2_h64_end:
 
     ret
 
+itrans_dct8_pb4_coef:
+.byte 42, 37, 27, 15, \
+      37, 0, -37, -37, \
+      27, -37, -15, 42, \
+      15, -37, 42, -27
+//*************************************************************************************************
+//void uavs3e_itrans_dct8_pb4_arm64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val);
+//x0->coeff blk, 16 bit
+//x1->resi blk, 16 bit
+//*************************************************************************************************
+function uavs3e_itrans_dct8_pb4_arm64
+    adr x6, itrans_dct8_pb4_coef
+    neg w15, w2
+    dup v28.8h, w4
+    dup v29.8h, w5
+    dup v30.4s, w15
+
+    //load 变换系数(4x4)
+    ld1 {v0.16b}, [x6]
+
+    //扩展到16bit
+    sxtl2 v2.8h, v0.16b
+    sxtl  v0.8h, v0.8b
+    ext   v1.16b, v0.16b, v0.16b, #8
+    ext   v3.16b, v2.16b, v2.16b, #8
+
+    lsl x3, x3, #1
+
+    cmp x2, #5
+    bne dct8_pb4_2nd
+
+    mov x8, #0
+loopi_1st:
+    add x9, x8, x0
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9]
+
+    smull v16.4s, v0.4h, v4.h[0]
+    smull v17.4s, v0.4h, v4.h[1]
+    smull v18.4s, v0.4h, v4.h[2]
+    smull v19.4s, v0.4h, v4.h[3]
+    smlal v16.4s, v1.4h, v5.h[0]
+    smlal v17.4s, v1.4h, v5.h[1]
+    smlal v18.4s, v1.4h, v5.h[2]
+    smlal v19.4s, v1.4h, v5.h[3]
+    smlal v16.4s, v2.4h, v6.h[0]
+    smlal v17.4s, v2.4h, v6.h[1]
+    smlal v18.4s, v2.4h, v6.h[2]
+    smlal v19.4s, v2.4h, v6.h[3]
+    smlal v16.4s, v3.4h, v7.h[0]
+    smlal v17.4s, v3.4h, v7.h[1]
+    smlal v18.4s, v3.4h, v7.h[2]
+    smlal v19.4s, v3.4h, v7.h[3]
+
+    sqrshrn  v16.4h, v16.4s, #5
+    sqrshrn2 v16.8h, v17.4s, #5
+    sqrshrn  v17.4h, v18.4s, #5
+    sqrshrn2 v17.8h, v19.4s, #5
+
+    add x8, x8, #8
+    smin v16.8h, v16.8h, v28.8h
+    smin v17.8h, v17.8h, v28.8h
+    smax v16.8h, v16.8h, v29.8h
+    smax v17.8h, v17.8h, v29.8h
+
+    cmp x8, x3
+    st1 {v16.8h, v17.8h}, [x1], #32
+    blt loopi_1st
+    b   dct8_pb4_end
+
+dct8_pb4_2nd:
+    mov x8, #0                  // i = 0
+loopi_2nd:
+    add x9, x8, x0
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9]
+
+    smull v16.4s, v0.4h, v4.h[0]
+    smull v17.4s, v0.4h, v4.h[1]
+    smull v18.4s, v0.4h, v4.h[2]
+    smull v19.4s, v0.4h, v4.h[3]
+    smlal v16.4s, v1.4h, v5.h[0]
+    smlal v17.4s, v1.4h, v5.h[1]
+    smlal v18.4s, v1.4h, v5.h[2]
+    smlal v19.4s, v1.4h, v5.h[3]
+    smlal v16.4s, v2.4h, v6.h[0]
+    smlal v17.4s, v2.4h, v6.h[1]
+    smlal v18.4s, v2.4h, v6.h[2]
+    smlal v19.4s, v2.4h, v6.h[3]
+    smlal v16.4s, v3.4h, v7.h[0]
+    smlal v17.4s, v3.4h, v7.h[1]
+    smlal v18.4s, v3.4h, v7.h[2]
+    smlal v19.4s, v3.4h, v7.h[3]
+
+    srshl v16.4s, v16.4s, v30.4s
+    srshl v17.4s, v17.4s, v30.4s
+    srshl v18.4s, v18.4s, v30.4s
+    srshl v19.4s, v19.4s, v30.4s
+
+    sqxtn  v16.4h, v16.4s
+    sqxtn2 v16.8h, v17.4s
+    sqxtn  v17.4h, v18.4s
+    sqxtn2 v17.8h, v19.4s
+
+    add x8, x8, #8
+    smin v16.8h, v16.8h, v28.8h
+    smin v17.8h, v17.8h, v28.8h
+    smax v16.8h, v16.8h, v29.8h
+    smax v17.8h, v17.8h, v29.8h
+
+    cmp x8, x3
+    st1 {v16.8h, v17.8h}, [x1], #32
+
+    blt loopi_2nd
+
+dct8_pb4_end:
+    ret
+
+itrans_dct8_pb8_coef:
+.byte 44, 42, 39, 35, 30, 23, 16, 8, \
+      42, 30, 8, -16, -35, -44, -39, -23, \
+      39, 8, -30, -44, -23, 16, 42, 35, \
+      35, -16, -44, -8, 39, 30, -23, -42, \
+      30, -35, -23, 39, 16, -42, -8, 44, \
+      23, -44, 16, 30, -42, 8, 35, -39, \
+      16, -39, 42, -23, -8, 35, -44, 30, \
+      8, -23, 35, -42, 44, -39, 30, -16
+//*************************************************************************************************
+//void uavs3e_itrans_dct8_pb8_arm64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val);
+//x0->coeff blk, 16 bit
+//x1->resi blk, 16 bit
+//*************************************************************************************************
+function uavs3e_itrans_dct8_pb8_arm64
+    sub sp, sp, #64
+    ld1 {v12.2d, v13.2d, v14.2d, v15.2d}, [sp]
+    adr x6, itrans_dct8_pb8_coef
+
+    neg w15, w2
+    dup v28.8h, w4                  // max_tr_val
+    dup v29.8h, w5                  // min_tr_val
+    dup v31.4s, w15                 // shift
+
+    ld1 {v0.8b, v1.8b, v2.8b, v3.8b}, [x6], #32
+    ld1 {v4.8b, v5.8b, v6.8b, v7.8b}, [x6]
+    sxtl v16.8h, v0.8b
+    sxtl v17.8h, v1.8b
+    sxtl v18.8h, v2.8b
+    sxtl v19.8h, v3.8b
+    sxtl v20.8h, v4.8b
+    sxtl v21.8h, v5.8b
+    sxtl v22.8h, v6.8b
+    sxtl v23.8h, v7.8b
+
+    lsl x3, x3, #1
+    mov x8, #0                      // i = 0
+dct8_pb8_loopi:
+    add x9, x0, x8
+    ld1 {v0.4h}, [x9], x3
+    ld1 {v1.4h}, [x9], x3
+    ld1 {v2.4h}, [x9], x3
+    ld1 {v3.4h}, [x9], x3
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9]
+
+    smull v24.4s, v16.4h, v0.h[0]
+    smull v25.4s, v16.4h, v0.h[1]
+    smull v26.4s, v16.4h, v0.h[2]
+    smull v27.4s, v16.4h, v0.h[3]
+    smlal v24.4s, v17.4h, v1.h[0]
+    smlal v25.4s, v17.4h, v1.h[1]
+    smlal v26.4s, v17.4h, v1.h[2]
+    smlal v27.4s, v17.4h, v1.h[3]
+    smlal v24.4s, v18.4h, v2.h[0]
+    smlal v25.4s, v18.4h, v2.h[1]
+    smlal v26.4s, v18.4h, v2.h[2]
+    smlal v27.4s, v18.4h, v2.h[3]
+    smlal v24.4s, v19.4h, v3.h[0]
+    smlal v25.4s, v19.4h, v3.h[1]
+    smlal v26.4s, v19.4h, v3.h[2]
+    smlal v27.4s, v19.4h, v3.h[3]
+    smlal v24.4s, v20.4h, v4.h[0]
+    smlal v25.4s, v20.4h, v4.h[1]
+    smlal v26.4s, v20.4h, v4.h[2]
+    smlal v27.4s, v20.4h, v4.h[3]
+    smlal v24.4s, v21.4h, v5.h[0]
+    smlal v25.4s, v21.4h, v5.h[1]
+    smlal v26.4s, v21.4h, v5.h[2]
+    smlal v27.4s, v21.4h, v5.h[3]
+    smlal v24.4s, v22.4h, v6.h[0]
+    smlal v25.4s, v22.4h, v6.h[1]
+    smlal v26.4s, v22.4h, v6.h[2]
+    smlal v27.4s, v22.4h, v6.h[3]
+    smlal v24.4s, v23.4h, v7.h[0]
+    smlal v25.4s, v23.4h, v7.h[1]
+    smlal v26.4s, v23.4h, v7.h[2]
+    smlal v27.4s, v23.4h, v7.h[3]
+
+    smull2 v12.4s, v16.8h, v0.h[0]
+    smull2 v13.4s, v16.8h, v0.h[1]
+    smull2 v14.4s, v16.8h, v0.h[2]
+    smull2 v15.4s, v16.8h, v0.h[3]
+    smlal2 v12.4s, v17.8h, v1.h[0]
+    smlal2 v13.4s, v17.8h, v1.h[1]
+    smlal2 v14.4s, v17.8h, v1.h[2]
+    smlal2 v15.4s, v17.8h, v1.h[3]
+    smlal2 v12.4s, v18.8h, v2.h[0]
+    smlal2 v13.4s, v18.8h, v2.h[1]
+    smlal2 v14.4s, v18.8h, v2.h[2]
+    smlal2 v15.4s, v18.8h, v2.h[3]
+    smlal2 v12.4s, v19.8h, v3.h[0]
+    smlal2 v13.4s, v19.8h, v3.h[1]
+    smlal2 v14.4s, v19.8h, v3.h[2]
+    smlal2 v15.4s, v19.8h, v3.h[3]
+    smlal2 v12.4s, v20.8h, v4.h[0]
+    smlal2 v13.4s, v20.8h, v4.h[1]
+    smlal2 v14.4s, v20.8h, v4.h[2]
+    smlal2 v15.4s, v20.8h, v4.h[3]
+    smlal2 v12.4s, v21.8h, v5.h[0]
+    smlal2 v13.4s, v21.8h, v5.h[1]
+    smlal2 v14.4s, v21.8h, v5.h[2]
+    smlal2 v15.4s, v21.8h, v5.h[3]
+    smlal2 v12.4s, v22.8h, v6.h[0]
+    smlal2 v13.4s, v22.8h, v6.h[1]
+    smlal2 v14.4s, v22.8h, v6.h[2]
+    smlal2 v15.4s, v22.8h, v6.h[3]
+    smlal2 v12.4s, v23.8h, v7.h[0]
+    smlal2 v13.4s, v23.8h, v7.h[1]
+    smlal2 v14.4s, v23.8h, v7.h[2]
+    smlal2 v15.4s, v23.8h, v7.h[3]
+
+    cmp x2, #5
+    bne dct8_pb8_shift12
+
+    sqrshrn  v24.4h, v24.4s, #5
+    sqrshrn  v25.4h, v25.4s, #5
+    sqrshrn  v26.4h, v26.4s, #5
+    sqrshrn  v27.4h, v27.4s, #5
+    sqrshrn2 v24.8h, v12.4s, #5
+    sqrshrn2 v25.8h, v13.4s, #5
+    sqrshrn2 v26.8h, v14.4s, #5
+    sqrshrn2 v27.8h, v15.4s, #5
+
+    b dct8_pb8_clip_store
+
+dct8_pb8_shift12:
+	srshl v24.4s, v24.4s, v31.4s
+    srshl v25.4s, v25.4s, v31.4s
+    srshl v26.4s, v26.4s, v31.4s
+    srshl v27.4s, v27.4s, v31.4s
+    srshl v12.4s, v12.4s, v31.4s
+    srshl v13.4s, v13.4s, v31.4s
+    srshl v14.4s, v14.4s, v31.4s
+    srshl v15.4s, v15.4s, v31.4s
+
+    sqxtn  v24.4h, v24.4s
+    sqxtn  v25.4h, v25.4s
+    sqxtn  v26.4h, v26.4s
+    sqxtn  v27.4h, v27.4s
+    sqxtn2 v24.8h, v12.4s
+    sqxtn2 v25.8h, v13.4s
+    sqxtn2 v26.8h, v14.4s
+    sqxtn2 v27.8h, v15.4s
+
+dct8_pb8_clip_store:
+    add x8, x8, #8
+    smin v24.8h, v24.8h, v28.8h
+    smin v25.8h, v25.8h, v28.8h
+    smin v26.8h, v26.8h, v28.8h
+    smin v27.8h, v27.8h, v28.8h
+    smax v24.8h, v24.8h, v29.8h
+    smax v25.8h, v25.8h, v29.8h
+    smax v26.8h, v26.8h, v29.8h
+    smax v27.8h, v27.8h, v29.8h
+
+    cmp x8, x3
+    st1 {v24.8h, v25.8h, v26.8h, v27.8h}, [x1], #64
+    blt dct8_pb8_loopi
+
+    ld1 {v12.2d, v13.2d, v14.2d, v15.2d}, [sp], #64
+    ret
+
+itrans_dct8_pb16_coef:
+.byte 45, 44, 43, 42, 41, 39, 36, 34, 31, 28, 24, 20, 17, 13, 8, 4, \
+      44, 41, 34, 24, 13, 0, -13, -24, -34, -41, -44, -44, -41, -34, -24, -13, \
+      43, 34, 17, -4, -24, -39, -45, -41, -28, -8, 13, 31, 42, 44, 36, 20, \
+      42, 24, -4, -31, -44, -39, -17, 13, 36, 45, 34, 8, -20, -41, -43, -28, \
+      41, 13, -24, -44, -34, 0, 34, 44, 24, -13, -41, -41, -13, 24, 44, 34, \
+      39, 0, -39, -39, 0, 39, 39, 0, -39, -39, 0, 39, 39, 0, -39, -39, \
+      36, -13, -45, -17, 34, 39, -8, -44, -20, 31, 41, -4, -43, -24, 28, 42, \
+      34, -24, -41, 13, 44, 0, -44, -13, 41, 24, -34, -34, 24, 41, -13, -44, \
+      31, -34, -28, 36, 24, -39, -20, 41, 17, -42, -13, 43, 8, -44, -4, 45, \
+      28, -41, -8, 45, -13, -39, 31, 24, -42, -4, 44, -17, -36, 34, 20, -43, \
+      24, -44, 13, 34, -41, 0, 41, -34, -13, 44, -24, -24, 44, -13, -34, 41, \
+      20, -44, 31, 8, -41, 39, -4, -34, 43, -17, -24, 45, -28, -13, 42, -36, \
+      17, -41, 42, -20, -13, 39, -43, 24, 8, -36, 44, -28, -4, 34, -45, 31, \
+      13, -34, 44, -41, 24, 0, -24, 41, -44, 34, -13, -13, 34, -44, 41, -24, \
+      8, -24, 36, -43, 44, -39, 28, -13, -4, 20, -34, 42, -45, 41, -31, 17, \
+      4, -13, 20, -28, 34, -39, 42, -44, 45, -43, 41, -36, 31, -24, 17, -8
+//*************************************************************************************************
+//void uavs3e_itrans_dct8_pb16_arm64(s16 *coeff, s16 *resi, int shift, int line, int max_tr_val, int min_tr_val)
+//x0->coeff blk, 16 bit
+//x1->resi blk, 16 bit
+//*************************************************************************************************
+function uavs3e_itrans_dct8_pb16_arm64
+    sub sp, sp, #64
+    st1 {v12.2d, v13.2d, v14.2d, v15.2d}, [sp]
+    adr x6, itrans_dct8_pb16_coef
+
+    neg w15, w2
+    dup v28.8h, w4                  // max_tr_val
+    dup v29.8h, w5                  // min_tr_val
+    dup v31.4s, w15                 // shift
+
+    mov x10, #16                    // it_stride
+    mov x14, #32                    // resi_stride
+    mov x13, x3                     // line - i
+    lsl x3, x3, #1                  // coeff_stride = line*sizeof(s16)
+dct8_pb16_loopi:
+    mov x12, #0                     // j
+    mov x11, x1                     // resi + i*16
+dct8_pb16_loopj:
+    add x8, x6, x12                 // it + j
+    mov x9, x0                      // coeff + i
+
+    ld1 {v16.8b}, [x8], x10         // load it first 8 lines
+    ld1 {v17.8b}, [x8], x10
+    ld1 {v18.8b}, [x8], x10
+    ld1 {v19.8b}, [x8], x10
+    ld1 {v20.8b}, [x8], x10
+    ld1 {v21.8b}, [x8], x10
+    ld1 {v22.8b}, [x8], x10
+    ld1 {v23.8b}, [x8], x10
+
+    sxtl v16.8h, v16.8b
+    sxtl v17.8h, v17.8b
+    sxtl v18.8h, v18.8b
+    sxtl v19.8h, v19.8b
+    sxtl v20.8h, v20.8b
+    sxtl v21.8h, v21.8b
+    sxtl v22.8h, v22.8b
+    sxtl v23.8h, v23.8b
+
+    ld1 {v0.4h}, [x9], x3
+    ld1 {v1.4h}, [x9], x3
+    ld1 {v2.4h}, [x9], x3
+    ld1 {v3.4h}, [x9], x3
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9], x3
+
+    smull v24.4s, v16.4h, v0.h[0]
+    smull v25.4s, v16.4h, v0.h[1]
+    smull v26.4s, v16.4h, v0.h[2]
+    smull v27.4s, v16.4h, v0.h[3]
+    smlal v24.4s, v17.4h, v1.h[0]
+    smlal v25.4s, v17.4h, v1.h[1]
+    smlal v26.4s, v17.4h, v1.h[2]
+    smlal v27.4s, v17.4h, v1.h[3]
+    smlal v24.4s, v18.4h, v2.h[0]
+    smlal v25.4s, v18.4h, v2.h[1]
+    smlal v26.4s, v18.4h, v2.h[2]
+    smlal v27.4s, v18.4h, v2.h[3]
+    smlal v24.4s, v19.4h, v3.h[0]
+    smlal v25.4s, v19.4h, v3.h[1]
+    smlal v26.4s, v19.4h, v3.h[2]
+    smlal v27.4s, v19.4h, v3.h[3]
+    smlal v24.4s, v20.4h, v4.h[0]
+    smlal v25.4s, v20.4h, v4.h[1]
+    smlal v26.4s, v20.4h, v4.h[2]
+    smlal v27.4s, v20.4h, v4.h[3]
+    smlal v24.4s, v21.4h, v5.h[0]
+    smlal v25.4s, v21.4h, v5.h[1]
+    smlal v26.4s, v21.4h, v5.h[2]
+    smlal v27.4s, v21.4h, v5.h[3]
+    smlal v24.4s, v22.4h, v6.h[0]
+    smlal v25.4s, v22.4h, v6.h[1]
+    smlal v26.4s, v22.4h, v6.h[2]
+    smlal v27.4s, v22.4h, v6.h[3]
+    smlal v24.4s, v23.4h, v7.h[0]
+    smlal v25.4s, v23.4h, v7.h[1]
+    smlal v26.4s, v23.4h, v7.h[2]
+    smlal v27.4s, v23.4h, v7.h[3]
+
+    smull2 v12.4s, v16.8h, v0.h[0]
+    smull2 v13.4s, v16.8h, v0.h[1]
+    smull2 v14.4s, v16.8h, v0.h[2]
+    smull2 v15.4s, v16.8h, v0.h[3]
+    smlal2 v12.4s, v17.8h, v1.h[0]
+    smlal2 v13.4s, v17.8h, v1.h[1]
+    smlal2 v14.4s, v17.8h, v1.h[2]
+    smlal2 v15.4s, v17.8h, v1.h[3]
+    smlal2 v12.4s, v18.8h, v2.h[0]
+    smlal2 v13.4s, v18.8h, v2.h[1]
+    smlal2 v14.4s, v18.8h, v2.h[2]
+    smlal2 v15.4s, v18.8h, v2.h[3]
+    smlal2 v12.4s, v19.8h, v3.h[0]
+    smlal2 v13.4s, v19.8h, v3.h[1]
+    smlal2 v14.4s, v19.8h, v3.h[2]
+    smlal2 v15.4s, v19.8h, v3.h[3]
+    smlal2 v12.4s, v20.8h, v4.h[0]
+    smlal2 v13.4s, v20.8h, v4.h[1]
+    smlal2 v14.4s, v20.8h, v4.h[2]
+    smlal2 v15.4s, v20.8h, v4.h[3]
+    smlal2 v12.4s, v21.8h, v5.h[0]
+    smlal2 v13.4s, v21.8h, v5.h[1]
+    smlal2 v14.4s, v21.8h, v5.h[2]
+    smlal2 v15.4s, v21.8h, v5.h[3]
+    smlal2 v12.4s, v22.8h, v6.h[0]
+    smlal2 v13.4s, v22.8h, v6.h[1]
+    smlal2 v14.4s, v22.8h, v6.h[2]
+    smlal2 v15.4s, v22.8h, v6.h[3]
+    smlal2 v12.4s, v23.8h, v7.h[0]
+    smlal2 v13.4s, v23.8h, v7.h[1]
+    smlal2 v14.4s, v23.8h, v7.h[2]
+    smlal2 v15.4s, v23.8h, v7.h[3]
+
+    ld1 {v16.8b}, [x8], x10         // load it bottom 8 lines
+    ld1 {v17.8b}, [x8], x10
+    ld1 {v18.8b}, [x8], x10
+    ld1 {v19.8b}, [x8], x10
+    ld1 {v20.8b}, [x8], x10
+    ld1 {v21.8b}, [x8], x10
+    ld1 {v22.8b}, [x8], x10
+    ld1 {v23.8b}, [x8], x10
+
+    sxtl v16.8h, v16.8b
+    sxtl v17.8h, v17.8b
+    sxtl v18.8h, v18.8b
+    sxtl v19.8h, v19.8b
+    sxtl v20.8h, v20.8b
+    sxtl v21.8h, v21.8b
+    sxtl v22.8h, v22.8b
+    sxtl v23.8h, v23.8b
+
+    ld1 {v0.4h}, [x9], x3
+    ld1 {v1.4h}, [x9], x3
+    ld1 {v2.4h}, [x9], x3
+    ld1 {v3.4h}, [x9], x3
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9], x3
+
+    smlal v24.4s, v16.4h, v0.h[0]
+    smlal v25.4s, v16.4h, v0.h[1]
+    smlal v26.4s, v16.4h, v0.h[2]
+    smlal v27.4s, v16.4h, v0.h[3]
+    smlal v24.4s, v17.4h, v1.h[0]
+    smlal v25.4s, v17.4h, v1.h[1]
+    smlal v26.4s, v17.4h, v1.h[2]
+    smlal v27.4s, v17.4h, v1.h[3]
+    smlal v24.4s, v18.4h, v2.h[0]
+    smlal v25.4s, v18.4h, v2.h[1]
+    smlal v26.4s, v18.4h, v2.h[2]
+    smlal v27.4s, v18.4h, v2.h[3]
+    smlal v24.4s, v19.4h, v3.h[0]
+    smlal v25.4s, v19.4h, v3.h[1]
+    smlal v26.4s, v19.4h, v3.h[2]
+    smlal v27.4s, v19.4h, v3.h[3]
+    smlal v24.4s, v20.4h, v4.h[0]
+    smlal v25.4s, v20.4h, v4.h[1]
+    smlal v26.4s, v20.4h, v4.h[2]
+    smlal v27.4s, v20.4h, v4.h[3]
+    smlal v24.4s, v21.4h, v5.h[0]
+    smlal v25.4s, v21.4h, v5.h[1]
+    smlal v26.4s, v21.4h, v5.h[2]
+    smlal v27.4s, v21.4h, v5.h[3]
+    smlal v24.4s, v22.4h, v6.h[0]
+    smlal v25.4s, v22.4h, v6.h[1]
+    smlal v26.4s, v22.4h, v6.h[2]
+    smlal v27.4s, v22.4h, v6.h[3]
+    smlal v24.4s, v23.4h, v7.h[0]
+    smlal v25.4s, v23.4h, v7.h[1]
+    smlal v26.4s, v23.4h, v7.h[2]
+    smlal v27.4s, v23.4h, v7.h[3]
+
+    smlal2 v12.4s, v16.8h, v0.h[0]
+    smlal2 v13.4s, v16.8h, v0.h[1]
+    smlal2 v14.4s, v16.8h, v0.h[2]
+    smlal2 v15.4s, v16.8h, v0.h[3]
+    smlal2 v12.4s, v17.8h, v1.h[0]
+    smlal2 v13.4s, v17.8h, v1.h[1]
+    smlal2 v14.4s, v17.8h, v1.h[2]
+    smlal2 v15.4s, v17.8h, v1.h[3]
+    smlal2 v12.4s, v18.8h, v2.h[0]
+    smlal2 v13.4s, v18.8h, v2.h[1]
+    smlal2 v14.4s, v18.8h, v2.h[2]
+    smlal2 v15.4s, v18.8h, v2.h[3]
+    smlal2 v12.4s, v19.8h, v3.h[0]
+    smlal2 v13.4s, v19.8h, v3.h[1]
+    smlal2 v14.4s, v19.8h, v3.h[2]
+    smlal2 v15.4s, v19.8h, v3.h[3]
+    smlal2 v12.4s, v20.8h, v4.h[0]
+    smlal2 v13.4s, v20.8h, v4.h[1]
+    smlal2 v14.4s, v20.8h, v4.h[2]
+    smlal2 v15.4s, v20.8h, v4.h[3]
+    smlal2 v12.4s, v21.8h, v5.h[0]
+    smlal2 v13.4s, v21.8h, v5.h[1]
+    smlal2 v14.4s, v21.8h, v5.h[2]
+    smlal2 v15.4s, v21.8h, v5.h[3]
+    smlal2 v12.4s, v22.8h, v6.h[0]
+    smlal2 v13.4s, v22.8h, v6.h[1]
+    smlal2 v14.4s, v22.8h, v6.h[2]
+    smlal2 v15.4s, v22.8h, v6.h[3]
+    smlal2 v12.4s, v23.8h, v7.h[0]
+    smlal2 v13.4s, v23.8h, v7.h[1]
+    smlal2 v14.4s, v23.8h, v7.h[2]
+    smlal2 v15.4s, v23.8h, v7.h[3]
+
+    cmp x2, #5
+    bne dct8_pb16_shift12
+
+    sqrshrn  v24.4h, v24.4s, #5
+    sqrshrn  v25.4h, v25.4s, #5
+    sqrshrn  v26.4h, v26.4s, #5
+    sqrshrn  v27.4h, v27.4s, #5
+    sqrshrn2 v24.8h, v12.4s, #5
+    sqrshrn2 v25.8h, v13.4s, #5
+    sqrshrn2 v26.8h, v14.4s, #5
+    sqrshrn2 v27.8h, v15.4s, #5
+
+    b dct8_pb16_clip_store
+
+dct8_pb16_shift12:
+    srshl v24.4s, v24.4s, v31.4s
+    srshl v25.4s, v25.4s, v31.4s
+    srshl v26.4s, v26.4s, v31.4s
+    srshl v27.4s, v27.4s, v31.4s
+    srshl v12.4s, v12.4s, v31.4s
+    srshl v13.4s, v13.4s, v31.4s
+    srshl v14.4s, v14.4s, v31.4s
+    srshl v15.4s, v15.4s, v31.4s
+
+    sqxtn  v24.4h, v24.4s
+    sqxtn  v25.4h, v25.4s
+    sqxtn  v26.4h, v26.4s
+    sqxtn  v27.4h, v27.4s
+    sqxtn2 v24.8h, v12.4s
+    sqxtn2 v25.8h, v13.4s
+    sqxtn2 v26.8h, v14.4s
+    sqxtn2 v27.8h, v15.4s
+
+dct8_pb16_clip_store:
+    add x11, x1, x12, lsl #1            // resi + i*16 + j
+    add x12, x12, #8                    // j += 8
+
+    smin v24.8h, v24.8h, v28.8h
+    smin v25.8h, v25.8h, v28.8h
+    smin v26.8h, v26.8h, v28.8h
+    smin v27.8h, v27.8h, v28.8h
+    smax v24.8h, v24.8h, v29.8h
+    smax v25.8h, v25.8h, v29.8h
+    smax v26.8h, v26.8h, v29.8h
+    smax v27.8h, v27.8h, v29.8h
+
+    cmp x12, #16
+    st1 {v24.8h}, [x11], x14
+    st1 {v25.8h}, [x11], x14
+    st1 {v26.8h}, [x11], x14
+    st1 {v27.8h}, [x11], x14
+
+    blt dct8_pb16_loopj
+
+    add  x0, x0, #8                     // coeff += 4
+    add  x1, x1, #128                   // resi += resi_stride * 4
+    subs x13, x13, #4                   // i += 4
+    bgt dct8_pb16_loopi
+
+    ld1 {v12.2d, v13.2d, v14.2d, v15.2d}, [sp], #64
+    ret
+
+itrans_dst7_pb4_coef:
+.byte 15, 27, 37, 42, \
+      37, 37, 0, -37, \
+      42, -15, -37, 27, \
+      27, -42, 37, -15
+//*************************************************************************************************
+//void uavs3e_itrans_dst7_pb4_arm64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val);
+//x0->coeff blk, 16 bit
+//x1->resi blk, 16 bit
+//*************************************************************************************************
+function uavs3e_itrans_dst7_pb4_arm64
+    adr x6, itrans_dst7_pb4_coef
+
+    neg w15, w2
+    dup v28.8h, w4
+    dup v29.8h, w5
+    dup v30.4s, w15
+
+    //load 变换系数(4x4)
+    ld1 {v0.16b}, [x6]
+
+    //扩展到16bit
+    sxtl2 v2.8h, v0.16b
+    sxtl  v0.8h, v0.8b
+    ext   v1.16b, v0.16b, v0.16b, #8
+    ext   v3.16b, v2.16b, v2.16b, #8
+
+    lsl x3, x3, #1
+
+    cmp x2, #5
+    bne dst7_pb4_2nd
+
+    mov x8, #0
+dst7_pb4_loopi_1st:
+    add x9, x8, x0
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9]
+
+    smull v16.4s, v0.4h, v4.h[0]
+    smull v17.4s, v0.4h, v4.h[1]
+    smull v18.4s, v0.4h, v4.h[2]
+    smull v19.4s, v0.4h, v4.h[3]
+    smlal v16.4s, v1.4h, v5.h[0]
+    smlal v17.4s, v1.4h, v5.h[1]
+    smlal v18.4s, v1.4h, v5.h[2]
+    smlal v19.4s, v1.4h, v5.h[3]
+    smlal v16.4s, v2.4h, v6.h[0]
+    smlal v17.4s, v2.4h, v6.h[1]
+    smlal v18.4s, v2.4h, v6.h[2]
+    smlal v19.4s, v2.4h, v6.h[3]
+    smlal v16.4s, v3.4h, v7.h[0]
+    smlal v17.4s, v3.4h, v7.h[1]
+    smlal v18.4s, v3.4h, v7.h[2]
+    smlal v19.4s, v3.4h, v7.h[3]
+
+    sqrshrn  v16.4h, v16.4s, #5
+    sqrshrn2 v16.8h, v17.4s, #5
+    sqrshrn  v17.4h, v18.4s, #5
+    sqrshrn2 v17.8h, v19.4s, #5
+
+    add x8, x8, #8
+    smin v16.8h, v16.8h, v28.8h
+    smin v17.8h, v17.8h, v28.8h
+    smax v16.8h, v16.8h, v29.8h
+    smax v17.8h, v17.8h, v29.8h
+
+    cmp x8, x3
+    st1 {v16.8h, v17.8h}, [x1], #32
+    blt dst7_pb4_loopi_1st
+    b   dst7_pb4_end
+
+dst7_pb4_2nd:
+    mov x8, #0                  // i = 0
+dst7_pb4_loopi_2nd:
+    add x9, x8, x0
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9]
+
+    smull v16.4s, v0.4h, v4.h[0]
+    smull v17.4s, v0.4h, v4.h[1]
+    smull v18.4s, v0.4h, v4.h[2]
+    smull v19.4s, v0.4h, v4.h[3]
+    smlal v16.4s, v1.4h, v5.h[0]
+    smlal v17.4s, v1.4h, v5.h[1]
+    smlal v18.4s, v1.4h, v5.h[2]
+    smlal v19.4s, v1.4h, v5.h[3]
+    smlal v16.4s, v2.4h, v6.h[0]
+    smlal v17.4s, v2.4h, v6.h[1]
+    smlal v18.4s, v2.4h, v6.h[2]
+    smlal v19.4s, v2.4h, v6.h[3]
+    smlal v16.4s, v3.4h, v7.h[0]
+    smlal v17.4s, v3.4h, v7.h[1]
+    smlal v18.4s, v3.4h, v7.h[2]
+    smlal v19.4s, v3.4h, v7.h[3]
+
+    srshl v16.4s, v16.4s, v30.4s
+    srshl v17.4s, v17.4s, v30.4s
+    srshl v18.4s, v18.4s, v30.4s
+    srshl v19.4s, v19.4s, v30.4s
+
+    sqxtn  v16.4h, v16.4s
+    sqxtn2 v16.8h, v17.4s
+    sqxtn  v17.4h, v18.4s
+    sqxtn2 v17.8h, v19.4s
+
+    add x8, x8, #8
+    smin v16.8h, v16.8h, v28.8h
+    smin v17.8h, v17.8h, v28.8h
+    smax v16.8h, v16.8h, v29.8h
+    smax v17.8h, v17.8h, v29.8h
+
+    cmp x8, x3
+    st1 {v16.8h, v17.8h}, [x1], #32
+
+    blt dst7_pb4_loopi_2nd
+
+dst7_pb4_end:
+    ret
+
+itrans_dst7_pb8_coef:
+.byte 8, 16, 23, 30, 35, 39, 42, 44, \
+      23, 39, 44, 35, 16, -8, -30, -42, \
+      35, 42, 16, -23, -44, -30, 8, 39, \
+      42, 23, -30, -39, 8, 44, 16, -35, \
+      44, -8, -42, 16, 39, -23, -35, 30, \
+      39, -35, -8, 42, -30, -16, 44, -23, \
+      30, -44, 35, -8, -23, 42, -39, 16, \
+      16, -30, 39, -44, 42, -35, 23, -8
+//*************************************************************************************************
+//void uavs3e_itrans_dst7_pb8_arm64(s16 *coeff, s16 *block, int shift, int line, int max_tr_val, int min_tr_val);
+//x0->coeff blk, 16 bit
+//x1->resi blk, 16 bit
+//*************************************************************************************************
+function uavs3e_itrans_dst7_pb8_arm64
+    sub sp, sp, #64
+    ld1 {v12.2d, v13.2d, v14.2d, v15.2d}, [sp]
+    adr x6, itrans_dst7_pb8_coef
+
+    neg w15, w2
+    dup v28.8h, w4                  // max_tr_val
+    dup v29.8h, w5                  // min_tr_val
+    dup v31.4s, w15                 // shift
+
+    ld1 {v0.8b, v1.8b, v2.8b, v3.8b}, [x6], #32
+    ld1 {v4.8b, v5.8b, v6.8b, v7.8b}, [x6]
+    sxtl v16.8h, v0.8b
+    sxtl v17.8h, v1.8b
+    sxtl v18.8h, v2.8b
+    sxtl v19.8h, v3.8b
+    sxtl v20.8h, v4.8b
+    sxtl v21.8h, v5.8b
+    sxtl v22.8h, v6.8b
+    sxtl v23.8h, v7.8b
+
+    lsl x3, x3, #1
+    mov x8, #0                      // i = 0
+dst7_pb8_loopi:
+    add x9, x0, x8
+    ld1 {v0.4h}, [x9], x3
+    ld1 {v1.4h}, [x9], x3
+    ld1 {v2.4h}, [x9], x3
+    ld1 {v3.4h}, [x9], x3
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9]
+
+    smull v24.4s, v16.4h, v0.h[0]
+    smull v25.4s, v16.4h, v0.h[1]
+    smull v26.4s, v16.4h, v0.h[2]
+    smull v27.4s, v16.4h, v0.h[3]
+    smlal v24.4s, v17.4h, v1.h[0]
+    smlal v25.4s, v17.4h, v1.h[1]
+    smlal v26.4s, v17.4h, v1.h[2]
+    smlal v27.4s, v17.4h, v1.h[3]
+    smlal v24.4s, v18.4h, v2.h[0]
+    smlal v25.4s, v18.4h, v2.h[1]
+    smlal v26.4s, v18.4h, v2.h[2]
+    smlal v27.4s, v18.4h, v2.h[3]
+    smlal v24.4s, v19.4h, v3.h[0]
+    smlal v25.4s, v19.4h, v3.h[1]
+    smlal v26.4s, v19.4h, v3.h[2]
+    smlal v27.4s, v19.4h, v3.h[3]
+    smlal v24.4s, v20.4h, v4.h[0]
+    smlal v25.4s, v20.4h, v4.h[1]
+    smlal v26.4s, v20.4h, v4.h[2]
+    smlal v27.4s, v20.4h, v4.h[3]
+    smlal v24.4s, v21.4h, v5.h[0]
+    smlal v25.4s, v21.4h, v5.h[1]
+    smlal v26.4s, v21.4h, v5.h[2]
+    smlal v27.4s, v21.4h, v5.h[3]
+    smlal v24.4s, v22.4h, v6.h[0]
+    smlal v25.4s, v22.4h, v6.h[1]
+    smlal v26.4s, v22.4h, v6.h[2]
+    smlal v27.4s, v22.4h, v6.h[3]
+    smlal v24.4s, v23.4h, v7.h[0]
+    smlal v25.4s, v23.4h, v7.h[1]
+    smlal v26.4s, v23.4h, v7.h[2]
+    smlal v27.4s, v23.4h, v7.h[3]
+
+    smull2 v12.4s, v16.8h, v0.h[0]
+    smull2 v13.4s, v16.8h, v0.h[1]
+    smull2 v14.4s, v16.8h, v0.h[2]
+    smull2 v15.4s, v16.8h, v0.h[3]
+    smlal2 v12.4s, v17.8h, v1.h[0]
+    smlal2 v13.4s, v17.8h, v1.h[1]
+    smlal2 v14.4s, v17.8h, v1.h[2]
+    smlal2 v15.4s, v17.8h, v1.h[3]
+    smlal2 v12.4s, v18.8h, v2.h[0]
+    smlal2 v13.4s, v18.8h, v2.h[1]
+    smlal2 v14.4s, v18.8h, v2.h[2]
+    smlal2 v15.4s, v18.8h, v2.h[3]
+    smlal2 v12.4s, v19.8h, v3.h[0]
+    smlal2 v13.4s, v19.8h, v3.h[1]
+    smlal2 v14.4s, v19.8h, v3.h[2]
+    smlal2 v15.4s, v19.8h, v3.h[3]
+    smlal2 v12.4s, v20.8h, v4.h[0]
+    smlal2 v13.4s, v20.8h, v4.h[1]
+    smlal2 v14.4s, v20.8h, v4.h[2]
+    smlal2 v15.4s, v20.8h, v4.h[3]
+    smlal2 v12.4s, v21.8h, v5.h[0]
+    smlal2 v13.4s, v21.8h, v5.h[1]
+    smlal2 v14.4s, v21.8h, v5.h[2]
+    smlal2 v15.4s, v21.8h, v5.h[3]
+    smlal2 v12.4s, v22.8h, v6.h[0]
+    smlal2 v13.4s, v22.8h, v6.h[1]
+    smlal2 v14.4s, v22.8h, v6.h[2]
+    smlal2 v15.4s, v22.8h, v6.h[3]
+    smlal2 v12.4s, v23.8h, v7.h[0]
+    smlal2 v13.4s, v23.8h, v7.h[1]
+    smlal2 v14.4s, v23.8h, v7.h[2]
+    smlal2 v15.4s, v23.8h, v7.h[3]
+
+    cmp x2, #5
+    bne dst7_pb8_shift12
+
+    sqrshrn  v24.4h, v24.4s, #5
+    sqrshrn  v25.4h, v25.4s, #5
+    sqrshrn  v26.4h, v26.4s, #5
+    sqrshrn  v27.4h, v27.4s, #5
+    sqrshrn2 v24.8h, v12.4s, #5
+    sqrshrn2 v25.8h, v13.4s, #5
+    sqrshrn2 v26.8h, v14.4s, #5
+    sqrshrn2 v27.8h, v15.4s, #5
+
+    b dst7_pb8_clip_store
+
+dst7_pb8_shift12:
+	srshl v24.4s, v24.4s, v31.4s
+    srshl v25.4s, v25.4s, v31.4s
+    srshl v26.4s, v26.4s, v31.4s
+    srshl v27.4s, v27.4s, v31.4s
+    srshl v12.4s, v12.4s, v31.4s
+    srshl v13.4s, v13.4s, v31.4s
+    srshl v14.4s, v14.4s, v31.4s
+    srshl v15.4s, v15.4s, v31.4s
+
+    sqxtn  v24.4h, v24.4s
+    sqxtn  v25.4h, v25.4s
+    sqxtn  v26.4h, v26.4s
+    sqxtn  v27.4h, v27.4s
+    sqxtn2 v24.8h, v12.4s
+    sqxtn2 v25.8h, v13.4s
+    sqxtn2 v26.8h, v14.4s
+    sqxtn2 v27.8h, v15.4s
+
+dst7_pb8_clip_store:
+    add x8, x8, #8
+    smin v24.8h, v24.8h, v28.8h
+    smin v25.8h, v25.8h, v28.8h
+    smin v26.8h, v26.8h, v28.8h
+    smin v27.8h, v27.8h, v28.8h
+    smax v24.8h, v24.8h, v29.8h
+    smax v25.8h, v25.8h, v29.8h
+    smax v26.8h, v26.8h, v29.8h
+    smax v27.8h, v27.8h, v29.8h
+
+    cmp x8, x3
+    st1 {v24.8h, v25.8h, v26.8h, v27.8h}, [x1], #64
+    blt dst7_pb8_loopi
+
+    ld1 {v12.2d, v13.2d, v14.2d, v15.2d}, [sp], #64
+    ret
+
+itrans_dst7_pb16_coef:
+.byte 4, 8, 13, 17, 20, 24, 28, 31, 34, 36, 39, 41, 42, 43, 44, 45, \
+      13, 24, 34, 41, 44, 44, 41, 34, 24, 13, 0, -13, -24, -34, -41, -44, \
+      20, 36, 44, 42, 31, 13, -8, -28, -41, -45, -39, -24, -4, 17, 34, 43, \
+      28, 43, 41, 20, -8, -34, -45, -36, -13, 17, 39, 44, 31, 4, -24, -42, \
+      34, 44, 24, -13, -41, -41, -13, 24, 44, 34, 0, -34, -44, -24, 13, 41, \
+      39, 39, 0, -39, -39, 0, 39, 39, 0, -39, -39, 0, 39, 39, 0, -39, \
+      42, 28, -24, -43, -4, 41, 31, -20, -44, -8, 39, 34, -17, -45, -13, 36, \
+      44, 13, -41, -24, 34, 34, -24, -41, 13, 44, 0, -44, -13, 41, 24, -34, \
+      45, -4, -44, 8, 43, -13, -42, 17, 41, -20, -39, 24, 36, -28, -34, 31, \
+      43, -20, -34, 36, 17, -44, 4, 42, -24, -31, 39, 13, -45, 8, 41, -28, \
+      41, -34, -13, 44, -24, -24, 44, -13, -34, 41, 0, -41, 34, 13, -44, 24, \
+      36, -42, 13, 28, -45, 24, 17, -43, 34, 4, -39, 41, -8, -31, 44, -20, \
+      31, -45, 34, -4, -28, 44, -36, 8, 24, -43, 39, -13, -20, 42, -41, 17, \
+      24, -41, 44, -34, 13, 13, -34, 44, -41, 24, 0, -24, 41, -44, 34, -13, \
+      17, -31, 41, -45, 42, -34, 20, -4, -13, 28, -39, 44, -43, 36, -24, 8, \
+      8, -17, 24, -31, 36, -41, 43, -45, 44, -42, 39, -34, 28, -20, 13, -4
+//*************************************************************************************************
+//void uavs3e_itrans_dst7_pb16_arm64(s16 *coeff, s16 *resi, int shift, int line, int max_tr_val, int min_tr_val)
+//x0->coeff blk, 16 bit
+//x1->resi blk, 16 bit
+//*************************************************************************************************
+function uavs3e_itrans_dst7_pb16_arm64
+    sub sp, sp, #64
+    st1 {v12.2d, v13.2d, v14.2d, v15.2d}, [sp]
+
+    adr x6, itrans_dst7_pb16_coef
+
+    neg w15, w2
+    dup v28.8h, w4                  // max_tr_val
+    dup v29.8h, w5                  // min_tr_val
+    dup v31.4s, w15                 // shift
+
+    mov x10, #16                    // it_stride
+    mov x14, #32                    // resi_stride
+    mov x13, x3                     // line - i
+    lsl x3, x3, #1                  // coeff_stride = line*sizeof(s16)
+dst7_pb16_loopi:
+    mov x12, #0                     // j
+    mov x11, x1                     // resi + i*16
+dst7_pb16_loopj:
+    add x8, x6, x12                 // it + j
+    mov x9, x0                      // coeff + i
+
+    ld1 {v16.8b}, [x8], x10         // load it first 8 lines
+    ld1 {v17.8b}, [x8], x10
+    ld1 {v18.8b}, [x8], x10
+    ld1 {v19.8b}, [x8], x10
+    ld1 {v20.8b}, [x8], x10
+    ld1 {v21.8b}, [x8], x10
+    ld1 {v22.8b}, [x8], x10
+    ld1 {v23.8b}, [x8], x10
+
+    sxtl v16.8h, v16.8b
+    sxtl v17.8h, v17.8b
+    sxtl v18.8h, v18.8b
+    sxtl v19.8h, v19.8b
+    sxtl v20.8h, v20.8b
+    sxtl v21.8h, v21.8b
+    sxtl v22.8h, v22.8b
+    sxtl v23.8h, v23.8b
+
+    ld1 {v0.4h}, [x9], x3
+    ld1 {v1.4h}, [x9], x3
+    ld1 {v2.4h}, [x9], x3
+    ld1 {v3.4h}, [x9], x3
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9], x3
+
+    smull v24.4s, v16.4h, v0.h[0]
+    smull v25.4s, v16.4h, v0.h[1]
+    smull v26.4s, v16.4h, v0.h[2]
+    smull v27.4s, v16.4h, v0.h[3]
+    smlal v24.4s, v17.4h, v1.h[0]
+    smlal v25.4s, v17.4h, v1.h[1]
+    smlal v26.4s, v17.4h, v1.h[2]
+    smlal v27.4s, v17.4h, v1.h[3]
+    smlal v24.4s, v18.4h, v2.h[0]
+    smlal v25.4s, v18.4h, v2.h[1]
+    smlal v26.4s, v18.4h, v2.h[2]
+    smlal v27.4s, v18.4h, v2.h[3]
+    smlal v24.4s, v19.4h, v3.h[0]
+    smlal v25.4s, v19.4h, v3.h[1]
+    smlal v26.4s, v19.4h, v3.h[2]
+    smlal v27.4s, v19.4h, v3.h[3]
+    smlal v24.4s, v20.4h, v4.h[0]
+    smlal v25.4s, v20.4h, v4.h[1]
+    smlal v26.4s, v20.4h, v4.h[2]
+    smlal v27.4s, v20.4h, v4.h[3]
+    smlal v24.4s, v21.4h, v5.h[0]
+    smlal v25.4s, v21.4h, v5.h[1]
+    smlal v26.4s, v21.4h, v5.h[2]
+    smlal v27.4s, v21.4h, v5.h[3]
+    smlal v24.4s, v22.4h, v6.h[0]
+    smlal v25.4s, v22.4h, v6.h[1]
+    smlal v26.4s, v22.4h, v6.h[2]
+    smlal v27.4s, v22.4h, v6.h[3]
+    smlal v24.4s, v23.4h, v7.h[0]
+    smlal v25.4s, v23.4h, v7.h[1]
+    smlal v26.4s, v23.4h, v7.h[2]
+    smlal v27.4s, v23.4h, v7.h[3]
+
+    smull2 v12.4s, v16.8h, v0.h[0]
+    smull2 v13.4s, v16.8h, v0.h[1]
+    smull2 v14.4s, v16.8h, v0.h[2]
+    smull2 v15.4s, v16.8h, v0.h[3]
+    smlal2 v12.4s, v17.8h, v1.h[0]
+    smlal2 v13.4s, v17.8h, v1.h[1]
+    smlal2 v14.4s, v17.8h, v1.h[2]
+    smlal2 v15.4s, v17.8h, v1.h[3]
+    smlal2 v12.4s, v18.8h, v2.h[0]
+    smlal2 v13.4s, v18.8h, v2.h[1]
+    smlal2 v14.4s, v18.8h, v2.h[2]
+    smlal2 v15.4s, v18.8h, v2.h[3]
+    smlal2 v12.4s, v19.8h, v3.h[0]
+    smlal2 v13.4s, v19.8h, v3.h[1]
+    smlal2 v14.4s, v19.8h, v3.h[2]
+    smlal2 v15.4s, v19.8h, v3.h[3]
+    smlal2 v12.4s, v20.8h, v4.h[0]
+    smlal2 v13.4s, v20.8h, v4.h[1]
+    smlal2 v14.4s, v20.8h, v4.h[2]
+    smlal2 v15.4s, v20.8h, v4.h[3]
+    smlal2 v12.4s, v21.8h, v5.h[0]
+    smlal2 v13.4s, v21.8h, v5.h[1]
+    smlal2 v14.4s, v21.8h, v5.h[2]
+    smlal2 v15.4s, v21.8h, v5.h[3]
+    smlal2 v12.4s, v22.8h, v6.h[0]
+    smlal2 v13.4s, v22.8h, v6.h[1]
+    smlal2 v14.4s, v22.8h, v6.h[2]
+    smlal2 v15.4s, v22.8h, v6.h[3]
+    smlal2 v12.4s, v23.8h, v7.h[0]
+    smlal2 v13.4s, v23.8h, v7.h[1]
+    smlal2 v14.4s, v23.8h, v7.h[2]
+    smlal2 v15.4s, v23.8h, v7.h[3]
+
+    ld1 {v16.8b}, [x8], x10         // load it bottom 8 lines
+    ld1 {v17.8b}, [x8], x10
+    ld1 {v18.8b}, [x8], x10
+    ld1 {v19.8b}, [x8], x10
+    ld1 {v20.8b}, [x8], x10
+    ld1 {v21.8b}, [x8], x10
+    ld1 {v22.8b}, [x8], x10
+    ld1 {v23.8b}, [x8], x10
+
+    sxtl v16.8h, v16.8b
+    sxtl v17.8h, v17.8b
+    sxtl v18.8h, v18.8b
+    sxtl v19.8h, v19.8b
+    sxtl v20.8h, v20.8b
+    sxtl v21.8h, v21.8b
+    sxtl v22.8h, v22.8b
+    sxtl v23.8h, v23.8b
+
+    ld1 {v0.4h}, [x9], x3
+    ld1 {v1.4h}, [x9], x3
+    ld1 {v2.4h}, [x9], x3
+    ld1 {v3.4h}, [x9], x3
+    ld1 {v4.4h}, [x9], x3
+    ld1 {v5.4h}, [x9], x3
+    ld1 {v6.4h}, [x9], x3
+    ld1 {v7.4h}, [x9], x3
+
+    smlal v24.4s, v16.4h, v0.h[0]
+    smlal v25.4s, v16.4h, v0.h[1]
+    smlal v26.4s, v16.4h, v0.h[2]
+    smlal v27.4s, v16.4h, v0.h[3]
+    smlal v24.4s, v17.4h, v1.h[0]
+    smlal v25.4s, v17.4h, v1.h[1]
+    smlal v26.4s, v17.4h, v1.h[2]
+    smlal v27.4s, v17.4h, v1.h[3]
+    smlal v24.4s, v18.4h, v2.h[0]
+    smlal v25.4s, v18.4h, v2.h[1]
+    smlal v26.4s, v18.4h, v2.h[2]
+    smlal v27.4s, v18.4h, v2.h[3]
+    smlal v24.4s, v19.4h, v3.h[0]
+    smlal v25.4s, v19.4h, v3.h[1]
+    smlal v26.4s, v19.4h, v3.h[2]
+    smlal v27.4s, v19.4h, v3.h[3]
+    smlal v24.4s, v20.4h, v4.h[0]
+    smlal v25.4s, v20.4h, v4.h[1]
+    smlal v26.4s, v20.4h, v4.h[2]
+    smlal v27.4s, v20.4h, v4.h[3]
+    smlal v24.4s, v21.4h, v5.h[0]
+    smlal v25.4s, v21.4h, v5.h[1]
+    smlal v26.4s, v21.4h, v5.h[2]
+    smlal v27.4s, v21.4h, v5.h[3]
+    smlal v24.4s, v22.4h, v6.h[0]
+    smlal v25.4s, v22.4h, v6.h[1]
+    smlal v26.4s, v22.4h, v6.h[2]
+    smlal v27.4s, v22.4h, v6.h[3]
+    smlal v24.4s, v23.4h, v7.h[0]
+    smlal v25.4s, v23.4h, v7.h[1]
+    smlal v26.4s, v23.4h, v7.h[2]
+    smlal v27.4s, v23.4h, v7.h[3]
+
+    smlal2 v12.4s, v16.8h, v0.h[0]
+    smlal2 v13.4s, v16.8h, v0.h[1]
+    smlal2 v14.4s, v16.8h, v0.h[2]
+    smlal2 v15.4s, v16.8h, v0.h[3]
+    smlal2 v12.4s, v17.8h, v1.h[0]
+    smlal2 v13.4s, v17.8h, v1.h[1]
+    smlal2 v14.4s, v17.8h, v1.h[2]
+    smlal2 v15.4s, v17.8h, v1.h[3]
+    smlal2 v12.4s, v18.8h, v2.h[0]
+    smlal2 v13.4s, v18.8h, v2.h[1]
+    smlal2 v14.4s, v18.8h, v2.h[2]
+    smlal2 v15.4s, v18.8h, v2.h[3]
+    smlal2 v12.4s, v19.8h, v3.h[0]
+    smlal2 v13.4s, v19.8h, v3.h[1]
+    smlal2 v14.4s, v19.8h, v3.h[2]
+    smlal2 v15.4s, v19.8h, v3.h[3]
+    smlal2 v12.4s, v20.8h, v4.h[0]
+    smlal2 v13.4s, v20.8h, v4.h[1]
+    smlal2 v14.4s, v20.8h, v4.h[2]
+    smlal2 v15.4s, v20.8h, v4.h[3]
+    smlal2 v12.4s, v21.8h, v5.h[0]
+    smlal2 v13.4s, v21.8h, v5.h[1]
+    smlal2 v14.4s, v21.8h, v5.h[2]
+    smlal2 v15.4s, v21.8h, v5.h[3]
+    smlal2 v12.4s, v22.8h, v6.h[0]
+    smlal2 v13.4s, v22.8h, v6.h[1]
+    smlal2 v14.4s, v22.8h, v6.h[2]
+    smlal2 v15.4s, v22.8h, v6.h[3]
+    smlal2 v12.4s, v23.8h, v7.h[0]
+    smlal2 v13.4s, v23.8h, v7.h[1]
+    smlal2 v14.4s, v23.8h, v7.h[2]
+    smlal2 v15.4s, v23.8h, v7.h[3]
+
+    cmp x2, #5
+    bne dst7_pb16_shift12
+
+    sqrshrn  v24.4h, v24.4s, #5
+    sqrshrn  v25.4h, v25.4s, #5
+    sqrshrn  v26.4h, v26.4s, #5
+    sqrshrn  v27.4h, v27.4s, #5
+    sqrshrn2 v24.8h, v12.4s, #5
+    sqrshrn2 v25.8h, v13.4s, #5
+    sqrshrn2 v26.8h, v14.4s, #5
+    sqrshrn2 v27.8h, v15.4s, #5
+
+    b dst7_pb16_clip_store
+
+dst7_pb16_shift12:
+    srshl v24.4s, v24.4s, v31.4s
+    srshl v25.4s, v25.4s, v31.4s
+    srshl v26.4s, v26.4s, v31.4s
+    srshl v27.4s, v27.4s, v31.4s
+    srshl v12.4s, v12.4s, v31.4s
+    srshl v13.4s, v13.4s, v31.4s
+    srshl v14.4s, v14.4s, v31.4s
+    srshl v15.4s, v15.4s, v31.4s
+
+    sqxtn  v24.4h, v24.4s
+    sqxtn  v25.4h, v25.4s
+    sqxtn  v26.4h, v26.4s
+    sqxtn  v27.4h, v27.4s
+    sqxtn2 v24.8h, v12.4s
+    sqxtn2 v25.8h, v13.4s
+    sqxtn2 v26.8h, v14.4s
+    sqxtn2 v27.8h, v15.4s
+
+dst7_pb16_clip_store:
+    add x11, x1, x12, lsl #1            // resi + i*16 + j
+    add x12, x12, #8                    // j += 8
+
+    smin v24.8h, v24.8h, v28.8h
+    smin v25.8h, v25.8h, v28.8h
+    smin v26.8h, v26.8h, v28.8h
+    smin v27.8h, v27.8h, v28.8h
+    smax v24.8h, v24.8h, v29.8h
+    smax v25.8h, v25.8h, v29.8h
+    smax v26.8h, v26.8h, v29.8h
+    smax v27.8h, v27.8h, v29.8h
+
+    cmp x12, #16
+    st1 {v24.8h}, [x11], x14
+    st1 {v25.8h}, [x11], x14
+    st1 {v26.8h}, [x11], x14
+    st1 {v27.8h}, [x11], x14
+
+    blt dst7_pb16_loopj
+
+    add  x0, x0, #8                     // coeff += 4
+    add  x1, x1, #128                   // resi += resi_stride * 4
+    subs x13, x13, #4                   // i += 4
+    bgt dst7_pb16_loopi
+
+    ld1 {v12.2d, v13.2d, v14.2d, v15.2d}, [sp], #64
+    ret
+
 #endif
