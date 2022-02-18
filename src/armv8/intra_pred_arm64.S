@@ -3686,7 +3686,7 @@ function uavs3e_intra_pred_dc_arm64
 
     lsl x2, x2, #1
     lsl x12, x4, #1
-    lsl x13, x5, #1
+    lsl x13, x5, #1         //?
 
     and w7, w5, #2          // left avail
     and w8, w5, #1          // up avail
