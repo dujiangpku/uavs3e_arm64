@@ -57,6 +57,9 @@ void uavs3e_funs_init_arm64()
     uavs3e_funs_handle.pel_diff[4] = uavs3e_pel_diff_64_arm64;
     uavs3e_funs_handle.pel_diff[5] = uavs3e_pel_diff_128_arm64;
 
+    uavs3e_funs_handle.sao = uavs3e_sao_on_lcu_arm64;
+    //todo uavs3e_funs_handle.sao_stat
+
 #else
     uavs3e_funs_handle.trans_dct2[1][1] = uavs3e_trans_dct2_w4_h4_arm64;
     uavs3e_funs_handle.trans_dct2[1][2] = uavs3e_trans_dct2_w4_h8_arm64;
